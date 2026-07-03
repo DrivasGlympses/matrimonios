@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Invitación - {{ event.display_name }}{% endblock %}
+
+{% block public_content %}
+<main class="flex-grow flex flex-col items-center w-full">
+    <section class="w-full relative min-h-screen flex items-center justify-center overflow-hidden">
+        <div class="absolute inset-0 z-0">
+            {% if event.couple_photo %}
+            <img class="w-full h-full object-cover object-center filter brightness-75" src="{{ event.couple_photo.url }}" alt="{{ event.name }}"/>
+            {% else %}
+            <div class="w-full h-full bg-gradient-to-br from-primary/20 to-secondary/20"></div>
+            {% endif %}
+        </div>
+        
+        <div class="relative z-10 max-w-4xl mx-auto px-6 py-16 text-center">
+            <div class="bg-surface-container-lowest/95 backdrop-blur-md rounded-2xl shadow-xl p-8 md:p-16 border border-white/60">
+                <span class="font-label-caps text-label-caps text-secondary tracking-widest uppercase block mb-6">Estás invitado</span>
+                
+                <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-6">
+                    {{ event.display_name }}
+                </h1>
+                
+                <p class="font-title-sm text-title-sm text-on-surface-variant mb-12">
+                    Nos llena de alegría compartir este momento tan especial contigo
+                </p>
+                
+                <div class="bg-surface-container rounded-xl p-8 mb-12">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="flex flex-col items-center">
+                            <span class="material-symbols-outlined text-secondary text-5xl mb-3" style="font-variation-settings: 'FILL' 0;">calendar_month</span>
+                            <h3 class="font-title-sm text-title-sm text-on-surface mb-2">Fecha</h3>
+                            <p class="font-body-md text-body-md text-on-surface-variant">
+                                {{ event.date|date:"l, d \d\e F \d\e Y" }}
+                            </p>
+                        </div>
+                        
+                        <div class="flex flex-col items-center">
+                            <span class="material-symbols-outlined text-secondary text-5xl mb-3" style="font-variation-settings: 'FILL' 0;">location_on</span>
+                            <h3 class="font-title-sm text-title-sm text-on-surface mb-2">Lugar</h3>
+                            <p class="font-body-md text-body-md text-on-surface-variant">
+                                {{ event.location }}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if event.venue_details %}
+                    <div class="mt-8 pt-8 border-t border-surface-variant">
+                        <h3 class="font-title-sm text-title-sm text-on-surface mb-3">Detalles del lugar</h3>
+                        <p class="font-body-md text-body-md text-on-surface-variant">
+                            {{ event.venue_details }}
+                        </p>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <div class="mb-8">
+                    <p class="font-body-lg text-body-lg text-on-surface mb-2">
+                        <strong>{{ guest.full_name }}</strong>, ¿nos acompañarás en este día tan especial?
+                    </p>
+                </div>
+                
+                <form method="post" action="{% url 'event:confirm_invitation' token=guest.invitation_token %}">
+                    {% csrf_token %}
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button type="submit" name="action" value="accept" class="bg-secondary text-on-secondary px-8 py-4 rounded-lg font-title-sm text-title-sm hover:bg-on-secondary-container transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-lg hover:shadow-xl hover:-translate-y-1">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                            Sí, confirmo mi asistencia
+                        </button>
+                        <button type="submit" name="action" value="decline" class="bg-surface-container text-on-surface-variant px-8 py-4 rounded-lg font-title-sm text-title-sm hover:bg-surface-container-high transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer border border-outline-variant">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">close</span>
+                            No podré asistir
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

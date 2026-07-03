@@ -1,0 +1,80 @@
+<nav class="hidden md:flex h-screen w-64 fixed left-0 top-0 flex-col gap-unit p-6 bg-surface-container-lowest shadow-xl shadow-secondary/4 z-50">
+    <div class="mb-8 flex flex-col items-center text-center">
+        <div class="w-20 h-20 rounded-full overflow-hidden mb-4 ring-2 ring-primary-container p-1">
+            {% if user.event and user.event.couple_photo %}
+            <img alt="Wedding Couple" class="w-full h-full object-cover rounded-full" src="{{ user.event.couple_photo.url }}"/>
+            {% else %}
+            <img alt="Wedding Couple" class="w-full h-full object-cover rounded-full" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcofCaw8XbN1ZbpT_1eoeYRS3FDTHl13PcCZqTJLoCwZVY-CWsMKVntm9oDACUn24OprLAT68yVfCL0vWe7P-XYPLX5mmpWEbhWrvlfSi-_P7ZhtYe4RSWmO57OR_D1iUgIJjaApEn7CPZPoXDi1V_jZ9D5nUbN3zU3AT6aCsfBz1-kB5LPHMYVxDvMGS_AAxNiynYpxadaSYd-wEXMAKSUwXZl1-k6eEMS3TXLxFok20laP1AHa9ncla_1hZk0lbt_-FvTisHlnw"/>
+            {% endif %}
+        </div>
+        <h2 class="font-headline-md text-headline-md-mobile text-secondary tracking-tight">
+            {{ user.get_full_name|default:user.username }}
+        </h2>
+        {% if user.event %}
+        <p class="font-body-md text-body-md text-on-surface-variant mt-1">{{ user.event.display_name }}</p>
+        {% endif %}
+    </div>
+    <ul class="flex flex-col gap-2 flex-grow">
+        <li>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-title-sm text-title-sm {% if request.resolver_match.namespace == 'dashboard' and not 'guests' in request.resolver_match.url_name %}text-secondary font-medium bg-primary-container/30{% endif %}" href="{% url 'dashboard:home' %}">
+                <span class="material-symbols-outlined">dashboard</span>
+                Panel
+            </a>
+        </li>
+        <li>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-title-sm text-title-sm {% if 'guests' in request.resolver_match.url_name %}text-secondary font-medium bg-primary-container/30{% endif %}" href="{% url 'dashboard:guests' %}">
+                <span class="material-symbols-outlined">group</span>
+                Lista de Invitados
+            </a>
+        </li>
+        <li>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-title-sm text-title-sm {% if request.resolver_match.namespace == 'tables' %}text-secondary font-medium bg-primary-container/30{% endif %}" href="{% url 'tables:home' %}">
+                <span class="material-symbols-outlined">grid_view</span>
+                Plan de Mesas
+            </a>
+        </li>
+        <li>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-title-sm text-title-sm {% if request.resolver_match.namespace == 'gallery' %}text-secondary font-medium bg-primary-container/30{% endif %}" href="{% url 'gallery:home' %}">
+                <span class="material-symbols-outlined">photo_library</span>
+                Galería de Fotos
+            </a>
+        </li>
+        <li>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-title-sm text-title-sm {% if request.resolver_match.url_name == 'checklist' %}text-secondary font-medium bg-primary-container/30{% endif %}" href="{% url 'dashboard:checklist' %}">
+                <span class="material-symbols-outlined">fact_check</span>
+                Lista de Tareas
+            </a>
+        </li>
+        <li>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-title-sm text-title-sm {% if 'budget' in request.resolver_match.url_name %}text-secondary font-medium bg-primary-container/30{% endif %}" href="{% url 'dashboard:budget' %}">
+                <span class="material-symbols-outlined">account_balance_wallet</span>
+                Presupuesto
+            </a>
+        </li>
+        <li>
+            <a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-title-sm text-title-sm {% if request.resolver_match.url_name == 'event_settings' %}text-secondary font-medium bg-primary-container/30{% endif %}" href="{% url 'dashboard:event_settings' %}">
+                <span class="material-symbols-outlined">palette</span>
+                Diseño de Invitación
+            </a>
+        </li>
+    </ul>
+    <a href="{% url 'event:public' %}" class="bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-6 py-3 rounded transition-colors w-full mb-6 font-title-sm text-title-sm shadow-md flex items-center justify-center gap-2">
+        <span class="material-symbols-outlined">visibility</span>
+        Ver Página Pública
+    </a>
+    <ul class="flex flex-col gap-2 pt-4 border-t border-outline-variant/30">
+        <li>
+            <a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-body-md text-sm" href="#">
+                <span class="material-symbols-outlined text-[20px]">help</span>
+                Centro de Ayuda
+            </a>
+        </li>
+        <li>
+            <form method="post" action="{% url 'core:logout' %}" class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-body-md text-sm cursor-pointer">
+                {% csrf_token %}
+                <span class="material-symbols-outlined text-[20px]">logout</span>
+                <button type="submit" class="bg-transparent border-0 p-0 cursor-pointer text-inherit">Cerrar Sesión</button>
+            </form>
+        </li>
+    </ul>
+</nav>

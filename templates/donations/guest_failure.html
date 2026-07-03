@@ -1,0 +1,34 @@
+{% extends 'guest_base.html' %}
+
+{% block title %}Error en la donación - {{ event.display_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-6 py-16 text-center">
+    <div class="bg-surface-container-lowest rounded-2xl shadow-xl p-8 md:p-16 border border-white/60">
+        <div class="w-24 h-24 mx-auto mb-8 rounded-full bg-error-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-error text-6xl" style="font-variation-settings: 'FILL' 0;">error</span>
+        </div>
+        
+        <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-6">
+            La donación no se pudo procesar
+        </h1>
+        
+        <p class="font-body-lg text-body-lg text-on-surface-variant mb-8">
+            Lamentablemente, no pudimos procesar tu donación. Esto puede deberse a un problema con el método de pago o con la conexión.
+        </p>
+        
+        <div class="bg-surface-container rounded-xl p-6 mb-8">
+            <p class="font-body-md text-body-md text-on-surface">
+                Si el problema persiste, puedes intentar nuevamente o contactarnos.
+            </p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'donations:donation' %}" class="bg-secondary text-on-secondary px-8 py-4 rounded-lg font-title-sm text-title-sm hover:bg-on-secondary-container transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-lg hover:shadow-xl">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">refresh</span>
+                Intentar nuevamente
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

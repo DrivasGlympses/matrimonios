@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+
+{% block title %}¡Confirmado! - {{ event.display_name }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet"/>
+<style>
+    .floral-romantic {
+        --fr-rose: #E8A0BF;
+        --fr-rose-dark: #DB2777;
+        --fr-sage: #A7C4A0;
+        --fr-sage-dark: #6B8E6B;
+        --fr-cream: #FFF8F0;
+        --fr-blush: #FDE8EF;
+        --fr-gold: #CA8A04;
+        --fr-text: #5D4037;
+    }
+    .floral-romantic .fr-script {
+        font-family: 'Great Vibes', cursive;
+    }
+    .floral-romantic .fr-serif {
+        font-family: 'Cormorant Infant', serif;
+    }
+    .floral-romantic .fr-petal-divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    .floral-romantic .fr-petal {
+        width: 8px;
+        height: 12px;
+        background: var(--fr-rose);
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        opacity: 0.6;
+    }
+    .floral-romantic .fr-petal:nth-child(2) {
+        transform: rotate(45deg);
+        opacity: 0.8;
+    }
+    .floral-romantic .fr-petal:nth-child(3) {
+        transform: rotate(-30deg);
+        opacity: 0.5;
+    }
+    .floral-romantic .fr-line {
+        width: 50px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--fr-rose), transparent);
+    }
+</style>
+{% endblock %}
+
+{% block public_content %}
+<main class="floral-romantic flex-grow flex flex-col items-center justify-center w-full min-h-screen" style="background: var(--fr-cream);">
+    <div class="max-w-2xl mx-auto px-6 py-16 text-center">
+        <div class="bg-white/95 backdrop-blur-sm rounded-3xl p-8 md:p-16 shadow-sm" style="border: 1px solid rgba(232, 160, 191, 0.3); box-shadow: 0 10px 40px rgba(219, 39, 119, 0.05);">
+            <div class="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center" style="background: var(--fr-blush);">
+                <svg class="w-10 h-10" style="color: var(--fr-rose-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            
+            <p class="fr-script text-4xl mb-4" style="color: var(--fr-rose-dark);">¡Confirmación exitosa!</p>
+            
+            <div class="fr-petal-divider mb-6">
+                <div class="fr-line"></div>
+                <div class="fr-petal"></div>
+                <div class="fr-petal"></div>
+                <div class="fr-petal"></div>
+                <div class="fr-line"></div>
+            </div>
+            
+            <p class="fr-serif text-xl md:text-2xl mb-8" style="color: var(--fr-text);">
+                Gracias por confirmar tu asistencia. Estamos muy contentos de que nos acompañes en este día tan especial.
+            </p>
+            
+            <div class="rounded-2xl p-6 mb-8" style="background: var(--fr-blush);">
+                <p class="fr-serif text-sm mb-3" style="color: var(--fr-text);">
+                    <strong>Revisa tu correo electrónico</strong> donde te hemos enviado tus credenciales de acceso para que puedas ver nuestra galería de fotos y más contenido exclusivo.
+                </p>
+                <p class="fr-serif text-xs" style="color: var(--fr-text); opacity: 0.7;">
+                    Si no encuentras el correo, revisa tu carpeta de spam o promociones.
+                </p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <a href="{% url 'core:login' %}" class="fr-serif px-8 py-4 rounded-full transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer" style="background: linear-gradient(135deg, var(--fr-rose-dark), var(--fr-rose)); color: white; font-size: 1rem; font-weight: 600; text-decoration: none; box-shadow: 0 4px 15px rgba(219, 39, 119, 0.2);">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+                    </svg>
+                    Iniciar sesión
+                </a>
+                <a href="{% url 'event:public' %}" class="fr-serif px-8 py-4 rounded-full transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer" style="background: transparent; color: var(--fr-text); border: 1px solid var(--fr-rose); font-size: 1rem; font-weight: 500; text-decoration: none;">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+                    </svg>
+                    Volver al inicio
+                </a>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

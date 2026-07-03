@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Presupuesto - Ethereal Union{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    <div class="mb-8 flex justify-between items-center flex-wrap gap-4">
+        <div>
+            <h1 class="font-display-lg-mobile md:font-display-lg text-on-surface mb-2">Presupuesto</h1>
+            <p class="font-body-md text-on-surface-variant">Controla los gastos de tu boda</p>
+        </div>
+        <a href="{% url 'dashboard:budget_add' %}" class="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-5 py-2.5 rounded-lg transition-colors font-title-sm text-title-sm shadow-md cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">add</span>
+            Nuevo Gasto
+        </a>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-gutter mb-8">
+        <div class="bg-surface-container-lowest rounded-xl p-6 whisper-shadow">
+            <span class="font-label-caps text-label-caps text-on-surface-variant tracking-widest uppercase block mb-2">Presupuesto Total</span>
+            <span class="font-headline-md-mobile md:font-headline-md text-secondary">${{ budget_total|intcomma }}</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-6 whisper-shadow">
+            <span class="font-label-caps text-label-caps text-on-surface-variant tracking-widest uppercase block mb-2">Estimado</span>
+            <span class="font-headline-md-mobile md:font-headline-md text-on-surface">${{ total_estimated|intcomma }}</span>
+        </div>
+        <div class="bg-surface-container-lowest rounded-xl p-6 whisper-shadow">
+            <span class="font-label-caps text-label-caps text-on-surface-variant tracking-widest uppercase block mb-2">Gastado</span>
+            <span class="font-headline-md-mobile md:font-headline-md {% if total_actual > budget_total and budget_total > 0 %}text-error{% else %}text-on-surface{% endif %}">${{ total_actual|intcomma }}</span>
+        </div>
+    </div>
+
+    {% if budget_total > 0 %}
+    <div class="bg-surface-container-lowest rounded-xl p-6 whisper-shadow mb-8">
+        <div class="flex justify-between items-center mb-3">
+            <span class="font-title-sm text-title-sm text-on-surface">Progreso del presupuesto</span>
+            <span class="font-body-md text-sm text-on-surface-variant">
+                {% widthratio total_actual budget_total 100 %}% utilizado
+            </span>
+        </div>
+        <div class="w-full bg-surface-variant h-3 rounded-full">
+            <div class="h-3 rounded-full transition-all {% if total_actual > budget_total %}bg-error{% else %}bg-secondary{% endif %}" style="width: {% widthratio total_actual budget_total 100 %}%; max-width: 100%;"></div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="bg-surface-container-lowest rounded-xl p-8 whisper-shadow">
+        <h2 class="font-title-sm text-title-sm text-on-surface mb-6">Desglose de gastos</h2>
+
+        <div class="space-y-3">
+            {% for item in budget_items %}
+            <div class="flex items-center gap-4 p-4 rounded-lg hover:bg-surface-container transition-colors group">
+                <div class="w-10 h-10 rounded-full bg-primary-container/30 flex items-center justify-center shrink-0">
+                    <span class="material-symbols-outlined text-secondary text-[20px]">
+                        {% if item.category == 'VENUE' %}location_city
+                        {% elif item.category == 'CATERING' %}restaurant
+                        {% elif item.category == 'ATTIRE' %}checkroom
+                        {% elif item.category == 'PHOTOGRAPHY' %}photo_camera
+                        {% elif item.category == 'FLOWERS' %}local_florist
+                        {% elif item.category == 'MUSIC' %}music_note
+                        {% elif item.category == 'TRANSPORT' %}directions_car
+                        {% else %}receipt_long{% endif %}
+                    </span>
+                </div>
+                <div class="flex-grow min-w-0">
+                    <span class="font-body-md text-body-md text-on-surface block truncate">{{ item.description }}</span>
+                    <span class="text-xs text-on-surface-variant">{{ item.get_category_display }}</span>
+                </div>
+                <div class="flex items-center gap-6 shrink-0 text-right">
+                    <div>
+                        <span class="text-xs text-on-surface-variant block">Estimado</span>
+                        <span class="font-title-sm text-title-sm text-on-surface">${{ item.estimated_cost|intcomma }}</span>
+                    </div>
+                    <div>
+                        <span class="text-xs text-on-surface-variant block">Real</span>
+                        <span class="font-title-sm text-title-sm {% if item.actual_cost > item.estimated_cost and item.estimated_cost > 0 %}text-error{% else %}text-on-surface{% endif %}">${{ item.actual_cost|intcomma }}</span>
+                    </div>
+                    <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <a href="{% url 'dashboard:budget_edit' item.pk %}" class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface-variant hover:text-secondary cursor-pointer" title="Editar">
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                        </a>
+                        <a href="{% url 'dashboard:budget_delete' item.pk %}" class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface-variant hover:text-error cursor-pointer" title="Eliminar">
+                            <span class="material-symbols-outlined text-[18px]">delete</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-12">
+                <span class="material-symbols-outlined text-[64px] text-secondary/30 mb-4">account_balance_wallet</span>
+                <p class="font-body-md text-body-md text-on-surface-variant mb-4">No hay gastos registrados</p>
+                <a href="{% url 'dashboard:budget_add' %}" class="inline-flex items-center gap-2 text-secondary hover:underline">
+                    <span class="material-symbols-outlined">add</span>
+                    Agregar primer gasto
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block title %}Invitación - {{ event.display_name }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+    .rustic-boho {
+        --rb-brown: #92400E;
+        --rb-brown-light: #B45309;
+        --rb-cream: #FEF3C7;
+        --rb-cream-dark: #FDE68A;
+        --rb-sage: #6B8E6B;
+        --rb-sage-light: #A7C4A0;
+        --rb-text: #78350F;
+        --rb-warm: #451A03;
+    }
+    .rustic-boho .rb-serif {
+        font-family: 'Cormorant', serif;
+    }
+    .rustic-boho .rb-sans {
+        font-family: 'Montserrat', sans-serif;
+    }
+    .rustic-boho .rb-botanical {
+        position: absolute;
+        opacity: 0.08;
+        pointer-events: none;
+    }
+    .rustic-boho .rb-texture {
+        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%2392400E' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    .rustic-boho .rb-divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+    }
+    .rustic-boho .rb-divider-line {
+        width: 40px;
+        height: 1px;
+        background: var(--rb-brown-light);
+        opacity: 0.4;
+    }
+    .rustic-boho .rb-leaf {
+        width: 16px;
+        height: 16px;
+        color: var(--rb-sage);
+    }
+    .rustic-boho .rb-card {
+        background: white;
+        border-radius: 0.75rem;
+        border: 1px solid var(--rb-cream-dark);
+        transition: all 300ms ease;
+    }
+    .rustic-boho .rb-card:hover {
+        box-shadow: 0 4px 20px rgba(146, 64, 14, 0.08);
+    }
+    .rustic-boho .rb-btn-accept {
+        background: var(--rb-sage);
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 2rem;
+        font-weight: 500;
+        transition: all 300ms ease;
+        cursor: pointer;
+        border: none;
+        font-size: 0.875rem;
+        letter-spacing: 0.05em;
+    }
+    .rustic-boho .rb-btn-accept:hover {
+        background: var(--rb-brown);
+        transform: translateY(-1px);
+    }
+    .rustic-boho .rb-btn-decline {
+        background: transparent;
+        color: var(--rb-brown);
+        padding: 1rem 2.5rem;
+        border-radius: 2rem;
+        font-weight: 500;
+        transition: all 300ms ease;
+        cursor: pointer;
+        border: 1px solid var(--rb-cream-dark);
+        font-size: 0.875rem;
+    }
+    .rustic-boho .rb-btn-decline:hover {
+        border-color: var(--rb-brown);
+        background: var(--rb-cream);
+    }
+</style>
+{% endblock %}
+
+{% block public_content %}
+<main class="rustic-boho flex-grow flex flex-col items-center w-full">
+    <section class="w-full relative min-h-screen flex items-center justify-center overflow-hidden rb-texture" style="background: var(--rb-cream);">
+        <svg class="rb-botanical" style="top: 5%; left: 5%; width: 200px;" viewBox="0 0 100 100" fill="currentColor" color="#6B8E6B">
+            <path d="M50 10 C30 20 20 40 25 60 C30 80 50 90 50 90 C50 90 70 80 75 60 C80 40 70 20 50 10Z"/>
+        </svg>
+        <svg class="rb-botanical" style="bottom: 10%; right: 5%; width: 150px; transform: rotate(45deg);" viewBox="0 0 100 100" fill="currentColor" color="#6B8E6B">
+            <path d="M50 10 C30 20 20 40 25 60 C30 80 50 90 50 90 C50 90 70 80 75 60 C80 40 70 20 50 10Z"/>
+        </svg>
+        
+        <div class="relative z-10 max-w-2xl mx-auto px-6 py-16 text-center">
+            <div class="bg-white/90 backdrop-blur-sm rounded-2xl p-8 md:p-14 shadow-sm" style="border: 1px solid var(--rb-cream-dark);">
+                <svg class="w-12 h-12 mx-auto mb-6" style="color: var(--rb-sage);" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C9.5 6 6 8 6 12c0 3.3 2.7 6 6 6s6-2.7 6-6c0-4-3.5-6-6-10z"/>
+                </svg>
+                
+                <p class="rb-sans text-xs tracking-[0.25em] uppercase mb-6" style="color: var(--rb-sage);">Nos Casamos</p>
+                
+                <div class="rb-divider mb-6">
+                    <div class="rb-divider-line"></div>
+                    <svg class="rb-leaf" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.54 4.54 0 018 18c1 0 2-.5 2.5-1L12 15.5l1.5 1.5c.5.5 1.5 1 2.5 1a4.54 4.54 0 011.29 1.7L18.29 22l1.89-.66C18.1 16.17 16 10 7 8"/></svg>
+                    <div class="rb-divider-line"></div>
+                </div>
+                
+                <h1 class="rb-serif text-4xl md:text-6xl font-medium mb-2" style="color: var(--rb-warm);">
+                    {{ event.bride_name }}
+                </h1>
+                <span class="rb-serif text-2xl italic mb-2 block" style="color: var(--rb-brown-light);">&</span>
+                <h1 class="rb-serif text-4xl md:text-6xl font-medium mb-8" style="color: var(--rb-warm);">
+                    {{ event.groom_name }}
+                </h1>
+                
+                <div class="rb-divider mb-8">
+                    <div class="rb-divider-line"></div>
+                    <svg class="rb-leaf" viewBox="0 0 24 24" fill="currentColor"><path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.54 4.54 0 018 18c1 0 2-.5 2.5-1L12 15.5l1.5 1.5c.5.5 1.5 1 2.5 1a4.54 4.54 0 011.29 1.7L18.29 22l1.89-.66C18.1 16.17 16 10 7 8"/></svg>
+                    <div class="rb-divider-line"></div>
+                </div>
+                
+                <p class="rb-serif text-lg md:text-xl mb-10" style="color: var(--rb-brown); line-height: 1.7;">
+                    Con la bendición de Dios y el amor de nuestras familias, te invitamos a compartir este día tan especial.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    <div class="rb-card p-6">
+                        <svg class="w-8 h-8 mx-auto mb-3" style="color: var(--rb-sage);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="rb-sans text-xs tracking-[0.15em] uppercase block mb-2" style="color: var(--rb-sage);">Cuándo</span>
+                        <p class="rb-serif text-lg" style="color: var(--rb-warm);">
+                            {{ event.date|date:"d \d\e F" }}
+                        </p>
+                        <p class="rb-sans text-sm font-light mt-1" style="color: var(--rb-brown);">
+                            {{ event.date|date:"Y" }}
+                        </p>
+                    </div>
+                    
+                    <div class="rb-card p-6">
+                        <svg class="w-8 h-8 mx-auto mb-3" style="color: var(--rb-sage);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span class="rb-sans text-xs tracking-[0.15em] uppercase block mb-2" style="color: var(--rb-sage);">Dónde</span>
+                        <p class="rb-serif text-lg" style="color: var(--rb-warm);">
+                            {{ event.location }}
+                        </p>
+                    </div>
+                </div>
+                
+                {% if event.venue_details %}
+                <div class="mb-10 p-5 rounded-xl text-left" style="background: var(--rb-cream); border-left: 3px solid var(--rb-sage);">
+                    <p class="rb-sans text-sm font-light" style="color: var(--rb-brown);">
+                        {{ event.venue_details }}
+                    </p>
+                </div>
+                {% endif %}
+                
+                <p class="rb-serif text-xl mb-8" style="color: var(--rb-warm);">
+                    <strong>{{ guest.full_name }}</strong>, te esperamos con mucho cariño
+                </p>
+                
+                <form method="post" action="{% url 'event:confirm_invitation' token=guest.invitation_token %}">
+                    {% csrf_token %}
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button type="submit" name="action" value="accept" class="rb-btn-accept flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            Confirmo mi asistencia
+                        </button>
+                        <button type="submit" name="action" value="decline" class="rb-btn-decline">
+                            No podré asistir
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,162 @@
+{% extends 'base.html' %}
+
+{% block title %}Donación - {{ event.display_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-6 py-12">
+    <div class="text-center mb-12">
+        <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-4">
+            Apoya nuestra boda
+        </h1>
+        <p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl mx-auto">
+            Tu presencia es nuestro mejor regalo, pero si deseas obsequiarnos algo más, puedes hacerlo a través de esta plataforma.
+        </p>
+    </div>
+
+    <div class="bg-surface-container-lowest rounded-2xl shadow-xl p-8 md:p-12 border border-surface-variant">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+                <h2 class="font-headline-md text-headline-md-mobile md:text-headline-md text-on-surface mb-6">
+                    Elige un monto
+                </h2>
+                
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <button type="button" class="amount-btn bg-surface-container hover:bg-primary-container text-on-surface hover:text-on-primary-container px-6 py-4 rounded-lg font-title-sm text-title-sm transition-all duration-200 cursor-pointer border-2 border-transparent hover:border-primary-container" data-amount="5000">
+                        $5.000
+                    </button>
+                    <button type="button" class="amount-btn bg-surface-container hover:bg-primary-container text-on-surface hover:text-on-primary-container px-6 py-4 rounded-lg font-title-sm text-title-sm transition-all duration-200 cursor-pointer border-2 border-transparent hover:border-primary-container" data-amount="10000">
+                        $10.000
+                    </button>
+                    <button type="button" class="amount-btn bg-surface-container hover:bg-primary-container text-on-surface hover:text-on-primary-container px-6 py-4 rounded-lg font-title-sm text-title-sm transition-all duration-200 cursor-pointer border-2 border-transparent hover:border-primary-container" data-amount="20000">
+                        $20.000
+                    </button>
+                    <button type="button" class="amount-btn bg-surface-container hover:bg-primary-container text-on-surface hover:text-on-primary-container px-6 py-4 rounded-lg font-title-sm text-title-sm transition-all duration-200 cursor-pointer border-2 border-transparent hover:border-primary-container" data-amount="50000">
+                        $50.000
+                    </button>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2">O ingresa un monto personalizado</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant font-body-md">$</span>
+                        <input type="number" id="custom-amount" min="1000" step="1000" placeholder="Monto" class="w-full pl-8 pr-4 py-3 bg-surface-container border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary">
+                    </div>
+                </div>
+
+                <div class="mb-6">
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2">Mensaje para los novios (opcional)</label>
+                    <textarea id="donation-message" rows="3" placeholder="Escribe un mensaje..." class="w-full px-4 py-3 bg-surface-container border border-outline-variant rounded-lg font-body-md text-body-md text-on-surface focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary resize-none"></textarea>
+                </div>
+            </div>
+
+            <div class="bg-surface-container rounded-xl p-6 flex flex-col justify-between">
+                <div>
+                    <h3 class="font-title-sm text-title-sm text-on-surface mb-4">Resumen</h3>
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between items-center">
+                            <span class="font-body-md text-body-md text-on-surface-variant">Monto:</span>
+                            <span class="font-title-sm text-title-sm text-on-surface" id="summary-amount">$0</span>
+                        </div>
+                    </div>
+                    <div class="border-t border-outline-variant pt-4">
+                        <p class="font-body-sm text-body-sm text-on-surface-variant">
+                            El pago se procesa de forma segura a través de Mercado Pago.
+                        </p>
+                    </div>
+                </div>
+
+                <button id="donate-btn" class="mt-6 w-full bg-secondary text-on-secondary px-8 py-4 rounded-lg font-title-sm text-title-sm hover:bg-on-secondary-container transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+                    <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">favorite</span>
+                    <span>Donar</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    let selectedAmount = 0;
+    const amountButtons = document.querySelectorAll('.amount-btn');
+    const customAmountInput = document.getElementById('custom-amount');
+    const summaryAmount = document.getElementById('summary-amount');
+    const donateBtn = document.getElementById('donate-btn');
+
+    amountButtons.forEach(btn => {
+        btn.addEventListener('click', function() {
+            amountButtons.forEach(b => {
+                b.classList.remove('bg-primary-container', 'text-on-primary-container', 'border-primary-container');
+                b.classList.add('bg-surface-container', 'text-on-surface');
+            });
+            this.classList.remove('bg-surface-container', 'text-on-surface');
+            this.classList.add('bg-primary-container', 'text-on-primary-container', 'border-primary-container');
+            
+            selectedAmount = parseInt(this.dataset.amount);
+            customAmountInput.value = '';
+            updateSummary();
+        });
+    });
+
+    customAmountInput.addEventListener('input', function() {
+        amountButtons.forEach(b => {
+            b.classList.remove('bg-primary-container', 'text-on-primary-container', 'border-primary-container');
+            b.classList.add('bg-surface-container', 'text-on-surface');
+        });
+        selectedAmount = parseInt(this.value) || 0;
+        updateSummary();
+    });
+
+    function updateSummary() {
+        if (selectedAmount > 0) {
+            summaryAmount.textContent = '$' + selectedAmount.toLocaleString('es-CL');
+            donateBtn.disabled = false;
+        } else {
+            summaryAmount.textContent = '$0';
+            donateBtn.disabled = true;
+        }
+    }
+
+    donateBtn.addEventListener('click', async function() {
+        if (selectedAmount <= 0) return;
+
+        this.disabled = true;
+        this.innerHTML = '<span class="material-symbols-outlined animate-spin">progress_activity</span><span>Procesando...</span>';
+
+        const message = document.getElementById('donation-message').value;
+
+        try {
+            const formData = new FormData();
+            formData.append('amount', selectedAmount);
+            formData.append('message', message);
+
+            const response = await fetch('{% url "donations:preference" %}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-CSRFToken': '{{ csrf_token }}'
+                }
+            });
+
+            const data = await response.json();
+            console.log('Respuesta completa:', data);
+
+            if (data.init_point) {
+                window.location.href = data.init_point;
+            } else {
+                const errorMsg = data.error || 'Error desconocido';
+                const details = data.details || data.response || '';
+                console.error('Error de Mercado Pago:', data);
+                alert(`Error al procesar la donación:\n${errorMsg}\n\n${typeof details === 'object' ? JSON.stringify(details) : details}`);
+                this.disabled = false;
+                this.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 0;">favorite</span><span>Donar</span>';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('Error al procesar la donación. Por favor, intenta nuevamente.');
+            this.disabled = false;
+            this.innerHTML = '<span class="material-symbols-outlined" style="font-variation-settings: \'FILL\' 0;">favorite</span><span>Donar</span>';
+        }
+    });
+</script>
+{% endblock %}

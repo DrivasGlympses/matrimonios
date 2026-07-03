@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dashboard - Ethereal Union</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&amp;family=Inter:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-container": "#745c00",
+                      "tertiary-fixed": "#e2e2e2",
+                      "surface-container": "#e9eef6",
+                      "on-secondary-fixed-variant": "#574500",
+                      "secondary": "#735c00",
+                      "secondary-container": "#fed65b",
+                      "surface-bright": "#f7f9ff",
+                      "surface-container-high": "#e3e9f0",
+                      "error-container": "#ffdad6",
+                      "primary-container": "#f8e1e7",
+                      "tertiary-fixed-dim": "#c6c6c7",
+                      "on-error": "#ffffff",
+                      "on-tertiary-container": "#666768",
+                      "surface-container-highest": "#dde3eb",
+                      "surface-variant": "#dde3eb",
+                      "on-secondary-fixed": "#241a00",
+                      "outline": "#7f7477",
+                      "background": "#f7f9ff",
+                      "primary-fixed": "#f4dde3",
+                      "on-surface": "#161c22",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed": "#1a1c1c",
+                      "on-error-container": "#93000a",
+                      "on-primary-container": "#746368",
+                      "inverse-on-surface": "#ecf1f9",
+                      "tertiary-container": "#e7e7e7",
+                      "on-surface-variant": "#4d4447",
+                      "inverse-primary": "#d7c1c7",
+                      "on-primary-fixed-variant": "#524348",
+                      "secondary-fixed-dim": "#e9c349",
+                      "on-tertiary-fixed-variant": "#454747",
+                      "inverse-surface": "#2b3137",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed": "#24181c",
+                      "on-primary": "#ffffff",
+                      "primary": "#6b5a5f",
+                      "surface-container-low": "#eff4fc",
+                      "surface": "#f7f9ff",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed": "#ffe088",
+                      "on-secondary": "#ffffff",
+                      "tertiary": "#5d5f5f",
+                      "on-background": "#161c22",
+                      "surface-tint": "#6b5a5f",
+                      "outline-variant": "#d0c3c6",
+                      "surface-dim": "#d5dae2",
+                      "primary-fixed-dim": "#d7c1c7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-mobile": "20px",
+                      "container-max": "1280px",
+                      "unit": "8px",
+                      "margin-desktop": "64px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Playfair Display"
+                      ],
+                      "headline-md-mobile": [
+                              "Playfair Display"
+                      ],
+                      "title-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "display-lg-mobile": [
+                              "Playfair Display"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Playfair Display"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+            },
+          }
+        }
+    </script>
+<style>
+        body {
+            background-color: #f7f9ff;
+            color: #161c22;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .icon-fill {
+            font-variation-settings: 'FILL' 1;
+        }
+        .whisper-shadow {
+            box-shadow: 0 10px 40px -10px rgba(115, 92, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md bg-background flex flex-col md:flex-row min-h-screen">
+<!-- Mobile Top App Bar (Hidden on Desktop) -->
+<header class="md:hidden sticky top-0 z-40 w-full bg-surface/80 backdrop-blur-md shadow-sm shadow-secondary/5 flex justify-between items-center px-margin-mobile py-4">
+<div class="font-headline-md-mobile text-headline-md-mobile text-secondary tracking-tight">Ethereal Union</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-secondary" data-icon="notifications">notifications</span>
+<img class="w-8 h-8 rounded-full object-cover" data-alt="A small circular profile picture of a young couple, softly lit in an outdoor setting, representing a premium wedding planning SaaS platform. The image should be warm and aspirational, fitting an editorial light-mode design with subtle champagne accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrbv5IPMVmP7Q6vQDrwjHrtcOQLMSJBDlmDuTV-pWKBvWVKQeo3g3tdLOJUJjRD78VCKx68xnjU5Ojjhtcb5IerzgicdKenApWsQbgecLehzZcgEPRBmaiOxpgOMzXL3NiQKir4jTt3ElpNmQLEjHlH88Jq0jOgjhQSweX0XdR1lYLAWz4tEgLmhXuiwXE4qR80zLGVGVcJKnpcxWp7gzQa1DaO6bPjuDvwKWUMKO6RJJKXTPov2sDiPdQsVv0d4o-z54vEladAyQ"/>
+</div>
+</header>
+<!-- Side Navigation Bar (Hidden on Mobile) -->
+<nav class="hidden md:flex flex-col bg-surface-container-lowest h-screen w-64 fixed left-0 top-0 shadow-xl shadow-secondary/4 p-6 gap-unit z-50">
+<!-- Brand -->
+<div class="font-headline-md text-headline-md text-secondary tracking-tight mb-8">Ethereal Union</div>
+<!-- Header Profile -->
+<div class="flex flex-col items-center mb-8">
+<img class="w-20 h-20 rounded-full object-cover mb-4 whisper-shadow" data-alt="A beautiful, softly focused portrait of an elegant couple in a garden, glowing in warm afternoon light. The image represents the engaged couple in a premium wedding management dashboard, utilizing a refined, light editorial aesthetic with soft pastel and gold undertones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAJHW5CP-O3J8vmjQ-mIurzuDq61_Rgrs0-CDjSfyYTEdDRTSHXS3p952IlmvocbRfnHPxsNJdQOSeX_X-LwZX_KgWerx1ECuaLO5jZ1eC4e78fSzOxx8HbFa-ukQwVHZY2VuYlI41OLNucWYCrbD2etLu_gO2vxU3Lzxt0zb0Ow-q1R2CRskCa2OOqI0zSaBOMd0ELNmcNH8FInbeQlVb1oHvCIfjTLL4dykvp4a7Tjs6TeTo0NarKQ9TiFnbOVJ_dKNk_aPBg_lU"/>
+<h2 class="font-title-sm text-title-sm text-on-surface">Sarah &amp; James</h2>
+<p class="font-body-md text-sm text-on-surface-variant">September 24, 2024</p>
+</div>
+<!-- Navigation Links -->
+<ul class="flex flex-col gap-2 flex-grow">
+<!-- Active Tab -->
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-secondary font-medium bg-primary-container/30 transition-transform duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined icon-fill" data-icon="dashboard">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<!-- Inactive Tabs -->
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant/70 hover:bg-primary-container/20 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                    Guest List
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant/70 hover:bg-primary-container/20 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="grid_view">grid_view</span>
+                    Table Plans
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant/70 hover:bg-primary-container/20 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="photo_library">photo_library</span>
+                    Photo Gallery
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-DEFAULT text-on-surface-variant/70 hover:bg-primary-container/20 transition-all duration-200 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+                    Checklist
+                </a>
+</li>
+</ul>
+<!-- CTA -->
+<button class="w-full bg-[#D4AF37] text-white py-3 rounded text-center font-title-sm text-sm hover:opacity-90 transition-opacity mb-6">
+            Invite Guests
+        </button>
+<!-- Footer Links -->
+<ul class="flex flex-col gap-2 border-t border-surface-variant pt-4 mt-auto">
+<li>
+<a class="flex items-center gap-3 px-4 py-2 rounded-DEFAULT text-on-surface-variant/70 hover:bg-primary-container/20 transition-all text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="help">help</span>
+                    Help Center
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 rounded-DEFAULT text-on-surface-variant/70 hover:bg-primary-container/20 transition-all text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]" data-icon="logout">logout</span>
+                    Log Out
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-grow md:ml-64 p-margin-mobile md:p-margin-desktop w-full max-w-container-max mx-auto pb-32 md:pb-margin-desktop">
+<!-- Header -->
+<div class="mb-12 flex justify-between items-end">
+<div>
+<h1 class="font-display-lg-mobile md:font-display-lg text-on-surface mb-2">Welcome Back, Sarah.</h1>
+<p class="font-body-md text-on-surface-variant">Here is a summary of your wedding preparations.</p>
+</div>
+<!-- Desktop Top Actions (Hidden on Mobile) -->
+<div class="hidden md:flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-surface-container transition-colors text-secondary">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="p-2 rounded-full hover:bg-surface-container transition-colors text-secondary">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+<!-- Countdown Widget (Spans 8 cols) -->
+<div class="md:col-span-8 bg-surface-container-lowest rounded-xl p-8 whisper-shadow relative overflow-hidden flex flex-col justify-center min-h-[300px]">
+<div class="absolute inset-0 bg-primary-container/10"></div>
+<div class="relative z-10 flex flex-col items-start">
+<span class="font-label-caps text-label-caps text-secondary tracking-widest uppercase mb-4">The Big Day</span>
+<div class="flex items-baseline gap-4 mb-2">
+<span class="font-display-lg-mobile md:font-display-lg text-secondary">142</span>
+<span class="font-title-sm text-title-sm text-on-surface-variant">Days Left</span>
+</div>
+<p class="font-body-md text-on-surface-variant max-w-md">Your perfect day at the Botanical Gardens is approaching. Keep up the great progress!</p>
+</div>
+</div>
+<!-- Quick Stats: RSVP (Spans 4 cols) -->
+<div class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 whisper-shadow flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-center mb-6">
+<span class="font-title-sm text-title-sm text-on-surface">RSVPs</span>
+<span class="material-symbols-outlined text-secondary">mail</span>
+</div>
+<div class="font-headline-md-mobile text-headline-md-mobile text-secondary mb-1">85 / 120</div>
+<p class="text-sm text-on-surface-variant">Guests confirmed</p>
+</div>
+<div class="w-full bg-surface-variant h-2 rounded-full mt-6">
+<div class="bg-secondary h-2 rounded-full" style="width: 70%"></div>
+</div>
+</div>
+<!-- Checklist Progress (Spans 4 cols) -->
+<div class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 whisper-shadow flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<span class="font-title-sm text-title-sm text-on-surface">Checklist</span>
+<span class="material-symbols-outlined text-secondary">checklist</span>
+</div>
+<div class="space-y-4 flex-grow">
+<div class="flex items-center gap-3">
+<div class="w-5 h-5 rounded-full bg-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-white">check</span>
+</div>
+<span class="text-on-surface-variant text-sm line-through">Book Venue</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-5 h-5 rounded-full bg-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[14px] text-white">check</span>
+</div>
+<span class="text-on-surface-variant text-sm line-through">Hire Photographer</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-5 h-5 rounded-full border border-secondary flex items-center justify-center"></div>
+<span class="text-on-surface font-medium text-sm">Send Invitations</span>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-5 h-5 rounded-full border border-secondary flex items-center justify-center"></div>
+<span class="text-on-surface font-medium text-sm">Finalize Menu</span>
+</div>
+</div>
+<button class="mt-6 text-sm text-secondary font-medium hover:underline text-left">View Full List →</button>
+</div>
+<!-- Budget Overview (Spans 4 cols) -->
+<div class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 whisper-shadow flex flex-col">
+<div class="flex justify-between items-center mb-6">
+<span class="font-title-sm text-title-sm text-on-surface">Budget</span>
+<span class="material-symbols-outlined text-secondary">account_balance_wallet</span>
+</div>
+<div class="mb-6">
+<span class="font-headline-md-mobile text-headline-md-mobile text-on-surface">$18,450</span>
+<p class="text-sm text-on-surface-variant">Spent of $25,000</p>
+</div>
+<div class="space-y-3">
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-primary"></div>Venue</span>
+<span class="font-medium">$8,000</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-secondary"></div>Catering</span>
+<span class="font-medium">$5,200</span>
+</div>
+<div class="flex justify-between items-center text-sm">
+<span class="text-on-surface-variant flex items-center gap-2"><div class="w-2 h-2 rounded-full bg-outline"></div>Attire</span>
+<span class="font-medium">$3,150</span>
+</div>
+</div>
+<button class="mt-auto pt-6 text-sm text-secondary font-medium hover:underline text-left">Manage Budget →</button>
+</div>
+<!-- Quick Access Grid (Spans 4 cols) -->
+<div class="md:col-span-4 grid grid-rows-2 gap-gutter">
+<!-- Moodboard Quick Link -->
+<div class="bg-surface-container-lowest rounded-xl whisper-shadow relative overflow-hidden group cursor-pointer h-[180px]">
+<img class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" data-alt="A curated grid of wedding inspiration photos, including elegant floral arrangements, soft tablescapes, and a champagne toast, designed to look like a premium editorial moodboard." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2C9Wyz-5iE4HAo4elOqbrF_Oqf94jCgYlKy1aAeAVVJl4J3c1i48aPTjWU6Jga8EhQXsUrcLg3XGSCJ2PBj_2anOo5AGOKmPqfaQEKhYtCMOIgZkkvvwl3SxYmuiLjNQv2gkMR8Ovdkc_6Du1BkpSt4u2P-EGHGecGG17nBINq5WZNmepuf0_PWylo0YAC32kAXGAmIG8a4oGYtkjK1XUAlu2T2NwZvv1hJ0ZehsBpkup3IbAKv4UowIRnPHFENQ3ngPa-z5z3fY"/>
+<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6">
+<span class="text-white font-title-sm text-title-sm mb-1 block">Photo Gallery</span>
+<span class="text-white/80 text-sm">12 New Inspiration Pins</span>
+</div>
+</div>
+<!-- Table Plan Quick Link -->
+<div class="bg-primary-container rounded-xl p-6 whisper-shadow flex flex-col justify-between hover:bg-primary-container/80 transition-colors cursor-pointer h-[180px]">
+<div class="flex justify-between items-start">
+<div class="bg-white/50 p-2 rounded-full">
+<span class="material-symbols-outlined text-primary">restaurant</span>
+</div>
+</div>
+<div>
+<span class="text-on-primary-container font-title-sm text-title-sm mb-1 block">Table Plans</span>
+<span class="text-on-primary-container/80 text-sm">3 Tables Unassigned</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Mobile Bottom Navigation (Hidden on Desktop) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container-lowest shadow-[0_-4px_20px_rgba(115,92,0,0.05)] border-t border-surface-variant/30 flex justify-around items-center h-16 z-50 px-2 pb-safe">
+<a class="flex flex-col items-center justify-center w-full h-full text-secondary" href="#">
+<span class="material-symbols-outlined icon-fill mb-1" data-icon="dashboard">dashboard</span>
+<span class="text-[10px] font-medium">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant/70 hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="group">group</span>
+<span class="text-[10px] font-medium">Guests</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant/70 hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="checklist">checklist</span>
+<span class="text-[10px] font-medium">Tasks</span>
+</a>
+<a class="flex flex-col items-center justify-center w-full h-full text-on-surface-variant/70 hover:text-secondary transition-colors" href="#">
+<span class="material-symbols-outlined mb-1" data-icon="settings">settings</span>
+<span class="text-[10px] font-medium">More</span>
+</a>
+</nav>
+</body></html>

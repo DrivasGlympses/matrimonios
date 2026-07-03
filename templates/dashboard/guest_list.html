@@ -1,0 +1,249 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Invitados - Ethereal Union{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    <div class="mb-8 flex justify-between items-center flex-wrap gap-4">
+        <div>
+            <h1 class="font-display-lg-mobile md:font-display-lg text-on-surface mb-2">Lista de Invitados</h1>
+            <p class="font-body-md text-on-surface-variant">
+                {{ total_guests }} invitados | {{ confirmed_guests }} confirmados | {{ pending_guests }} pendientes
+            </p>
+        </div>
+        <div class="flex gap-3 flex-wrap">
+            <a href="{% url 'dashboard:guests_template' %}" class="flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors font-title-sm text-title-sm cursor-pointer">
+                <span class="material-symbols-outlined">download</span>
+                Descargar Plantilla
+            </a>
+            <label class="flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors font-title-sm text-title-sm cursor-pointer">
+                <span class="material-symbols-outlined">upload</span>
+                Importar Excel
+                <input type="file" id="import-file" accept=".xlsx,.xls" class="hidden" onchange="importGuests(this.files[0])"/>
+            </label>
+            <a href="{% url 'dashboard:guests_export' %}" class="flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors font-title-sm text-title-sm cursor-pointer">
+                <span class="material-symbols-outlined">download</span>
+                Exportar
+            </a>
+            <a href="{% url 'dashboard:guest_add' %}" class="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-6 py-3 rounded-lg transition-colors font-title-sm text-title-sm shadow-md cursor-pointer">
+                <span class="material-symbols-outlined">person_add</span>
+                Agregar Invitado
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-surface-container-lowest rounded-xl whisper-shadow p-6 mb-6">
+        <form method="get" class="flex flex-wrap gap-4 items-end">
+            <div class="flex-1 min-w-[200px]">
+                <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="search">Buscar</label>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">search</span>
+                    <input class="w-full pl-10 pr-4 py-2 border-b border-outline-variant/50 bg-transparent focus:border-[#D4AF37] focus:ring-0 transition-colors font-body-md text-sm" 
+                           id="search" name="search" type="text" placeholder="Nombre o email..." value="{{ search }}"/>
+                </div>
+            </div>
+            <div>
+                <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="group">Grupo</label>
+                <select class="px-4 py-2 border border-outline-variant rounded-lg bg-surface-container-low focus:border-[#D4AF37] focus:ring-0 font-body-md text-sm cursor-pointer" id="group" name="group">
+                    <option value="">Todos</option>
+                    <option value="NOVIA" {% if group_filter == 'NOVIA' %}selected{% endif %}>Familia de la Novia</option>
+                    <option value="NOVIO" {% if group_filter == 'NOVIO' %}selected{% endif %}>Familia del Novio</option>
+                    <option value="AMIGOS_NOVIA" {% if group_filter == 'AMIGOS_NOVIA' %}selected{% endif %}>Amigos de la Novia</option>
+                    <option value="AMIGOS_NOVIO" {% if group_filter == 'AMIGOS_NOVIO' %}selected{% endif %}>Amigos del Novio</option>
+                    <option value="TRABAJO" {% if group_filter == 'TRABAJO' %}selected{% endif %}>Compañeros de Trabajo</option>
+                    <option value="OTROS" {% if group_filter == 'OTROS' %}selected{% endif %}>Otros</option>
+                </select>
+            </div>
+            <div>
+                <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="rsvp">Estado RSVP</label>
+                <select class="px-4 py-2 border border-outline-variant rounded-lg bg-surface-container-low focus:border-[#D4AF37] focus:ring-0 font-body-md text-sm cursor-pointer" id="rsvp" name="rsvp">
+                    <option value="">Todos</option>
+                    <option value="CONFIRMED" {% if rsvp_filter == 'CONFIRMED' %}selected{% endif %}>Confirmado</option>
+                    <option value="PENDING" {% if rsvp_filter == 'PENDING' %}selected{% endif %}>Pendiente</option>
+                    <option value="DECLINED" {% if rsvp_filter == 'DECLINED' %}selected{% endif %}>Rechazado</option>
+                </select>
+            </div>
+            <div class="flex gap-2">
+                <button type="submit" class="px-6 py-2 bg-[#D4AF37] hover:bg-[#c29f2f] text-white rounded-lg font-title-sm text-title-sm transition-colors cursor-pointer">
+                    Filtrar
+                </button>
+                <a href="{% url 'dashboard:guests' %}" class="px-4 py-2 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors font-title-sm text-title-sm cursor-pointer">
+                    Limpiar
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <div class="bg-surface-container-lowest rounded-xl whisper-shadow overflow-hidden">
+        <div class="overflow-x-auto">
+            <table class="w-full">
+                <thead class="bg-surface-container text-on-surface-variant text-left">
+                    <tr>
+                        <th class="px-6 py-4 font-title-sm text-title-sm">Nombre</th>
+                        <th class="px-6 py-4 font-title-sm text-title-sm">Email</th>
+                        <th class="px-6 py-4 font-title-sm text-title-sm">Grupo</th>
+                        <th class="px-6 py-4 font-title-sm text-title-sm">RSVP</th>
+                        <th class="px-6 py-4 font-title-sm text-title-sm">Menú</th>
+                        <th class="px-6 py-4 font-title-sm text-title-sm">Mesa</th>
+                        <th class="px-6 py-4 font-title-sm text-title-sm text-right">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-outline-variant/20">
+                    {% for guest in guests %}
+                    <tr class="hover:bg-surface-container/50 transition-colors">
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-3">
+                                <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-primary font-bold text-sm">
+                                    {{ guest.full_name|slice:":2"|upper }}
+                                </div>
+                                <div>
+                                    <p class="font-body-md text-body-md text-on-surface font-medium">{{ guest.full_name }}</p>
+                                    {% if guest.plus_one %}
+                                    <p class="font-label-caps text-label-caps text-on-surface-variant text-xs">+ {{ guest.plus_one_name|default:"1 acompañante" }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 font-body-md text-sm text-on-surface-variant">{{ guest.email }}</td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium {% if guest.group == 'NOVIA' %}bg-primary-container text-on-primary-container{% elif guest.group == 'NOVIO' %}bg-secondary-container text-on-secondary-container{% else %}bg-surface-container text-on-surface-variant{% endif %}">
+                                {{ guest.get_group_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4">
+                            <span class="px-3 py-1 rounded-full text-xs font-medium {% if guest.rsvp_status == 'CONFIRMED' %}bg-green-100 text-green-800{% elif guest.rsvp_status == 'DECLINED' %}bg-red-100 text-red-800{% else %}bg-yellow-100 text-yellow-800{% endif %}">
+                                {{ guest.get_rsvp_status_display }}
+                            </span>
+                        </td>
+                        <td class="px-6 py-4 font-body-md text-sm text-on-surface-variant">{{ guest.get_meal_choice_display }}</td>
+                        <td class="px-6 py-4">
+                            {% if guest.assigned_table %}
+                            <span class="font-body-md text-sm text-secondary">{{ guest.assigned_table.name }}</span>
+                            {% else %}
+                            <span class="font-body-md text-sm text-on-surface-variant/50">Sin asignar</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 text-right">
+                            <div class="flex justify-end gap-2">
+                                <a href="{% url 'dashboard:guest_edit' guest.pk %}" class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface-variant hover:text-secondary cursor-pointer" title="Editar">
+                                    <span class="material-symbols-outlined text-[20px]">edit</span>
+                                </a>
+                                <a href="{% url 'dashboard:guest_delete' guest.pk %}" class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface-variant hover:text-error cursor-pointer" title="Eliminar">
+                                    <span class="material-symbols-outlined text-[20px]">delete</span>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="px-6 py-16 text-center">
+                            <span class="material-symbols-outlined text-[64px] text-secondary/30 mb-4">group_off</span>
+                            <p class="font-body-md text-body-md text-on-surface-variant mb-4">No hay invitados registrados</p>
+                            <a href="{% url 'dashboard:guest_add' %}" class="inline-flex items-center gap-2 text-secondary hover:underline">
+                                <span class="material-symbols-outlined">person_add</span>
+                                Agregar tu primer invitado
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<div id="import-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+    <div class="bg-surface-container-lowest rounded-xl p-8 max-w-md w-full mx-4 whisper-shadow">
+        <h3 class="font-headline-md text-headline-md text-on-surface mb-4">Importando invitados...</h3>
+        <div class="flex items-center gap-3">
+            <div class="animate-spin w-6 h-6 border-2 border-secondary border-t-transparent rounded-full"></div>
+            <p class="font-body-md text-body-md text-on-surface-variant">Procesando archivo Excel</p>
+        </div>
+    </div>
+</div>
+
+<div id="import-result-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center">
+    <div class="bg-surface-container-lowest rounded-xl p-8 max-w-md w-full mx-4 whisper-shadow">
+        <h3 class="font-headline-md text-headline-md text-on-surface mb-4" id="import-result-title">Resultado de Importación</h3>
+        <p class="font-body-md text-body-md text-on-surface mb-4" id="import-result-message"></p>
+        <div id="import-errors" class="hidden mb-4 max-h-48 overflow-y-auto">
+            <p class="font-title-sm text-title-sm text-on-surface mb-2">Errores:</p>
+            <ul class="text-sm text-error space-y-1" id="import-errors-list"></ul>
+        </div>
+        <button onclick="closeImportResultModal()" class="w-full px-6 py-3 bg-[#D4AF37] hover:bg-[#c29f2f] text-white rounded-lg font-title-sm text-title-sm transition-colors cursor-pointer">
+            Cerrar
+        </button>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function importGuests(file) {
+        if (!file) return;
+        
+        const modal = document.getElementById('import-modal');
+        modal.classList.remove('hidden');
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        fetch('{% url "dashboard:guests_import" %}', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            modal.classList.add('hidden');
+            
+            const resultModal = document.getElementById('import-result-modal');
+            const message = document.getElementById('import-result-message');
+            const errorsDiv = document.getElementById('import-errors');
+            const errorsList = document.getElementById('import-errors-list');
+            
+            if (data.success) {
+                message.textContent = data.created + ' invitados creados, ' + data.updated + ' actualizados.';
+                if (data.errors && data.errors.length > 0) {
+                    errorsDiv.classList.remove('hidden');
+                    errorsList.innerHTML = data.errors.map(e => '<li>' + e + '</li>').join('');
+                } else {
+                    errorsDiv.classList.add('hidden');
+                }
+                setTimeout(() => location.reload(), 1500);
+            } else {
+                message.textContent = 'Error: ' + data.error;
+                errorsDiv.classList.add('hidden');
+            }
+            
+            resultModal.classList.remove('hidden');
+        })
+        .catch(error => {
+            modal.classList.add('hidden');
+            alert('Error al importar: ' + error);
+        });
+    }
+    
+    function closeImportResultModal() {
+        document.getElementById('import-result-modal').classList.add('hidden');
+        location.reload();
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

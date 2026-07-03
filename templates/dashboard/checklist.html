@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Tareas - Ethereal Union{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    <div class="mb-8 flex justify-between items-center flex-wrap gap-4">
+        <div>
+            <h1 class="font-display-lg-mobile md:font-display-lg text-on-surface mb-2">Lista de Tareas</h1>
+            <p class="font-body-md text-on-surface-variant">Organiza todos los preparativos de tu boda</p>
+        </div>
+        <a href="{% url 'dashboard:checklist_add' %}" class="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-5 py-2.5 rounded-lg transition-colors font-title-sm text-title-sm shadow-md cursor-pointer">
+            <span class="material-symbols-outlined text-[18px]">add</span>
+            Nueva Tarea
+        </a>
+    </div>
+
+    <div class="bg-surface-container-lowest rounded-xl p-8 whisper-shadow">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="font-title-sm text-title-sm text-on-surface">Todas las tareas</h2>
+            <span class="font-body-md text-sm text-on-surface-variant">{{ completed_tasks }}/{{ total_tasks }} completadas</span>
+        </div>
+        
+        <div class="space-y-3">
+            {% for item in checklist_items %}
+            <div class="flex items-center gap-4 p-4 rounded-lg hover:bg-surface-container transition-colors group {% if item.is_completed %}bg-surface-container/50{% endif %}">
+                <a href="{% url 'dashboard:toggle_checklist' item.pk %}" class="w-6 h-6 rounded-full flex items-center justify-center shrink-0 {% if item.is_completed %}bg-secondary text-white{% else %}border-2 border-secondary hover:bg-secondary/20{% endif %} transition-colors cursor-pointer">
+                    {% if item.is_completed %}
+                    <span class="material-symbols-outlined text-[14px]">check</span>
+                    {% endif %}
+                </a>
+                <div class="flex-grow min-w-0">
+                    <span class="font-body-md text-body-md text-on-surface block {% if item.is_completed %}line-through text-on-surface-variant{% endif %}">{{ item.title }}</span>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
+                    {% if item.due_date %}
+                    <span class="font-label-caps text-label-caps text-on-surface-variant hidden sm:block">{{ item.due_date|date:"d M" }}</span>
+                    {% endif %}
+                    <span class="px-2 py-1 rounded text-xs font-medium 
+                        {% if item.priority == 'HIGH' %}bg-error-container text-on-error-container
+                        {% elif item.priority == 'MEDIUM' %}bg-secondary-container text-on-secondary-container
+                        {% else %}bg-surface-container text-on-surface-variant{% endif %}">
+                        {{ item.get_priority_display }}
+                    </span>
+                </div>
+                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <a href="{% url 'dashboard:checklist_edit' item.pk %}" class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface-variant hover:text-secondary cursor-pointer" title="Editar">
+                        <span class="material-symbols-outlined text-[18px]">edit</span>
+                    </a>
+                    <a href="{% url 'dashboard:checklist_delete' item.pk %}" class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface-variant hover:text-error cursor-pointer" title="Eliminar">
+                        <span class="material-symbols-outlined text-[18px]">delete</span>
+                    </a>
+                </div>
+            </div>
+            {% empty %}
+            <div class="text-center py-12">
+                <span class="material-symbols-outlined text-[64px] text-secondary/30 mb-4">checklist</span>
+                <p class="font-body-md text-body-md text-on-surface-variant mb-4">No hay tareas creadas</p>
+                <a href="{% url 'dashboard:checklist_add' %}" class="inline-flex items-center gap-2 text-secondary hover:underline">
+                    <span class="material-symbols-outlined">add</span>
+                    Agregar tu primera tarea
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if total_tasks > 0 %}
+        <div class="w-full bg-surface-variant h-2 rounded-full mt-6">
+            <div class="bg-secondary h-2 rounded-full transition-all" style="width: {% widthratio completed_tasks total_tasks 100 %}%"></div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

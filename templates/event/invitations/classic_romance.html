@@ -1,0 +1,190 @@
+{% extends 'base.html' %}
+
+{% block title %}Invitación - {{ event.display_name }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet"/>
+<style>
+    .classic-romance {
+        --cr-primary: #DB2777;
+        --cr-secondary: #F472B6;
+        --cr-gold: #CA8A04;
+        --cr-bg: #FDF2F8;
+        --cr-text: #831843;
+        --cr-surface: #FFF1F6;
+    }
+    .classic-romance .cr-ornament {
+        width: 120px;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, var(--cr-gold), transparent);
+        margin: 1.5rem auto;
+    }
+    .classic-romance .cr-ornament-lg {
+        width: 200px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--cr-gold), transparent);
+        margin: 2rem auto;
+        position: relative;
+    }
+    .classic-romance .cr-ornament-lg::before {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        background: var(--cr-gold);
+        border-radius: 50%;
+    }
+    .classic-romance .cr-script {
+        font-family: 'Great Vibes', cursive;
+    }
+    .classic-romance .cr-serif {
+        font-family: 'Cormorant Infant', serif;
+    }
+    .classic-romance .cr-border-frame {
+        border: 1px solid var(--cr-gold);
+        padding: 2rem;
+        position: relative;
+    }
+    .classic-romance .cr-border-frame::before,
+    .classic-romance .cr-border-frame::after {
+        content: '';
+        position: absolute;
+        width: 20px;
+        height: 20px;
+        border-color: var(--cr-gold);
+    }
+    .classic-romance .cr-border-frame::before {
+        top: -2px;
+        left: -2px;
+        border-top: 2px solid;
+        border-left: 2px solid;
+    }
+    .classic-romance .cr-border-frame::after {
+        bottom: -2px;
+        right: -2px;
+        border-bottom: 2px solid;
+        border-right: 2px solid;
+    }
+    .classic-romance .cr-btn-accept {
+        background: linear-gradient(135deg, var(--cr-gold), #D4AF37);
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        transition: all 300ms ease;
+        cursor: pointer;
+        border: none;
+        font-size: 1rem;
+    }
+    .classic-romance .cr-btn-accept:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(202, 138, 4, 0.3);
+    }
+    .classic-romance .cr-btn-decline {
+        background: transparent;
+        color: var(--cr-text);
+        padding: 1rem 2.5rem;
+        border-radius: 0.5rem;
+        font-weight: 500;
+        transition: all 300ms ease;
+        cursor: pointer;
+        border: 1px solid var(--cr-secondary);
+        font-size: 1rem;
+    }
+    .classic-romance .cr-btn-decline:hover {
+        background: var(--cr-surface);
+        border-color: var(--cr-primary);
+    }
+</style>
+{% endblock %}
+
+{% block public_content %}
+<main class="classic-romance flex-grow flex flex-col items-center w-full">
+    <section class="w-full relative min-h-screen flex items-center justify-center overflow-hidden" style="background: linear-gradient(180deg, var(--cr-bg) 0%, white 50%, var(--cr-bg) 100%);">
+        <div class="absolute inset-0 z-0 opacity-10">
+            <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <pattern id="classic-pattern" x="0" y="0" width="60" height="60" patternUnits="userSpaceOnUse">
+                        <circle cx="30" cy="30" r="1" fill="#CA8A04"/>
+                    </pattern>
+                </defs>
+                <rect width="100%" height="100%" fill="url(#classic-pattern)"/>
+            </svg>
+        </div>
+        
+        <div class="relative z-10 max-w-3xl mx-auto px-6 py-16 text-center">
+            <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-8 md:p-16" style="border: 1px solid rgba(202, 138, 4, 0.2);">
+                <div class="cr-border-frame">
+                    <p class="cr-script text-4xl md:text-5xl mb-4" style="color: var(--cr-gold);">Estás invitado</p>
+                    
+                    <div class="cr-ornament"></div>
+                    
+                    <h1 class="cr-serif text-4xl md:text-6xl font-semibold mb-4" style="color: var(--cr-text);">
+                        {{ event.bride_name }} <span class="cr-script text-3xl md:text-4xl" style="color: var(--cr-gold);">&</span> {{ event.groom_name }}
+                    </h1>
+                    
+                    <div class="cr-ornament-lg"></div>
+                    
+                    <p class="cr-serif text-xl md:text-2xl mb-10" style="color: var(--cr-primary);">
+                        Nos llena de alegría compartir este momento tan especial contigo
+                    </p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+                        <div class="flex flex-col items-center p-6 rounded-xl" style="background: var(--cr-surface);">
+                            <svg class="w-10 h-10 mb-3" style="color: var(--cr-gold);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <h3 class="cr-serif text-lg font-semibold mb-1" style="color: var(--cr-text);">Fecha</h3>
+                            <p class="cr-serif text-base" style="color: var(--cr-primary);">
+                                {{ event.date|date:"l, d \d\e F \d\e Y" }}
+                            </p>
+                        </div>
+                        
+                        <div class="flex flex-col items-center p-6 rounded-xl" style="background: var(--cr-surface);">
+                            <svg class="w-10 h-10 mb-3" style="color: var(--cr-gold);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                            <h3 class="cr-serif text-lg font-semibold mb-1" style="color: var(--cr-text);">Lugar</h3>
+                            <p class="cr-serif text-base" style="color: var(--cr-primary);">
+                                {{ event.location }}
+                            </p>
+                        </div>
+                    </div>
+                    
+                    {% if event.venue_details %}
+                    <div class="mb-10 p-6 rounded-xl" style="background: var(--cr-bg); border-left: 3px solid var(--cr-gold);">
+                        <p class="cr-serif text-base" style="color: var(--cr-text);">
+                            {{ event.venue_details }}
+                        </p>
+                    </div>
+                    {% endif %}
+                    
+                    <div class="cr-ornament"></div>
+                    
+                    <p class="cr-serif text-xl mb-8" style="color: var(--cr-text);">
+                        <strong>{{ guest.full_name }}</strong>, ¿nos acompañarás en este día tan especial?
+                    </p>
+                    
+                    <form method="post" action="{% url 'event:confirm_invitation' token=guest.invitation_token %}">
+                        {% csrf_token %}
+                        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                            <button type="submit" name="action" value="accept" class="cr-btn-accept flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                                Sí, confirmo mi asistencia
+                            </button>
+                            <button type="submit" name="action" value="decline" class="cr-btn-decline flex items-center justify-center gap-2">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                                No podré asistir
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

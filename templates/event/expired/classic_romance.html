@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}Enlace caducado - {{ event.display_name }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet"/>
+<style>
+    .classic-romance {
+        --cr-primary: #DB2777;
+        --cr-secondary: #F472B6;
+        --cr-gold: #CA8A04;
+        --cr-bg: #FDF2F8;
+        --cr-text: #831843;
+        --cr-surface: #FFF1F6;
+    }
+    .classic-romance .cr-script { font-family: 'Great Vibes', cursive; }
+    .classic-romance .cr-serif { font-family: 'Cormorant Infant', serif; }
+    .classic-romance .cr-ornament {
+        width: 100px; height: 2px;
+        background: linear-gradient(90deg, transparent, var(--cr-gold), transparent);
+        margin: 1.5rem auto;
+    }
+</style>
+{% endblock %}
+
+{% block public_content %}
+<main class="classic-romance flex-grow flex flex-col items-center justify-center w-full min-h-screen" style="background: linear-gradient(180deg, var(--cr-bg) 0%, white 50%, var(--cr-bg) 100%);">
+    <div class="max-w-2xl mx-auto px-6 py-16 text-center">
+        <div class="bg-white/95 backdrop-blur-md rounded-2xl shadow-xl p-8 md:p-16" style="border: 1px solid rgba(202, 138, 4, 0.2);">
+            <div class="w-24 h-24 mx-auto mb-8 rounded-full flex items-center justify-center" style="background: var(--cr-surface);">
+                <svg class="w-16 h-16" style="color: var(--cr-primary);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                </svg>
+            </div>
+            <p class="cr-script text-4xl mb-4" style="color: var(--cr-gold);">Enlace caducado</p>
+            <div class="cr-ornament"></div>
+            <p class="cr-serif text-xl md:text-2xl mb-6" style="color: var(--cr-text);">
+                Este enlace de invitación ya no está disponible.
+            </p>
+            <p class="cr-serif text-base mb-8" style="color: var(--cr-primary);">
+                Ya has respondido a esta invitación. Si necesitas más información, por favor contacta a los novios.
+            </p>
+            <a href="{% url 'event:public' %}" class="px-8 py-4 rounded-lg font-title-sm text-title-sm transition-all duration-300 inline-flex items-center justify-center gap-2 cursor-pointer" style="background: transparent; color: var(--cr-text); border: 1px solid var(--cr-secondary); text-decoration: none;">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
+                Volver al inicio
+            </a>
+        </div>
+    </div>
+</main>
+{% endblock %}

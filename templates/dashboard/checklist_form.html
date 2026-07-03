@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object|default:"Nueva Tarea" }} - Ethereal Union{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    <div class="max-w-lg mx-auto">
+        <div class="mb-8 flex items-center gap-4">
+            <a href="{% url 'dashboard:checklist' %}" class="p-2 rounded hover:bg-surface-container transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+            </a>
+            <h1 class="font-display-lg-mobile md:font-display-lg text-on-surface">
+                {{ object|default:"Nueva Tarea" }}
+            </h1>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-xl whisper-shadow p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_title">Descripción de la tarea *</label>
+                    <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                           id="id_title" name="title" placeholder="Ej: Reservar fotógrafo" type="text" value="{{ form.title.value|default:'' }}" required/>
+                    {% if form.title.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.title.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_priority">Prioridad</label>
+                        <select class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md cursor-pointer" 
+                                id="id_priority" name="priority">
+                            <option value="HIGH" {% if form.priority.value == 'HIGH' %}selected{% endif %}>Alta</option>
+                            <option value="MEDIUM" {% if form.priority.value == 'MEDIUM' %}selected{% endif %}>Media</option>
+                            <option value="LOW" {% if form.priority.value == 'LOW' %}selected{% endif %}>Baja</option>
+                        </select>
+                        {% if form.priority.errors %}
+                        <p class="mt-1 text-sm text-error">{{ form.priority.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_due_date">Fecha límite</label>
+                        <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                               id="id_due_date" name="due_date" type="date" value="{{ form.due_date.value|date:'Y-m-d'|default:'' }}"/>
+                        {% if form.due_date.errors %}
+                        <p class="mt-1 text-sm text-error">{{ form.due_date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" class="flex-1 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-8 py-4 rounded-lg font-title-sm text-title-sm transition-colors duration-300 flex justify-center items-center gap-2 cursor-pointer">
+                        <span class="material-symbols-outlined">save</span>
+                        Guardar
+                    </button>
+                    <a href="{% url 'dashboard:checklist' %}" class="px-8 py-4 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors font-title-sm text-title-sm flex justify-center items-center gap-2 cursor-pointer">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

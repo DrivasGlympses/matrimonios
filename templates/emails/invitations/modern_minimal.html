@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación - {{ event.display_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body style="margin: 0; padding: 0; background-color: #F9FAFB; font-family: 'Jost', sans-serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #F9FAFB;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff;">
+                    <tr>
+                        <td style="padding: 60px 40px 30px; text-align: center;">
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 16px; margin-bottom: 32px;">
+                                <div style="width: 40px; height: 1px; background-color: #CA8A04;"></div>
+                                <span style="font-family: 'Jost', sans-serif; font-size: 11px; letter-spacing: 3px; text-transform: uppercase; color: #CA8A04;">{{ event.email_header }}</span>
+                                <div style="width: 40px; height: 1px; background-color: #CA8A04;"></div>
+                            </div>
+                            
+                            <h1 style="font-family: 'Bodoni Moda', serif; font-size: 42px; color: #1A1A1A; margin: 0; font-weight: 400;">
+                                {{ event.bride_name }}
+                            </h1>
+                            <span style="font-family: 'Bodoni Moda', serif; font-size: 24px; font-style: italic; color: #CA8A04; display: block; margin: 8px 0;">&</span>
+                            <h1 style="font-family: 'Bodoni Moda', serif; font-size: 42px; color: #1A1A1A; margin: 0 0 32px; font-weight: 400;">
+                                {{ event.groom_name }}
+                            </h1>
+                            
+                            <div style="width: 1px; height: 40px; background-color: #E5E7EB; margin: 0 auto 32px;"></div>
+                            
+                            <p style="font-family: 'Jost', sans-serif; font-size: 16px; color: #6B7280; margin: 0 0 40px; line-height: 1.8; font-weight: 300;">
+                                {{ event.email_message }}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0 40px 40px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border: 1px solid #E5E7EB;">
+                                <tr>
+                                    <td width="50%" style="padding: 24px; text-align: center; border-right: 1px solid #E5E7EB; border-bottom: 1px solid #E5E7EB;">
+                                        <span style="font-family: 'Jost', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #CA8A04; display: block; margin-bottom: 8px;">Fecha</span>
+                                        <p style="font-family: 'Bodoni Moda', serif; font-size: 20px; color: #1A1A1A; margin: 0;">{{ event.date|date:"d" }}</p>
+                                        <p style="font-family: 'Jost', sans-serif; font-size: 13px; color: #6B7280; margin: 4px 0 0; font-weight: 300;">{{ event.date|date:"F Y" }}</p>
+                                    </td>
+                                    <td width="50%" style="padding: 24px; text-align: center; border-bottom: 1px solid #E5E7EB;">
+                                        <span style="font-family: 'Jost', sans-serif; font-size: 10px; letter-spacing: 2px; text-transform: uppercase; color: #CA8A04; display: block; margin-bottom: 8px;">Lugar</span>
+                                        <p style="font-family: 'Bodoni Moda', serif; font-size: 20px; color: #1A1A1A; margin: 0;">{{ event.location }}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0 40px 40px; text-align: center;">
+                            {% if event.venue_details %}
+                            <p style="font-family: 'Jost', sans-serif; font-size: 14px; color: #6B7280; margin: 0 0 30px; padding: 16px; background-color: #F9FAFB; font-weight: 300;">
+                                {{ event.venue_details }}
+                            </p>
+                            {% endif %}
+                            
+                            <p style="font-family: 'Jost', sans-serif; font-size: 16px; color: #1A1A1A; margin: 0 0 8px;">
+                                <strong>{{ guest.full_name }}</strong>
+                            </p>
+                            <p style="font-family: 'Jost', sans-serif; font-size: 13px; color: #6B7280; margin: 0 0 30px; font-weight: 300;">
+                                {{ event.email_question }}
+                            </p>
+                            
+                            <a href="{{ invitation_url }}" style="display: inline-block; background-color: #1A1A1A; color: #ffffff; text-decoration: none; padding: 16px 40px; font-family: 'Jost', sans-serif; font-size: 12px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;">
+                                {{ event.email_button_text }}
+                            </a>
+                            
+                            <p style="font-family: 'Jost', sans-serif; font-size: 12px; color: #6B7280; margin-top: 25px; font-weight: 300;">
+                                Si el botón no funciona, copia este enlace:<br>
+                                <a href="{{ invitation_url }}" style="color: #CA8A04;">{{ invitation_url }}</a>
+                            </p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

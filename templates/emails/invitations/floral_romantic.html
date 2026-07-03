@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invitación - {{ event.display_name }}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+</head>
+<body style="margin: 0; padding: 0; background-color: #FFF8F0; font-family: 'Cormorant Infant', serif;">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color: #FFF8F0;">
+        <tr>
+            <td align="center" style="padding: 40px 20px;">
+                <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background-color: #ffffff; border-radius: 24px; border: 1px solid rgba(232, 160, 191, 0.3); box-shadow: 0 10px 40px rgba(219, 39, 119, 0.05);">
+                    <tr>
+                        <td style="padding: 50px 40px 30px; text-align: center;">
+                            <p style="font-family: 'Great Vibes', cursive; font-size: 36px; color: #DB2777; margin: 0 0 16px;">{{ event.email_header }}</p>
+                            
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px;">
+                                <div style="width: 50px; height: 1px; background: linear-gradient(90deg, transparent, #E8A0BF, transparent);"></div>
+                                <div style="width: 8px; height: 12px; background: #E8A0BF; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; opacity: 0.6;"></div>
+                                <div style="width: 8px; height: 12px; background: #E8A0BF; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; opacity: 0.8; transform: rotate(45deg);"></div>
+                                <div style="width: 8px; height: 12px; background: #E8A0BF; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; opacity: 0.5; transform: rotate(-30deg);"></div>
+                                <div style="width: 50px; height: 1px; background: linear-gradient(90deg, transparent, #E8A0BF, transparent);"></div>
+                            </div>
+                            
+                            <h1 style="font-family: 'Great Vibes', cursive; font-size: 42px; color: #5D4037; margin: 0 0 4px; font-weight: 400;">
+                                {{ event.bride_name }}
+                            </h1>
+                            <span style="font-family: 'Cormorant Infant', serif; font-size: 24px; font-style: italic; color: #DB2777; display: block; margin: 4px 0;">&</span>
+                            <h1 style="font-family: 'Great Vibes', cursive; font-size: 42px; color: #5D4037; margin: 0 0 24px; font-weight: 400;">
+                                {{ event.groom_name }}
+                            </h1>
+                            
+                            <div style="display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px;">
+                                <div style="width: 50px; height: 1px; background: linear-gradient(90deg, transparent, #E8A0BF, transparent);"></div>
+                                <div style="width: 8px; height: 12px; background: #E8A0BF; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; opacity: 0.6;"></div>
+                                <div style="width: 8px; height: 12px; background: #E8A0BF; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; opacity: 0.8; transform: rotate(45deg);"></div>
+                                <div style="width: 8px; height: 12px; background: #E8A0BF; border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%; opacity: 0.5; transform: rotate(-30deg);"></div>
+                                <div style="width: 50px; height: 1px; background: linear-gradient(90deg, transparent, #E8A0BF, transparent);"></div>
+                            </div>
+                            
+                            <p style="font-family: 'Cormorant Infant', serif; font-size: 18px; color: #5D4037; margin: 0 0 30px; line-height: 1.7;">
+                                {{ event.email_message }}
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0 40px 30px;">
+                            <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                                <tr>
+                                    <td width="48%" style="padding: 20px; text-align: center; background-color: #FDE8EF; border-radius: 16px;">
+                                        <span style="font-family: 'Cormorant Infant', serif; font-size: 13px; letter-spacing: 1px; color: #DB2777; display: block; margin-bottom: 8px;">Fecha</span>
+                                        <p style="font-family: 'Cormorant Infant', serif; font-size: 18px; color: #5D4037; margin: 0; font-weight: 500;">{{ event.date|date:"d \d\e F" }}</p>
+                                        <p style="font-family: 'Cormorant Infant', serif; font-size: 14px; color: #5D4037; margin: 4px 0 0; font-weight: 300; opacity: 0.7;">{{ event.date|date:"Y" }}</p>
+                                    </td>
+                                    <td width="4%"></td>
+                                    <td width="48%" style="padding: 20px; text-align: center; background-color: #FDE8EF; border-radius: 16px;">
+                                        <span style="font-family: 'Cormorant Infant', serif; font-size: 13px; letter-spacing: 1px; color: #DB2777; display: block; margin-bottom: 8px;">Lugar</span>
+                                        <p style="font-family: 'Cormorant Infant', serif; font-size: 18px; color: #5D4037; margin: 0; font-weight: 500;">{{ event.location }}</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 0 40px 40px; text-align: center;">
+                            {% if event.venue_details %}
+                            <p style="font-family: 'Cormorant Infant', serif; font-size: 14px; color: #5D4037; margin: 0 0 25px; padding: 15px; background-color: rgba(167, 196, 160, 0.15); border-left: 3px solid #A7C4A0; text-align: left; border-radius: 0 12px 12px 0;">
+                                {{ event.venue_details }}
+                            </p>
+                            {% endif %}
+                            
+                            <p style="font-family: 'Cormorant Infant', serif; font-size: 20px; color: #5D4037; margin: 0 0 25px;">
+                                <strong>{{ guest.full_name }}</strong>, {{ event.email_question }}
+                            </p>
+                            
+                            <a href="{{ invitation_url }}" style="display: inline-block; background: linear-gradient(135deg, #DB2777, #E8A0BF); color: #ffffff; text-decoration: none; padding: 16px 40px; border-radius: 25px; font-family: 'Cormorant Infant', serif; font-size: 16px; font-weight: 600; box-shadow: 0 4px 15px rgba(219, 39, 119, 0.2);">
+                                {{ event.email_button_text }}
+                            </a>
+                            
+                            <p style="font-family: 'Cormorant Infant', serif; font-size: 13px; color: #5D4037; margin-top: 25px; opacity: 0.7;">
+                                Si el botón no funciona, copia este enlace:<br>
+                                <a href="{{ invitation_url }}" style="color: #DB2777;">{{ invitation_url }}</a>
+                            </p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 20px 40px; text-align: center; background-color: #FFF8F0; border-radius: 0 0 24px 24px; border-top: 1px solid rgba(232, 160, 191, 0.2);">
+                            <p style="font-family: 'Great Vibes', cursive; font-size: 22px; color: #DB2777; margin: 0;">{{ event.email_closing }}</p>
+                            <p style="font-family: 'Cormorant Infant', serif; font-size: 16px; color: #5D4037; margin: 8px 0 0; font-weight: 600;">{{ event.display_name }}</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object|default:"Agregar Invitado" }} - Ethereal Union{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    <div class="max-w-xl mx-auto">
+        <div class="mb-8 flex items-center gap-4">
+            <a href="{% url 'dashboard:guests' %}" class="p-2 rounded hover:bg-surface-container transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+            </a>
+            <h1 class="font-display-lg-mobile md:font-display-lg text-on-surface">
+                {{ object|default:"Agregar Invitado" }}
+            </h1>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-xl whisper-shadow p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_full_name">Nombre Completo *</label>
+                    <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                           id="id_full_name" name="full_name" placeholder="Ej: María García" type="text" value="{{ form.full_name.value|default:'' }}" required/>
+                    {% if form.full_name.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.full_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_email">Correo Electrónico *</label>
+                    <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                           id="id_email" name="email" placeholder="Ej: maria@correo.com" type="email" value="{{ form.email.value|default:'' }}" required/>
+                    {% if form.email.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.email.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_phone">Teléfono</label>
+                    <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                           id="id_phone" name="phone" placeholder="Ej: 555-1234" type="text" value="{{ form.phone.value|default:'' }}"/>
+                    {% if form.phone.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.phone.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_group">Grupo *</label>
+                    <select class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md cursor-pointer" 
+                            id="id_group" name="group" required>
+                        <option value="">Seleccionar...</option>
+                        <option value="NOVIA" {% if form.group.value == 'NOVIA' %}selected{% endif %}>Familia de la Novia</option>
+                        <option value="NOVIO" {% if form.group.value == 'NOVIO' %}selected{% endif %}>Familia del Novio</option>
+                        <option value="AMIGOS_NOVIA" {% if form.group.value == 'AMIGOS_NOVIA' %}selected{% endif %}>Amigos de la Novia</option>
+                        <option value="AMIGOS_NOVIO" {% if form.group.value == 'AMIGOS_NOVIO' %}selected{% endif %}>Amigos del Novio</option>
+                        <option value="TRABAJO" {% if form.group.value == 'TRABAJO' %}selected{% endif %}>Compañeros de Trabajo</option>
+                        <option value="OTROS" {% if form.group.value == 'OTROS' %}selected{% endif %}>Otros</option>
+                    </select>
+                    {% if form.group.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.group.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_rsvp_status">Estado RSVP</label>
+                        <select class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md cursor-pointer" 
+                                id="id_rsvp_status" name="rsvp_status">
+                            <option value="PENDING" {% if form.rsvp_status.value == 'PENDING' %}selected{% endif %}>Pendiente</option>
+                            <option value="CONFIRMED" {% if form.rsvp_status.value == 'CONFIRMED' %}selected{% endif %}>Confirmado</option>
+                            <option value="DECLINED" {% if form.rsvp_status.value == 'DECLINED' %}selected{% endif %}>Rechazado</option>
+                        </select>
+                        {% if form.rsvp_status.errors %}
+                        <p class="mt-1 text-sm text-error">{{ form.rsvp_status.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_meal_choice">Preferencia de Menú</label>
+                        <select class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md cursor-pointer" 
+                                id="id_meal_choice" name="meal_choice">
+                            <option value="STANDARD" {% if form.meal_choice.value == 'STANDARD' %}selected{% endif %}>Menú Estándar</option>
+                            <option value="VEGETARIAN" {% if form.meal_choice.value == 'VEGETARIAN' %}selected{% endif %}>Vegetariano</option>
+                            <option value="VEGAN" {% if form.meal_choice.value == 'VEGAN' %}selected{% endif %}>Vegano</option>
+                            <option value="CELIAC" {% if form.meal_choice.value == 'CELIAC' %}selected{% endif %}>Sin Gluten</option>
+                        </select>
+                        {% if form.meal_choice.errors %}
+                        <p class="mt-1 text-sm text-error">{{ form.meal_choice.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" id="id_plus_one" name="plus_one" {% if form.plus_one.value %}checked{% endif %} class="w-5 h-5 rounded border-outline-variant text-secondary focus:ring-secondary cursor-pointer"/>
+                    <label for="id_plus_one" class="font-body-md text-body-md text-on-surface cursor-pointer">Traerá un acompañante</label>
+                </div>
+
+                <div id="plus_one_name_field" class="{% if not form.plus_one.value %}hidden{% endif %}">
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_plus_one_name">Nombre del Acompañante</label>
+                    <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                           id="id_plus_one_name" name="plus_one_name" placeholder="Nombre del acompañante" type="text" value="{{ form.plus_one_name.value|default:'' }}"/>
+                    {% if form.plus_one_name.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.plus_one_name.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_notes">Notas / Alergias</label>
+                    <textarea class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md resize-none" 
+                              id="id_notes" name="notes" placeholder="Alergias, preferencias, notas..." rows="3">{{ form.notes.value|default:'' }}</textarea>
+                    {% if form.notes.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.notes.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" class="flex-1 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-8 py-4 rounded-lg font-title-sm text-title-sm transition-colors duration-300 flex justify-center items-center gap-2 cursor-pointer">
+                        <span class="material-symbols-outlined">save</span>
+                        Guardar
+                    </button>
+                    <a href="{% url 'dashboard:guests' %}" class="px-8 py-4 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors font-title-sm text-title-sm flex justify-center items-center gap-2 cursor-pointer">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('id_plus_one').addEventListener('change', function() {
+        const plusOneField = document.getElementById('plus_one_name_field');
+        if (this.checked) {
+            plusOneField.classList.remove('hidden');
+        } else {
+            plusOneField.classList.add('hidden');
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,228 @@
+{% extends 'base.html' %}
+
+{% block title %}Invitación - {{ event.display_name }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet"/>
+<style>
+    .floral-romantic {
+        --fr-rose: #E8A0BF;
+        --fr-rose-dark: #DB2777;
+        --fr-sage: #A7C4A0;
+        --fr-sage-dark: #6B8E6B;
+        --fr-cream: #FFF8F0;
+        --fr-blush: #FDE8EF;
+        --fr-gold: #CA8A04;
+        --fr-text: #5D4037;
+    }
+    .floral-romantic .fr-script {
+        font-family: 'Great Vibes', cursive;
+    }
+    .floral-romantic .fr-serif {
+        font-family: 'Cormorant Infant', serif;
+    }
+    .floral-romantic .fr-floral-top {
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 200px;
+        height: 100px;
+        opacity: 0.15;
+        pointer-events: none;
+    }
+    .floral-romantic .fr-floral-corner {
+        position: absolute;
+        width: 120px;
+        height: 120px;
+        opacity: 0.1;
+        pointer-events: none;
+    }
+    .floral-romantic .fr-watercolor {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(40px);
+        opacity: 0.08;
+        pointer-events: none;
+    }
+    .floral-romantic .fr-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 1.5rem;
+        border: 1px solid rgba(232, 160, 191, 0.3);
+        box-shadow: 0 10px 40px rgba(219, 39, 119, 0.05);
+    }
+    .floral-romantic .fr-petal-divider {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+    .floral-romantic .fr-petal {
+        width: 8px;
+        height: 12px;
+        background: var(--fr-rose);
+        border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+        opacity: 0.6;
+    }
+    .floral-romantic .fr-petal:nth-child(2) {
+        transform: rotate(45deg);
+        opacity: 0.8;
+    }
+    .floral-romantic .fr-petal:nth-child(3) {
+        transform: rotate(-30deg);
+        opacity: 0.5;
+    }
+    .floral-romantic .fr-line {
+        width: 50px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--fr-rose), transparent);
+    }
+    .floral-romantic .fr-btn-accept {
+        background: linear-gradient(135deg, var(--fr-rose-dark), var(--fr-rose));
+        color: white;
+        padding: 1rem 2.5rem;
+        border-radius: 2rem;
+        font-weight: 500;
+        transition: all 300ms ease;
+        cursor: pointer;
+        border: none;
+        font-size: 0.875rem;
+        box-shadow: 0 4px 15px rgba(219, 39, 119, 0.2);
+    }
+    .floral-romantic .fr-btn-accept:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(219, 39, 119, 0.3);
+    }
+    .floral-romantic .fr-btn-decline {
+        background: transparent;
+        color: var(--fr-text);
+        padding: 1rem 2.5rem;
+        border-radius: 2rem;
+        font-weight: 500;
+        transition: all 300ms ease;
+        cursor: pointer;
+        border: 1px solid var(--fr-rose);
+        font-size: 0.875rem;
+    }
+    .floral-romantic .fr-btn-decline:hover {
+        background: var(--fr-blush);
+    }
+</style>
+{% endblock %}
+
+{% block public_content %}
+<main class="floral-romantic flex-grow flex flex-col items-center w-full">
+    <section class="w-full relative min-h-screen flex items-center justify-center overflow-hidden" style="background: var(--fr-cream);">
+        <div class="fr-watercolor" style="top: 10%; left: 10%; width: 300px; height: 300px; background: var(--fr-rose);"></div>
+        <div class="fr-watercolor" style="bottom: 15%; right: 10%; width: 250px; height: 250px; background: var(--fr-sage);"></div>
+        <div class="fr-watercolor" style="top: 50%; left: 50%; width: 400px; height: 400px; background: var(--fr-rose); transform: translate(-50%, -50%);"></div>
+        
+        <svg class="fr-floral-corner" style="top: 20px; left: 20px;" viewBox="0 0 100 100" fill="var(--fr-sage-dark)">
+            <path d="M10 50 Q20 20 50 10 Q40 30 30 50 Q20 40 10 50Z"/>
+            <path d="M20 60 Q30 40 50 35 Q40 50 35 60 Q25 55 20 60Z"/>
+            <circle cx="15" cy="15" r="5" fill="var(--fr-rose-dark)" opacity="0.6"/>
+            <circle cx="25" cy="25" r="3" fill="var(--fr-rose)" opacity="0.5"/>
+        </svg>
+        <svg class="fr-floral-corner" style="bottom: 20px; right: 20px; transform: rotate(180deg);" viewBox="0 0 100 100" fill="var(--fr-sage-dark)">
+            <path d="M10 50 Q20 20 50 10 Q40 30 30 50 Q20 40 10 50Z"/>
+            <path d="M20 60 Q30 40 50 35 Q40 50 35 60 Q25 55 20 60Z"/>
+            <circle cx="15" cy="15" r="5" fill="var(--fr-rose-dark)" opacity="0.6"/>
+            <circle cx="25" cy="25" r="3" fill="var(--fr-rose)" opacity="0.5"/>
+        </svg>
+        
+        <div class="relative z-10 max-w-2xl mx-auto px-6 py-16 text-center">
+            <div class="fr-card p-8 md:p-14 relative">
+                <svg class="fr-floral-top" viewBox="0 0 200 100" fill="none">
+                    <path d="M100 80 Q80 60 60 70 Q70 50 100 40 Q130 50 140 70 Q120 60 100 80Z" fill="var(--fr-sage)" opacity="0.4"/>
+                    <path d="M100 60 Q85 45 75 50 Q80 35 100 25 Q120 35 125 50 Q115 45 100 60Z" fill="var(--fr-rose)" opacity="0.3"/>
+                    <circle cx="100" cy="20" r="6" fill="var(--fr-rose-dark)" opacity="0.5"/>
+                    <circle cx="80" cy="35" r="4" fill="var(--fr-rose)" opacity="0.4"/>
+                    <circle cx="120" cy="35" r="4" fill="var(--fr-rose)" opacity="0.4"/>
+                </svg>
+                
+                <p class="fr-script text-4xl md:text-5xl mb-4" style="color: var(--fr-rose-dark);">Con amor invitamos</p>
+                
+                <div class="fr-petal-divider mb-8">
+                    <div class="fr-line"></div>
+                    <div class="fr-petal"></div>
+                    <div class="fr-petal"></div>
+                    <div class="fr-petal"></div>
+                    <div class="fr-line"></div>
+                </div>
+                
+                <h1 class="fr-script text-5xl md:text-7xl mb-2" style="color: var(--fr-text);">
+                    {{ event.bride_name }}
+                </h1>
+                <span class="fr-serif text-2xl italic mb-2 block" style="color: var(--fr-rose-dark);">&</span>
+                <h1 class="fr-script text-5xl md:text-7xl mb-8" style="color: var(--fr-text);">
+                    {{ event.groom_name }}
+                </h1>
+                
+                <div class="fr-petal-divider mb-8">
+                    <div class="fr-line"></div>
+                    <div class="fr-petal"></div>
+                    <div class="fr-petal"></div>
+                    <div class="fr-petal"></div>
+                    <div class="fr-line"></div>
+                </div>
+                
+                <p class="fr-serif text-lg md:text-xl mb-10" style="color: var(--fr-text); line-height: 1.7;">
+                    Queremos compartir contigo la alegría de este día tan especial en nuestras vidas
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    <div class="p-6 rounded-2xl text-center" style="background: var(--fr-blush);">
+                        <svg class="w-8 h-8 mx-auto mb-3" style="color: var(--fr-rose-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="fr-serif text-sm tracking-wide block mb-2" style="color: var(--fr-rose-dark);">Fecha</span>
+                        <p class="fr-serif text-lg" style="color: var(--fr-text);">
+                            {{ event.date|date:"d \d\e F" }}
+                        </p>
+                        <p class="fr-serif text-sm font-light mt-1" style="color: var(--fr-text); opacity: 0.7;">
+                            {{ event.date|date:"Y" }}
+                        </p>
+                    </div>
+                    
+                    <div class="p-6 rounded-2xl text-center" style="background: var(--fr-blush);">
+                        <svg class="w-8 h-8 mx-auto mb-3" style="color: var(--fr-rose-dark);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span class="fr-serif text-sm tracking-wide block mb-2" style="color: var(--fr-rose-dark);">Lugar</span>
+                        <p class="fr-serif text-lg" style="color: var(--fr-text);">
+                            {{ event.location }}
+                        </p>
+                    </div>
+                </div>
+                
+                {% if event.venue_details %}
+                <div class="mb-10 p-5 rounded-xl" style="background: rgba(167, 196, 160, 0.15); border-left: 3px solid var(--fr-sage);">
+                    <p class="fr-serif text-sm" style="color: var(--fr-text);">
+                        {{ event.venue_details }}
+                    </p>
+                </div>
+                {% endif %}
+                
+                <p class="fr-serif text-xl mb-8" style="color: var(--fr-text);">
+                    <strong>{{ guest.full_name }}</strong>, nos encantaría contar con tu presencia
+                </p>
+                
+                <form method="post" action="{% url 'event:confirm_invitation' token=guest.invitation_token %}">
+                    {% csrf_token %}
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button type="submit" name="action" value="accept" class="fr-btn-accept flex items-center justify-center gap-2">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+                            Confirmo con alegría
+                        </button>
+                        <button type="submit" name="action" value="decline" class="fr-btn-decline">
+                            No podré asistir
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

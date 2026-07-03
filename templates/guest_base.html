@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ event.display_name|default:"Ethereal Union" }}{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    {% if user.event.design_template == 'classic_romance' %}
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    {% elif user.event.design_template == 'modern_minimal' %}
+    <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:wght@400;500;600;700&family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    {% elif user.event.design_template == 'rustic_boho' %}
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant:wght@300;400;500;600;700&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    {% elif user.event.design_template == 'art_deco' %}
+    <link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Didact+Gothic&display=swap" rel="stylesheet"/>
+    {% elif user.event.design_template == 'floral_romantic' %}
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+    {% else %}
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    {% endif %}
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-container": "#745c00",
+                        "tertiary-fixed": "#e2e2e2",
+                        "surface-container": "#e9eef6",
+                        "on-secondary-fixed-variant": "#574500",
+                        "secondary": "#735c00",
+                        "secondary-container": "#fed65b",
+                        "surface-bright": "#f7f9ff",
+                        "surface-container-high": "#e3e9f0",
+                        "error-container": "#ffdad6",
+                        "primary-container": "#f8e1e7",
+                        "tertiary-fixed-dim": "#c6c6c7",
+                        "on-error": "#ffffff",
+                        "on-tertiary-container": "#666768",
+                        "surface-container-highest": "#dde3eb",
+                        "surface-variant": "#dde3eb",
+                        "on-secondary-fixed": "#241a00",
+                        "outline": "#7f7477",
+                        "background": "#f7f9ff",
+                        "primary-fixed": "#f4dde3",
+                        "on-surface": "#161c22",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed": "#1a1c1c",
+                        "on-error-container": "#93000a",
+                        "on-primary-container": "#746368",
+                        "inverse-on-surface": "#ecf1f9",
+                        "tertiary-container": "#e7e7e7",
+                        "on-surface-variant": "#4d4447",
+                        "inverse-primary": "#d7c1c7",
+                        "on-primary-fixed-variant": "#524348",
+                        "secondary-fixed-dim": "#e9c349",
+                        "on-tertiary-fixed-variant": "#454747",
+                        "inverse-surface": "#2b3137",
+                        "error": "#ba1a1a",
+                        "on-primary-fixed": "#24181c",
+                        "on-primary": "#ffffff",
+                        "primary": "#6b5a5f",
+                        "surface-container-low": "#eff4fc",
+                        "surface": "#f7f9ff",
+                        "on-tertiary": "#ffffff",
+                        "secondary-fixed": "#ffe088",
+                        "on-secondary": "#ffffff",
+                        "tertiary": "#5d5f5f",
+                        "on-background": "#161c22",
+                        "surface-tint": "#6b5a5f",
+                        "outline-variant": "#d0c3c6",
+                        "surface-dim": "#d5dae2",
+                        "primary-fixed-dim": "#d7c1c7"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px"
+                    },
+                    "fontFamily": {
+                        "headline-md": ["Playfair Display", "serif"],
+                        "headline-md-mobile": ["Playfair Display", "serif"],
+                        "title-sm": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "display-lg-mobile": ["Playfair Display", "serif"],
+                        "label-caps": ["Inter", "sans-serif"],
+                        "display-lg": ["Playfair Display", "serif"]
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg {
+            font-family: 'Playfair Display', serif;
+        }
+        
+        {% if user.event.design_template == 'classic_romance' %}
+        body { font-family: 'Cormorant Infant', serif; background-color: #FDF2F8; }
+        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg { font-family: 'Great Vibes', cursive; }
+        header { background: linear-gradient(135deg, #DB2777 0%, #F472B6 100%) !important; }
+        header .font-headline-md { color: white !important; font-family: 'Great Vibes', cursive !important; }
+        header a { color: rgba(255,255,255,0.9) !important; }
+        {% elif user.event.design_template == 'modern_minimal' %}
+        body { font-family: 'Jost', sans-serif; background-color: #FFFFFF; }
+        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg { font-family: 'Bodoni Moda', serif; }
+        header { background: #FFFFFF !important; border-bottom: 1px solid #E5E7EB !important; }
+        header .font-headline-md { color: #1A1A1A !important; font-family: 'Bodoni Moda', serif !important; letter-spacing: 2px; }
+        header a { color: #6B7280 !important; }
+        {% elif user.event.design_template == 'rustic_boho' %}
+        body { font-family: 'Cormorant', serif; background-color: #FEF3C7; }
+        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg { font-family: 'Cormorant', serif; }
+        header { background: #FEF3C7 !important; border-bottom: 1px solid #FDE68A !important; }
+        header .font-headline-md { color: #451A03 !important; font-family: 'Cormorant', serif !important; }
+        header a { color: #6B8E6B !important; }
+        {% elif user.event.design_template == 'art_deco' %}
+        body { font-family: 'Didact Gothic', sans-serif; background-color: #0A0A0A; color: #F5F0E6; }
+        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg { font-family: 'Poiret One', sans-serif; }
+        header { background: #0A0A0A !important; border-bottom: 2px solid #CA8A04 !important; }
+        header .font-headline-md { color: #CA8A04 !important; font-family: 'Poiret One', sans-serif !important; letter-spacing: 3px; }
+        header a { color: #F5F0E6 !important; }
+        {% elif user.event.design_template == 'floral_romantic' %}
+        body { font-family: 'Cormorant Infant', serif; background-color: #FFF8F0; }
+        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg { font-family: 'Great Vibes', cursive; }
+        header { background: linear-gradient(135deg, #E8A0BF 0%, #FDE8EF 100%) !important; }
+        header .font-headline-md { color: #5D4037 !important; font-family: 'Great Vibes', cursive !important; }
+        header a { color: #DB2777 !important; }
+        {% endif %}
+    </style>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-background text-on-background font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
+    <header class="w-full sticky top-0 z-40 bg-surface/80 backdrop-blur-md shadow-sm shadow-secondary/5 flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4">
+        <div class="font-headline-md text-headline-md-mobile md:text-headline-md text-secondary dark:text-secondary-fixed tracking-tight">
+            {{ user.event.display_name|default:"Ethereal Union" }}
+        </div>
+        <div class="hidden md:flex gap-gutter items-center">
+            <a class="font-title-sm text-title-sm text-on-surface-variant hover:text-secondary transition-colors duration-300 cursor-pointer" href="{% url 'gallery:home' %}">Galería</a>
+            <a class="font-title-sm text-title-sm text-on-surface-variant hover:text-secondary transition-colors duration-300 cursor-pointer" href="{% url 'donations:donation' %}">Donación</a>
+            <form method="post" action="{% url 'core:logout' %}" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="font-title-sm text-title-sm text-secondary hover:text-secondary/80 transition-colors duration-300 cursor-pointer bg-transparent border-0 p-0">Cerrar Sesión</button>
+            </form>
+        </div>
+        <div class="flex md:hidden gap-4">
+            <form method="post" action="{% url 'core:logout' %}" class="inline">
+                {% csrf_token %}
+                <button type="submit" class="font-title-sm text-title-sm text-secondary bg-transparent border-0 p-0 cursor-pointer">Salir</button>
+            </form>
+        </div>
+    </header>
+    
+    <main class="flex-1 flex flex-col min-h-screen">
+        {% block content %}{% endblock %}
+    </main>
+    
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

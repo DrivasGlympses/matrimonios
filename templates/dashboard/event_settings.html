@@ -1,0 +1,546 @@
+{% extends 'base.html' %}
+{% load l10n %}
+
+{% block title %}{{ object|default:"Configurar Evento" }} - Ethereal Union{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<style>
+    #venue-map {
+        height: 350px;
+        border-radius: 0.75rem;
+        border: 2px solid #e0e4ea;
+        z-index: 1;
+    }
+    .map-search-container {
+        position: relative;
+    }
+    .map-search-results {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        border: 1px solid #e0e4ea;
+        border-top: none;
+        border-radius: 0 0 0.5rem 0.5rem;
+        max-height: 200px;
+        overflow-y: auto;
+        z-index: 1000;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        display: none;
+    }
+    .map-search-results.active { display: block; }
+    .map-search-item {
+        padding: 0.75rem 1rem;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 150ms;
+        font-size: 0.85rem;
+    }
+    .map-search-item:hover { background: #f8f9fa; }
+    .map-search-item:last-child { border-bottom: none; }
+    .map-search-item .address-main { font-weight: 500; color: #161c22; }
+    .map-search-item .address-detail { font-size: 0.75rem; color: #6b7280; margin-top: 2px; }
+    .leaflet-control-zoom { border: none !important; box-shadow: 0 2px 8px rgba(0,0,0,0.15) !important; }
+    .leaflet-control-zoom a { border-radius: 0.5rem !important; }
+    .map-coords {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    <div class="mb-8 flex justify-between items-center flex-wrap gap-4">
+        <div>
+            <h1 class="font-display-lg-mobile md:font-display-lg text-on-surface mb-2">Configurar Evento</h1>
+            <p class="font-body-md text-on-surface-variant">Ingresa los datos de tu boda</p>
+        </div>
+        <a href="{% url 'dashboard:home' %}" class="flex items-center gap-2 px-4 py-2 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors font-title-sm text-title-sm cursor-pointer">
+            <span class="material-symbols-outlined">arrow_back</span>
+            Volver al Panel
+        </a>
+    </div>
+
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-surface-container-lowest rounded-xl whisper-shadow p-8">
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_bride_name">Nombre de la Novia</label>
+                        <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                               id="id_bride_name" name="bride_name" placeholder="Ej: Maria" type="text" value="{{ form.bride_name.value|default:'' }}" required/>
+                        {% if form.bride_name.errors %}
+                        <p class="mt-1 text-sm text-error">{{ form.bride_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_groom_name">Nombre del Novio</label>
+                        <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                               id="id_groom_name" name="groom_name" placeholder="Ej: Juan" type="text" value="{{ form.groom_name.value|default:'' }}" required/>
+                        {% if form.groom_name.errors %}
+                        <p class="mt-1 text-sm text-error">{{ form.groom_name.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_date">Fecha de la Boda</label>
+                        <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                               id="id_date" name="date" type="date" value="{{ form.date.value|date:'Y-m-d'|default:'' }}"/>
+                        {% if form.date.errors %}
+                        <p class="mt-1 text-sm text-error">{{ form.date.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_location">Nombre del Lugar</label>
+                        <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                               id="id_location" name="location" placeholder="Ej: Hacienda Los Nogales" type="text" value="{{ form.location.value|default:'' }}"/>
+                        {% if form.location.errors %}
+                        <p class="mt-1 text-sm text-error">{{ form.location.errors.0 }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">location_on</span>
+                        Ubicacion en el Mapa
+                    </label>
+                    <p class="text-xs text-on-surface-variant mb-3">Busca la direccion o haz click en el mapa para marcar la ubicacion exacta</p>
+                    
+                    <div class="map-search-container mb-3">
+                        <div class="relative">
+                            <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+                            <input type="text" id="map-search-input" placeholder="Buscar direccion..." 
+                                   class="w-full pl-10 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-sm"
+                                   autocomplete="off"/>
+                            <button type="button" id="map-search-btn" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md bg-[#D4AF37] hover:bg-[#c29f2f] text-white transition-colors cursor-pointer">
+                                <span class="material-symbols-outlined text-[18px]">search</span>
+                            </button>
+                        </div>
+                        <div id="map-search-results" class="map-search-results"></div>
+                    </div>
+                    
+                    <div id="venue-map"></div>
+                    <p class="map-coords" id="map-coords">Coordenadas: <span id="coords-display">-</span></p>
+                    
+                    {{ form.latitude }}
+                    {{ form.longitude }}
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_venue_details">Detalles del Lugar</label>
+                    <textarea class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md resize-none" 
+                              id="id_venue_details" name="venue_details" placeholder="Direccion completa, indicaciones para los invitados..." rows="3">{{ form.venue_details.value|default:'' }}</textarea>
+                    {% if form.venue_details.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.venue_details.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_couple_photo">Foto de la Pareja</label>
+                    <div class="flex items-center gap-4">
+                        {% if event.couple_photo %}
+                        <div class="w-24 h-24 rounded-full overflow-hidden ring-2 ring-primary-container">
+                            <img src="{{ event.couple_photo.url }}" alt="Couple Photo" class="w-full h-full object-cover"/>
+                        </div>
+                        {% endif %}
+                        <input class="block w-full text-on-surface bg-surface-container-low border border-outline-variant rounded-lg file:mr-4 file:py-2 file:px-4 file:rounded file:border-0 file:text-sm file:font-semibold file:bg-secondary file:text-on-secondary hover:file:bg-secondary/80 cursor-pointer font-body-md text-body-md" 
+                               id="id_couple_photo" name="couple_photo" type="file" accept="image/*"/>
+                    </div>
+                    {% if form.couple_photo.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.couple_photo.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2">
+                        <span class="material-symbols-outlined text-[18px] align-middle mr-1">palette</span>
+                        Diseño de Invitación
+                    </label>
+                    <p class="text-xs text-on-surface-variant mb-4">Selecciona el estilo visual para tu parte matrimonial, correos y página de invitados</p>
+                    
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4" id="design-selector">
+                        {% for value, label in form.fields.design_template.choices %}
+                        <label class="design-option relative flex flex-col p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 {% if form.design_template.value == value %}border-secondary bg-secondary/5 shadow-md{% else %}border-outline-variant hover:border-secondary/50 hover:shadow-sm{% endif %}" data-value="{{ value }}">
+                            <input type="radio" name="design_template" value="{{ value }}" class="sr-only" {% if form.design_template.value == value %}checked{% endif %}/>
+                            
+                            <div class="design-preview w-full h-24 rounded-lg mb-3 overflow-hidden relative" data-design="{{ value }}">
+                                {% if value == 'classic_romance' %}
+                                <div class="w-full h-full flex items-center justify-center" style="background: linear-gradient(135deg, #FDF2F8, #FFF1F6);">
+                                    <div class="text-center">
+                                        <div style="font-family: 'Playfair Display', serif; font-size: 14px; color: #831843;">María & Juan</div>
+                                        <div style="width: 40px; height: 1px; background: #CA8A04; margin: 4px auto;"></div>
+                                        <div style="font-size: 8px; color: #DB2777;">15 de Diciembre</div>
+                                    </div>
+                                    <div class="absolute top-2 right-2 w-3 h-3 rounded-full" style="background: #CA8A04; opacity: 0.3;"></div>
+                                </div>
+                                {% elif value == 'modern_minimal' %}
+                                <div class="w-full h-full flex items-center justify-center" style="background: #FFFFFF; border: 1px solid #E5E7EB;">
+                                    <div class="text-center">
+                                        <div style="font-family: 'Playfair Display', serif; font-size: 16px; color: #1A1A1A; letter-spacing: 2px;">MARÍA</div>
+                                        <div style="font-size: 10px; color: #CA8A04; font-style: italic;">&</div>
+                                        <div style="font-family: 'Playfair Display', serif; font-size: 16px; color: #1A1A1A; letter-spacing: 2px;">JUAN</div>
+                                    </div>
+                                </div>
+                                {% elif value == 'rustic_boho' %}
+                                <div class="w-full h-full flex items-center justify-center" style="background: #FEF3C7;">
+                                    <div class="text-center">
+                                        <div style="font-size: 8px; color: #6B8E6B; letter-spacing: 2px; text-transform: uppercase;">Nos Casamos</div>
+                                        <div style="font-family: 'Playfair Display', serif; font-size: 13px; color: #451A03; margin-top: 4px;">María & Juan</div>
+                                        <div style="width: 20px; height: 1px; background: #B45309; margin: 4px auto; opacity: 0.4;"></div>
+                                    </div>
+                                    <div class="absolute bottom-2 left-2 w-4 h-4 rounded-full" style="background: #6B8E6B; opacity: 0.2;"></div>
+                                </div>
+                                {% elif value == 'art_deco' %}
+                                <div class="w-full h-full flex items-center justify-center" style="background: #0A0A0A;">
+                                    <div class="text-center" style="border: 1px solid #CA8A04; padding: 8px 12px;">
+                                        <div style="font-size: 7px; color: #CA8A04; letter-spacing: 3px; text-transform: uppercase;">Invitación</div>
+                                        <div style="font-family: 'Playfair Display', serif; font-size: 13px; color: #F5F0E6; margin-top: 4px;">María & Juan</div>
+                                    </div>
+                                </div>
+                                {% elif value == 'floral_romantic' %}
+                                <div class="w-full h-full flex items-center justify-center" style="background: #FFF8F0;">
+                                    <div class="text-center">
+                                        <div style="font-family: 'Playfair Display', serif; font-size: 12px; font-style: italic; color: #DB2777;">Con amor</div>
+                                        <div style="font-family: 'Playfair Display', serif; font-size: 14px; color: #5D4037; margin-top: 2px;">María & Juan</div>
+                                    </div>
+                                    <div class="absolute top-2 left-2 w-3 h-3 rounded-full" style="background: #E8A0BF; opacity: 0.4;"></div>
+                                    <div class="absolute bottom-2 right-2 w-2 h-2 rounded-full" style="background: #A7C4A0; opacity: 0.4;"></div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="flex-1">
+                                <span class="font-title-sm text-title-sm text-on-surface block mb-1">{{ label }}</span>
+                                {% if value == 'classic_romance' %}
+                                <p class="text-xs text-on-surface-variant leading-relaxed">Elegante y romántico con tonos rosa y dorado. Tipografía serif con acentos ornamentales.</p>
+                                {% elif value == 'modern_minimal' %}
+                                <p class="text-xs text-on-surface-variant leading-relaxed">Limpio y sofisticado con alto contraste. Diseño contemporáneo con espacios amplios.</p>
+                                {% elif value == 'rustic_boho' %}
+                                <p class="text-xs text-on-surface-variant leading-relaxed">Cálido y natural con tonos tierra y verde sage. Elementos botánicos y textura orgánica.</p>
+                                {% elif value == 'art_deco' %}
+                                <p class="text-xs text-on-surface-variant leading-relaxed">Glamouroso y vintage con patrones geométricos dorados sobre fondo oscuro. Estilo 1920s.</p>
+                                {% elif value == 'floral_romantic' %}
+                                <p class="text-xs text-on-surface-variant leading-relaxed">Delicado y femenino con acuarelas florales. Rosa suave y verde sage con tipografía script.</p>
+                                {% endif %}
+                                
+                                <div class="flex gap-1 mt-2">
+                                    {% if value == 'classic_romance' %}
+                                    <div class="w-4 h-4 rounded-full" style="background: #DB2777;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #F472B6;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #CA8A04;"></div>
+                                    <div class="w-4 h-4 rounded-full border" style="background: #FDF2F8;"></div>
+                                    {% elif value == 'modern_minimal' %}
+                                    <div class="w-4 h-4 rounded-full" style="background: #1A1A1A;"></div>
+                                    <div class="w-4 h-4 rounded-full border" style="background: #FFFFFF;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #CA8A04;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #F9FAFB;"></div>
+                                    {% elif value == 'rustic_boho' %}
+                                    <div class="w-4 h-4 rounded-full" style="background: #92400E;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #B45309;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #6B8E6B;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #FEF3C7;"></div>
+                                    {% elif value == 'art_deco' %}
+                                    <div class="w-4 h-4 rounded-full" style="background: #CA8A04;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #0A0A0A;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #F5F0E6;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #1A1A1A;"></div>
+                                    {% elif value == 'floral_romantic' %}
+                                    <div class="w-4 h-4 rounded-full" style="background: #E8A0BF;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #DB2777;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #A7C4A0;"></div>
+                                    <div class="w-4 h-4 rounded-full" style="background: #FFF8F0;"></div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            <div class="absolute top-3 right-3 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all {% if form.design_template.value == value %}border-secondary bg-secondary{% else %}border-outline-variant{% endif %}">
+                                <span class="material-symbols-outlined text-white text-xs" style="{% if form.design_template.value != value %}display:none;{% endif %}">check</span>
+                            </div>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if form.design_template.errors %}
+                    <p class="mt-2 text-sm text-error">{{ form.design_template.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="pt-6 border-t border-outline-variant/30">
+                    <h2 class="font-title-sm text-title-sm text-on-surface mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">mail</span>
+                        Mensajes del Correo de Invitación
+                    </h2>
+                    <p class="text-xs text-on-surface-variant mb-6">Personaliza los textos que aparecerán en el correo de invitación enviado a tus invitados</p>
+                    
+                    <div class="space-y-5">
+                        <div>
+                            <label class="block font-body-md text-body-md text-on-surface mb-2" for="id_email_header">Encabezado</label>
+                            <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                                   id="id_email_header" name="email_header" type="text" value="{{ form.email_header.value|default:'' }}" placeholder="Estás invitado"/>
+                            <p class="text-xs text-on-surface-variant mt-1">Texto principal que aparece en la parte superior del correo</p>
+                            {% if form.email_header.errors %}
+                            <p class="mt-1 text-sm text-error">{{ form.email_header.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div>
+                            <label class="block font-body-md text-body-md text-on-surface mb-2" for="id_email_message">Mensaje Principal</label>
+                            <textarea class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md resize-none" 
+                                      id="id_email_message" name="email_message" rows="3" placeholder="Nos llena de alegría compartir este momento tan especial contigo">{{ form.email_message.value|default:'' }}</textarea>
+                            <p class="text-xs text-on-surface-variant mt-1">Mensaje que acompaña a los nombres de la pareja</p>
+                            {% if form.email_message.errors %}
+                            <p class="mt-1 text-sm text-error">{{ form.email_message.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block font-body-md text-body-md text-on-surface mb-2" for="id_email_question">Pregunta de Confirmación</label>
+                                <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                                       id="id_email_question" name="email_question" type="text" value="{{ form.email_question.value|default:'' }}" placeholder="¿nos acompañarás?"/>
+                                <p class="text-xs text-on-surface-variant mt-1">Pregunta que aparece antes del botón</p>
+                                {% if form.email_question.errors %}
+                                <p class="mt-1 text-sm text-error">{{ form.email_question.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+
+                            <div>
+                                <label class="block font-body-md text-body-md text-on-surface mb-2" for="id_email_button_text">Texto del Botón</label>
+                                <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                                       id="id_email_button_text" name="email_button_text" type="text" value="{{ form.email_button_text.value|default:'' }}" placeholder="Confirmar Asistencia"/>
+                                <p class="text-xs text-on-surface-variant mt-1">Texto que aparece en el botón de confirmación</p>
+                                {% if form.email_button_text.errors %}
+                                <p class="mt-1 text-sm text-error">{{ form.email_button_text.errors.0 }}</p>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block font-body-md text-body-md text-on-surface mb-2" for="id_email_closing">Cierre</label>
+                            <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                                   id="id_email_closing" name="email_closing" type="text" value="{{ form.email_closing.value|default:'' }}" placeholder="Con amor"/>
+                            <p class="text-xs text-on-surface-variant mt-1">Despedida que aparece al final del correo</p>
+                            {% if form.email_closing.errors %}
+                            <p class="mt-1 text-sm text-error">{{ form.email_closing.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="mt-6 p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
+                        <div class="flex items-center gap-3">
+                            <span class="material-symbols-outlined text-secondary">visibility</span>
+                            <p class="text-sm text-on-surface-variant flex-1">Visualiza cómo se verá el correo con los mensajes personalizados</p>
+                            <a href="{% url 'dashboard:email_preview' %}" target="_blank" class="px-4 py-2 bg-secondary text-on-secondary rounded-lg text-sm font-medium hover:bg-secondary/90 transition-colors cursor-pointer flex items-center gap-2">
+                                <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+                                Vista Previa
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" class="flex-1 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-8 py-4 rounded-lg font-title-sm text-title-sm transition-colors duration-300 flex justify-center items-center gap-2 cursor-pointer">
+                        <span class="material-symbols-outlined">save</span>
+                        Guardar Cambios
+                    </button>
+                    <a href="{% url 'dashboard:home' %}" class="px-8 py-4 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors font-title-sm text-title-sm flex justify-center items-center gap-2 cursor-pointer">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    const initLat = {{ current_lat|unlocalize }};
+    const initLng = {{ current_lng|unlocalize }};
+    
+    const map = L.map('venue-map').setView([initLat, initLng], 13);
+    
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+    }).addTo(map);
+    
+    const weddingIcon = L.divIcon({
+        html: '<div style="background:#D4AF37;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="transform:rotate(45deg);color:white;font-size:16px;">favorite</span></div>',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        className: ''
+    });
+    
+    let marker = L.marker([initLat, initLng], { 
+        icon: weddingIcon,
+        draggable: true 
+    }).addTo(map);
+    
+    updateCoordsDisplay(initLat, initLng);
+    
+    marker.on('dragend', function(e) {
+        const pos = e.target.getLatLng();
+        updateCoordsDisplay(pos.lat, pos.lng);
+        reverseGeocode(pos.lat, pos.lng);
+    });
+    
+    map.on('click', function(e) {
+        marker.setLatLng(e.latlng);
+        updateCoordsDisplay(e.latlng.lat, e.latlng.lng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng);
+    });
+    
+    function updateCoordsDisplay(lat, lng) {
+        document.getElementById('id_latitude').value = lat.toFixed(6);
+        document.getElementById('id_longitude').value = lng.toFixed(6);
+        document.getElementById('coords-display').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    }
+    
+    const searchInput = document.getElementById('map-search-input');
+    const searchResults = document.getElementById('map-search-results');
+    const searchBtn = document.getElementById('map-search-btn');
+    let searchTimeout = null;
+    
+    searchInput.addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        const query = this.value.trim();
+        if (query.length < 3) {
+            searchResults.classList.remove('active');
+            return;
+        }
+        searchTimeout = setTimeout(() => searchAddress(query), 400);
+    });
+    
+    searchInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            const query = this.value.trim();
+            if (query.length >= 3) searchAddress(query);
+        }
+    });
+    
+    searchBtn.addEventListener('click', function() {
+        const query = searchInput.value.trim();
+        if (query.length >= 3) searchAddress(query);
+    });
+    
+    document.addEventListener('click', function(e) {
+        if (!e.target.closest('.map-search-container')) {
+            searchResults.classList.remove('active');
+        }
+    });
+    
+    function searchAddress(query) {
+        fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`)
+            .then(r => r.json())
+            .then(results => {
+                if (results.length === 0) {
+                    searchResults.innerHTML = '<div class="map-search-item"><span class="address-main">No se encontraron resultados</span></div>';
+                    searchResults.classList.add('active');
+                    return;
+                }
+                
+                searchResults.innerHTML = results.map(r => {
+                    const parts = r.display_name.split(',');
+                    const main = parts.slice(0, 2).join(',');
+                    const detail = parts.slice(2, 4).join(',');
+                    return `<div class="map-search-item" data-lat="${r.lat}" data-lon="${r.lon}" data-name="${escapeHtml(parts[0] || '')}" data-address="${escapeHtml(r.display_name)}">
+                        <div class="address-main">${main}</div>
+                        <div class="address-detail">${detail}</div>
+                    </div>`;
+                }).join('');
+                
+                searchResults.classList.add('active');
+                
+                searchResults.querySelectorAll('.map-search-item').forEach(item => {
+                    item.addEventListener('click', function() {
+                        const lat = parseFloat(this.dataset.lat);
+                        const lon = parseFloat(this.dataset.lon);
+                        const name = this.dataset.name;
+                        const address = this.dataset.address;
+                        
+                        map.setView([lat, lon], 16);
+                        marker.setLatLng([lat, lon]);
+                        updateCoordsDisplay(lat, lon);
+                        
+                        if (!document.getElementById('id_location').value) {
+                            document.getElementById('id_location').value = name;
+                        }
+                        if (!document.getElementById('id_venue_details').value) {
+                            document.getElementById('id_venue_details').value = address;
+                        }
+                        
+                        searchInput.value = name;
+                        searchResults.classList.remove('active');
+                    });
+                });
+            })
+            .catch(err => console.error('Search error:', err));
+    }
+    
+    function reverseGeocode(lat, lng) {
+        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`)
+            .then(r => r.json())
+            .then(data => {
+                if (data && data.display_name) {
+                    const parts = data.display_name.split(',');
+                    searchInput.value = parts.slice(0, 2).join(',').trim();
+                    if (!document.getElementById('id_venue_details').value) {
+                        document.getElementById('id_venue_details').value = data.display_name;
+                    }
+                }
+            })
+            .catch(() => {});
+    }
+    
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    
+    setTimeout(() => map.invalidateSize(), 100);
+    
+    const designOptions = document.querySelectorAll('.design-option');
+    designOptions.forEach(option => {
+        option.addEventListener('click', function() {
+            designOptions.forEach(opt => {
+                opt.classList.remove('border-secondary', 'bg-secondary/5', 'shadow-md');
+                opt.classList.add('border-outline-variant');
+                const check = opt.querySelector('.material-symbols-outlined');
+                const circle = opt.querySelector('.absolute.top-3');
+                if (check) check.style.display = 'none';
+                if (circle) {
+                    circle.classList.remove('border-secondary', 'bg-secondary');
+                    circle.classList.add('border-outline-variant');
+                }
+            });
+            
+            this.classList.remove('border-outline-variant');
+            this.classList.add('border-secondary', 'bg-secondary/5', 'shadow-md');
+            
+            const radio = this.querySelector('input[type="radio"]');
+            if (radio) radio.checked = true;
+            
+            const check = this.querySelector('.material-symbols-outlined');
+            const circle = this.querySelector('.absolute.top-3');
+            if (check) check.style.display = '';
+            if (circle) {
+                circle.classList.remove('border-outline-variant');
+                circle.classList.add('border-secondary', 'bg-secondary');
+            }
+        });
+    });
+</script>
+{% endblock %}

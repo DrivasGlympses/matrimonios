@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block title %}Invitación - {{ event.display_name }}{% endblock %}
+
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Poiret+One&family=Didact+Gothic&display=swap" rel="stylesheet"/>
+<style>
+    .art-deco {
+        --ad-gold: #CA8A04;
+        --ad-gold-light: #D4AF37;
+        --ad-black: #0A0A0A;
+        --ad-dark: #1A1A1A;
+        --ad-cream: #F5F0E6;
+        --ad-cream-dark: #E8DFD0;
+    }
+    .art-deco .ad-display {
+        font-family: 'Poiret One', sans-serif;
+    }
+    .art-deco .ad-body {
+        font-family: 'Didact Gothic', sans-serif;
+    }
+    .art-deco .ad-pattern {
+        background-image: 
+            linear-gradient(30deg, rgba(202, 138, 4, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(202, 138, 4, 0.05) 87.5%),
+            linear-gradient(150deg, rgba(202, 138, 4, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(202, 138, 4, 0.05) 87.5%),
+            linear-gradient(30deg, rgba(202, 138, 4, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(202, 138, 4, 0.05) 87.5%),
+            linear-gradient(150deg, rgba(202, 138, 4, 0.05) 12%, transparent 12.5%, transparent 87%, rgba(202, 138, 4, 0.05) 87.5%);
+        background-size: 80px 140px;
+        background-position: 0 0, 0 0, 40px 70px, 40px 70px;
+    }
+    .art-deco .ad-border {
+        border: 2px solid var(--ad-gold);
+        position: relative;
+    }
+    .art-deco .ad-border::before {
+        content: '';
+        position: absolute;
+        top: 6px;
+        left: 6px;
+        right: 6px;
+        bottom: 6px;
+        border: 1px solid var(--ad-gold);
+        opacity: 0.5;
+        pointer-events: none;
+    }
+    .art-deco .ad-corner {
+        position: absolute;
+        width: 30px;
+        height: 30px;
+        border-color: var(--ad-gold);
+    }
+    .art-deco .ad-corner-tl {
+        top: -2px; left: -2px;
+        border-top: 3px solid;
+        border-left: 3px solid;
+    }
+    .art-deco .ad-corner-tr {
+        top: -2px; right: -2px;
+        border-top: 3px solid;
+        border-right: 3px solid;
+    }
+    .art-deco .ad-corner-bl {
+        bottom: -2px; left: -2px;
+        border-bottom: 3px solid;
+        border-left: 3px solid;
+    }
+    .art-deco .ad-corner-br {
+        bottom: -2px; right: -2px;
+        border-bottom: 3px solid;
+        border-right: 3px solid;
+    }
+    .art-deco .ad-fan {
+        width: 60px;
+        height: 30px;
+        margin: 0 auto;
+        position: relative;
+        overflow: hidden;
+    }
+    .art-deco .ad-fan::before {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 60px;
+        border: 2px solid var(--ad-gold);
+        border-radius: 50%;
+        opacity: 0.6;
+    }
+    .art-deco .ad-fan::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 40px;
+        border: 1px solid var(--ad-gold);
+        border-radius: 50%;
+        opacity: 0.3;
+    }
+    .art-deco .ad-btn-accept {
+        background: var(--ad-gold);
+        color: var(--ad-black);
+        padding: 1rem 2.5rem;
+        font-family: 'Didact Gothic', sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        transition: all 300ms ease;
+        cursor: pointer;
+        border: 2px solid var(--ad-gold);
+    }
+    .art-deco .ad-btn-accept:hover {
+        background: transparent;
+        color: var(--ad-gold);
+    }
+    .art-deco .ad-btn-decline {
+        background: transparent;
+        color: var(--ad-gold);
+        padding: 1rem 2.5rem;
+        font-family: 'Didact Gothic', sans-serif;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        transition: all 300ms ease;
+        cursor: pointer;
+        border: 1px solid rgba(202, 138, 4, 0.4);
+    }
+    .art-deco .ad-btn-decline:hover {
+        border-color: var(--ad-gold);
+    }
+</style>
+{% endblock %}
+
+{% block public_content %}
+<main class="art-deco flex-grow flex flex-col items-center w-full">
+    <section class="w-full relative min-h-screen flex items-center justify-center overflow-hidden ad-pattern" style="background-color: var(--ad-black);">
+        <div class="absolute inset-0 opacity-5" style="background: radial-gradient(ellipse at center, var(--ad-gold) 0%, transparent 70%);"></div>
+        
+        <div class="relative z-10 max-w-2xl mx-auto px-6 py-16 text-center">
+            <div class="ad-border p-8 md:p-14" style="background: rgba(10, 10, 10, 0.95);">
+                <div class="ad-corner ad-corner-tl"></div>
+                <div class="ad-corner ad-corner-tr"></div>
+                <div class="ad-corner ad-corner-bl"></div>
+                <div class="ad-corner ad-corner-br"></div>
+                
+                <div class="ad-fan mb-6"></div>
+                
+                <p class="ad-body text-xs tracking-[0.4em] uppercase mb-8" style="color: var(--ad-gold);">Tienen el honor de invitarle</p>
+                
+                <div class="flex items-center justify-center gap-4 mb-4">
+                    <div class="w-16 h-px" style="background: linear-gradient(90deg, transparent, var(--ad-gold));"></div>
+                    <svg class="w-5 h-5" style="color: var(--ad-gold);" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                    <div class="w-16 h-px" style="background: linear-gradient(90deg, var(--ad-gold), transparent);"></div>
+                </div>
+                
+                <h1 class="ad-display text-5xl md:text-7xl mb-2" style="color: var(--ad-cream);">
+                    {{ event.bride_name }}
+                </h1>
+                <div class="flex items-center justify-center gap-3 my-3">
+                    <div class="w-8 h-px" style="background: var(--ad-gold);"></div>
+                    <span class="ad-display text-xl" style="color: var(--ad-gold);">&</span>
+                    <div class="w-8 h-px" style="background: var(--ad-gold);"></div>
+                </div>
+                <h1 class="ad-display text-5xl md:text-7xl mb-8" style="color: var(--ad-cream);">
+                    {{ event.groom_name }}
+                </h1>
+                
+                <div class="flex items-center justify-center gap-4 mb-8">
+                    <div class="w-16 h-px" style="background: linear-gradient(90deg, transparent, var(--ad-gold));"></div>
+                    <svg class="w-5 h-5" style="color: var(--ad-gold);" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                    </svg>
+                    <div class="w-16 h-px" style="background: linear-gradient(90deg, var(--ad-gold), transparent);"></div>
+                </div>
+                
+                <p class="ad-body text-base mb-10" style="color: var(--ad-cream-dark); line-height: 1.8;">
+                    A la celebración de su unión matrimonial
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+                    <div class="p-6 text-center" style="border: 1px solid rgba(202, 138, 4, 0.3);">
+                        <svg class="w-8 h-8 mx-auto mb-3" style="color: var(--ad-gold);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                        <span class="ad-body text-xs tracking-[0.2em] uppercase block mb-2" style="color: var(--ad-gold);">Fecha</span>
+                        <p class="ad-display text-xl" style="color: var(--ad-cream);">
+                            {{ event.date|date:"d \d\e F, Y" }}
+                        </p>
+                    </div>
+                    
+                    <div class="p-6 text-center" style="border: 1px solid rgba(202, 138, 4, 0.3);">
+                        <svg class="w-8 h-8 mx-auto mb-3" style="color: var(--ad-gold);" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span class="ad-body text-xs tracking-[0.2em] uppercase block mb-2" style="color: var(--ad-gold);">Lugar</span>
+                        <p class="ad-display text-xl" style="color: var(--ad-cream);">
+                            {{ event.location }}
+                        </p>
+                    </div>
+                </div>
+                
+                {% if event.venue_details %}
+                <div class="mb-10 p-5" style="border: 1px solid rgba(202, 138, 4, 0.2); background: rgba(202, 138, 4, 0.05);">
+                    <p class="ad-body text-sm" style="color: var(--ad-cream-dark);">
+                        {{ event.venue_details }}
+                    </p>
+                </div>
+                {% endif %}
+                
+                <p class="ad-body text-base mb-8" style="color: var(--ad-cream);">
+                    <strong>{{ guest.full_name }}</strong>, su presencia es muy importante
+                </p>
+                
+                <form method="post" action="{% url 'event:confirm_invitation' token=guest.invitation_token %}">
+                    {% csrf_token %}
+                    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                        <button type="submit" name="action" value="accept" class="ad-btn-accept">
+                            Confirmar Asistencia
+                        </button>
+                        <button type="submit" name="action" value="decline" class="ad-btn-decline">
+                            No podré asistir
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+</main>
+{% endblock %}

@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load humanize %}
+
+{% block title %}Dashboard - Ethereal Union{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    {% if event and event.bride_name and event.groom_name %}
+    <div class="mb-12 flex justify-between items-end">
+        <div>
+            <h1 class="font-display-lg-mobile md:font-display-lg text-on-surface mb-2">
+                ¡Bienvenida de vuelta, {{ user.get_full_name|default:user.username }}!
+            </h1>
+            <p class="font-body-md text-on-surface-variant">Resumen de los preparativos de tu boda.</p>
+        </div>
+        <div class="hidden md:flex items-center gap-4">
+            <a href="{% url 'dashboard:event_settings' %}" class="p-2 rounded-full hover:bg-surface-container transition-colors text-secondary cursor-pointer" title="Configurar Evento">
+                <span class="material-symbols-outlined">settings</span>
+            </a>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-12 gap-gutter">
+        <div class="md:col-span-8 bg-surface-container-lowest rounded-xl p-8 whisper-shadow relative overflow-hidden flex flex-col justify-center min-h-[300px]">
+            <div class="absolute inset-0 bg-primary-container/10"></div>
+            <div class="relative z-10 flex flex-col items-start">
+                <span class="font-label-caps text-label-caps text-secondary tracking-widest uppercase mb-4">El Gran Día</span>
+                <div class="flex items-baseline gap-4 mb-2">
+                    <span class="font-display-lg-mobile md:font-display-lg text-secondary">{{ days_left }}</span>
+                    <span class="font-title-sm text-title-sm text-on-surface-variant">Días restantes</span>
+                </div>
+                <p class="font-body-md text-on-surface-variant max-w-md">{{ event.display_name }}{% if event.date %} - {{ event.date|date:"d \d\e F \d\e Y" }}{% endif %}</p>
+            </div>
+        </div>
+
+        <div class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 whisper-shadow flex flex-col justify-between">
+            <div>
+                <div class="flex justify-between items-center mb-6">
+                    <span class="font-title-sm text-title-sm text-on-surface">RSVPs</span>
+                    <span class="material-symbols-outlined text-secondary">mail</span>
+                </div>
+                <div class="font-headline-md-mobile text-headline-md-mobile text-secondary mb-1">
+                    {{ confirmed_guests }} / {{ total_guests }}
+                </div>
+                <p class="text-sm text-on-surface-variant">Invitados confirmados</p>
+            </div>
+            <div class="w-full bg-surface-variant h-2 rounded-full mt-6">
+                <div class="bg-secondary h-2 rounded-full" style="width: {% widthratio confirmed_guests total_guests 100 %}%"></div>
+            </div>
+        </div>
+
+        <div class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 whisper-shadow flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <span class="font-title-sm text-title-sm text-on-surface">Tareas</span>
+                <span class="material-symbols-outlined text-secondary">checklist</span>
+            </div>
+            <div class="space-y-4 flex-grow">
+                {% for item in checklist_items %}
+                <div class="flex items-center gap-3">
+                    <a href="{% url 'dashboard:toggle_checklist' item.pk %}" class="w-5 h-5 rounded-full flex items-center justify-center {% if item.is_completed %}bg-secondary text-white{% else %}border border-secondary{% endif %} cursor-pointer hover:opacity-80 transition-opacity">
+                        {% if item.is_completed %}
+                        <span class="material-symbols-outlined text-[14px]">check</span>
+                        {% endif %}
+                    </a>
+                    <span class="text-on-surface-variant text-sm {% if item.is_completed %}line-through{% endif %}">{{ item.title }}</span>
+                </div>
+                {% empty %}
+                <p class="text-on-surface-variant text-sm">No hay tareas aún</p>
+                {% endfor %}
+            </div>
+            <a href="{% url 'dashboard:checklist' %}" class="mt-6 text-sm text-secondary font-medium hover:underline text-left cursor-pointer">
+                Ver todas las tareas →
+            </a>
+        </div>
+
+        <div class="md:col-span-4 bg-surface-container-lowest rounded-xl p-8 whisper-shadow flex flex-col">
+            <div class="flex justify-between items-center mb-6">
+                <span class="font-title-sm text-title-sm text-on-surface">Presupuesto</span>
+                <span class="material-symbols-outlined text-secondary">account_balance_wallet</span>
+            </div>
+            <div class="mb-6">
+                <span class="font-headline-md-mobile text-headline-md-mobile text-on-surface">${{ total_actual|intcomma }}</span>
+                <p class="text-sm text-on-surface-variant">Gastado de ${{ budget_total|intcomma }}</p>
+            </div>
+            <div class="w-full bg-surface-variant h-2 rounded-full mt-6">
+                <div class="bg-secondary h-2 rounded-full" style="width: {% widthratio total_actual budget_total 100 %}%"></div>
+            </div>
+            <a href="{% url 'dashboard:budget' %}" class="mt-6 text-sm text-secondary font-medium hover:underline text-left cursor-pointer">
+                Gestionar presupuesto →
+            </a>
+        </div>
+
+        <div class="md:col-span-4 grid grid-rows-2 gap-gutter">
+            <a href="{% url 'tables:home' %}" class="bg-primary-container rounded-xl p-6 whisper-shadow flex flex-col justify-between hover:bg-primary-container/80 transition-colors cursor-pointer h-[180px]">
+                <div class="flex justify-between items-start">
+                    <div class="bg-white/50 p-2 rounded-full">
+                        <span class="material-symbols-outlined text-primary">restaurant</span>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-on-primary-container font-title-sm text-title-sm mb-1 block">Plan de Mesas</span>
+                    <span class="text-on-primary-container/80 text-sm">{{ unassigned_guests }} invitados sin asignar</span>
+                </div>
+            </a>
+            <a href="{% url 'gallery:home' %}" class="bg-surface-container-lowest rounded-xl whisper-shadow relative overflow-hidden group cursor-pointer h-[180px]">
+                {% if recent_photos.0 %}
+                <img class="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500" src="{{ recent_photos.0.image.url }}" alt="{{ recent_photos.0.caption }}"/>
+                {% else %}
+                <div class="absolute inset-0 w-full h-full bg-surface-container"></div>
+                {% endif %}
+                <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                <div class="absolute bottom-0 left-0 p-6">
+                    <span class="text-white font-title-sm text-title-sm mb-1 block">Galería</span>
+                    <span class="text-white/80 text-sm">{{ recent_photos|length|default:"0" }} fotos recientes</span>
+                </div>
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center py-16">
+        <span class="material-symbols-outlined text-[80px] text-secondary/30 mb-4">celebration</span>
+        <h2 class="font-headline-md text-headline-md text-on-surface mb-4">Bienvenido a Ethereal Union</h2>
+        <p class="font-body-md text-on-surface-variant mb-8">Configura tu evento para comenzar a planificar tu boda perfecta.</p>
+        <a href="{% url 'dashboard:event_settings' %}" class="inline-flex items-center gap-2 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-8 py-4 rounded-lg font-title-sm text-title-sm transition-colors">
+            <span class="material-symbols-outlined">add</span>
+            Configurar Evento
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

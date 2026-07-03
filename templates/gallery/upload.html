@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Subir Foto - Ethereal Union{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    <div class="max-w-xl mx-auto">
+        <div class="bg-surface-container-lowest rounded-xl whisper-shadow p-8">
+            <div class="flex items-center gap-4 mb-8">
+                <a href="{% url 'gallery:home' %}" class="p-2 rounded hover:bg-surface-container transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+                </a>
+                <h1 class="font-headline-md text-headline-md text-on-surface">Subir Foto</h1>
+            </div>
+
+            <form method="post" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="space-y-1">
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2">Seleccionar imagen</label>
+                    <div class="relative">
+                        <input type="file" name="image" accept="image/*" required id="id_image" 
+                               class="block w-full text-sm text-on-surface file:mr-4 file:py-3 file:px-6 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-secondary file:text-on-secondary file:hover:bg-on-secondary-container file:cursor-pointer cursor-pointer"/>
+                    </div>
+                    <p class="text-xs text-on-surface-variant mt-1">Tamaño máximo: 5MB. Formatos: JPG, PNG, GIF</p>
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2">Categoría</label>
+                    <select name="category" id="id_category" class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md cursor-pointer">
+                        {% for value, label in form.category.field.choices %}
+                        <option value="{{ value }}">{{ label }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2">Descripción (opcional)</label>
+                    <textarea name="caption" id="id_caption" rows="3" placeholder="Añade una descripción..." 
+                              class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md resize-none"></textarea>
+                </div>
+
+                <div id="image-preview" class="hidden">
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2">Vista previa</label>
+                    <img id="preview-img" src="" alt="Preview" class="max-h-64 rounded-lg shadow-md"/>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" class="flex-1 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-8 py-4 rounded font-title-sm text-title-sm transition-colors duration-300 flex justify-center items-center gap-2 cursor-pointer">
+                        <span class="material-symbols-outlined">cloud_upload</span>
+                        Subir Foto
+                    </button>
+                    <a href="{% url 'gallery:home' %}" class="px-8 py-4 rounded font-title-sm text-title-sm border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors duration-300 flex justify-center items-center gap-2 cursor-pointer">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.getElementById('id_image').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview-img').src = e.target.result;
+                document.getElementById('image-preview').classList.remove('hidden');
+            };
+            reader.readAsDataURL(file);
+        }
+    });
+</script>
+{% endblock %}

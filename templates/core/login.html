@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Iniciar Sesión - Ethereal Union{% endblock %}
+
+{% block auth_content %}
+<div class="min-h-screen flex items-center justify-center bg-background p-margin-mobile">
+    <div class="w-full max-w-md">
+        <div class="bg-surface-container-lowest rounded-xl whisper-shadow p-8">
+            <div class="text-center mb-8">
+                <h1 class="font-display-lg text-display-lg-mobile text-secondary mb-2">Ethereal Union</h1>
+                <p class="font-body-md text-on-surface-variant">Gestión de bodas premium</p>
+            </div>
+            
+            {% if form.errors %}
+            <div class="bg-error-container text-on-error-container p-4 rounded-lg mb-6 font-body-md text-sm">
+                Tu usuario o contraseña son incorrectos.
+            </div>
+            {% endif %}
+            
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                <div>
+                    <label class="block font-body-md text-sm font-medium text-on-surface mb-2" for="id_username">Usuario</label>
+                    <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border-2 border-outline-variant rounded-lg focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 font-body-md text-body-md transition-colors" 
+                           id="id_username" name="username" placeholder="Ingresa tu usuario" type="text" required autofocus/>
+                </div>
+                <div>
+                    <label class="block font-body-md text-sm font-medium text-on-surface mb-2" for="id_password">Contraseña</label>
+                    <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border-2 border-outline-variant rounded-lg focus:outline-none focus:border-secondary focus:ring-2 focus:ring-secondary/20 font-body-md text-body-md transition-colors" 
+                           id="id_password" name="password" placeholder="Ingresa tu contraseña" type="password" required/>
+                </div>
+                <button class="w-full bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-8 py-4 rounded-lg font-title-sm text-title-sm transition-colors duration-300 flex justify-center items-center gap-2 cursor-pointer" type="submit">
+                    <span class="material-symbols-outlined">login</span>
+                    Iniciar Sesión
+                </button>
+            </form>
+            
+            <div class="mt-6 text-center">
+                <a class="font-body-md text-sm text-secondary hover:text-on-secondary-container transition-colors border-b border-secondary pb-1" href="{% url 'event:public' %}">
+                    Ver página pública del evento
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

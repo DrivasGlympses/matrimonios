@@ -1,0 +1,138 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object|default:"Nuevo Gasto" }} - Ethereal Union{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    <div class="max-w-lg mx-auto">
+        <div class="mb-8 flex items-center gap-4">
+            <a href="{% url 'dashboard:budget' %}" class="p-2 rounded hover:bg-surface-container transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+            </a>
+            <h1 class="font-display-lg-mobile md:font-display-lg text-on-surface">
+                {{ object|default:"Nuevo Gasto" }}
+            </h1>
+        </div>
+
+        <div class="bg-surface-container-lowest rounded-xl whisper-shadow p-8">
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_category">Categoría *</label>
+                    <select class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md cursor-pointer"
+                            id="id_category" name="category">
+                        <option value="">Seleccionar categoría</option>
+                        <option value="VENUE" {% if form.category.value == 'VENUE' %}selected{% endif %}>Lugar</option>
+                        <option value="CATERING" {% if form.category.value == 'CATERING' %}selected{% endif %}>Catering</option>
+                        <option value="ATTIRE" {% if form.category.value == 'ATTIRE' %}selected{% endif %}>Vestuario</option>
+                        <option value="PHOTOGRAPHY" {% if form.category.value == 'PHOTOGRAPHY' %}selected{% endif %}>Fotografía</option>
+                        <option value="FLOWERS" {% if form.category.value == 'FLOWERS' %}selected{% endif %}>Flores</option>
+                        <option value="MUSIC" {% if form.category.value == 'MUSIC' %}selected{% endif %}>Música</option>
+                        <option value="TRANSPORT" {% if form.category.value == 'TRANSPORT' %}selected{% endif %}>Transporte</option>
+                        <option value="OTHER" {% if form.category.value == 'OTHER' %}selected{% endif %}>Otros</option>
+                    </select>
+                    {% if form.category.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.category.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_description">Descripción *</label>
+                    <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md"
+                           id="id_description" name="description" placeholder="Ej: Arreglo floral para altar" type="text" value="{{ form.description.value|default:'' }}" required/>
+                    {% if form.description.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.description.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_estimated_cost">Costo estimado (CLP)</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">$</span>
+                        <input class="block w-full pl-8 pr-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md"
+                               id="id_estimated_cost" name="estimated_cost" type="text" inputmode="numeric" placeholder="0" value="{{ form.estimated_cost.value|default:'' }}"/>
+                    </div>
+                    {% if form.estimated_cost.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.estimated_cost.errors.0 }}</p>
+                    {% endif %}
+                </div>
+
+                {% if object %}
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_actual_cost">Costo real (CLP)</label>
+                    <div class="relative">
+                        <span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface-variant">$</span>
+                        <input class="block w-full pl-8 pr-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md"
+                               id="id_actual_cost" name="actual_cost" type="text" inputmode="numeric" placeholder="0" value="{{ form.actual_cost.value|default:'' }}"/>
+                    </div>
+                    {% if form.actual_cost.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.actual_cost.errors.0 }}</p>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" class="flex-1 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-8 py-4 rounded-lg font-title-sm text-title-sm transition-colors duration-300 flex justify-center items-center gap-2 cursor-pointer">
+                        <span class="material-symbols-outlined">save</span>
+                        Guardar
+                    </button>
+                    <a href="{% url 'dashboard:budget' %}" class="px-8 py-4 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors font-title-sm text-title-sm flex justify-center items-center gap-2 cursor-pointer">
+                        Cancelar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const formatNumber = (value) => {
+        const num = value.replace(/[^\d]/g, '');
+        if (!num) return '';
+        return parseInt(num).toLocaleString('es-CL');
+    };
+
+    const cleanNumber = (value) => {
+        return value.replace(/[^\d]/g, '');
+    };
+
+    const setupInput = (input) => {
+        if (!input) return;
+
+        input.addEventListener('input', function() {
+            const cursorPos = this.selectionStart;
+            const oldLength = this.value.length;
+            this.value = formatNumber(this.value);
+            const newLength = this.value.length;
+            const newPos = cursorPos + (newLength - oldLength);
+            this.setSelectionRange(newPos, newPos);
+        });
+
+        input.addEventListener('blur', function() {
+            this.value = formatNumber(this.value);
+        });
+
+        if (input.value) {
+            input.value = formatNumber(input.value);
+        }
+    };
+
+    setupInput(document.getElementById('id_estimated_cost'));
+    setupInput(document.getElementById('id_actual_cost'));
+
+    const form = document.querySelector('form');
+    if (form) {
+        form.addEventListener('submit', function() {
+            const estimatedInput = document.getElementById('id_estimated_cost');
+            const actualInput = document.getElementById('id_actual_cost');
+            if (estimatedInput) estimatedInput.value = cleanNumber(estimatedInput.value);
+            if (actualInput) actualInput.value = cleanNumber(actualInput.value);
+        });
+    }
+});
+</script>
+{% endblock %}

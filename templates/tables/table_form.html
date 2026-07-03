@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}{{ object|default:"Crear Mesa" }} - Ethereal Union{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    <div class="max-w-xl mx-auto">
+        <div class="bg-surface-container-lowest rounded-xl whisper-shadow p-8">
+            <div class="flex items-center gap-4 mb-8">
+                <a href="{% url 'tables:home' %}" class="p-2 rounded hover:bg-surface-container transition-colors cursor-pointer">
+                    <span class="material-symbols-outlined text-on-surface-variant">arrow_back</span>
+                </a>
+                <h1 class="font-headline-md text-headline-md text-on-surface">
+                    {{ object|default:"Crear Mesa" }}
+                </h1>
+            </div>
+
+            <form method="post" class="space-y-6">
+                {% csrf_token %}
+                
+                <div class="relative group">
+                    <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                           id="id_name" name="name" placeholder=" " type="text" value="{{ object.name|default:'' }}"/>
+                    <label class="absolute text-on-surface-variant duration-300 transform -translate-y-6 scale-75 top-3 left-4 -z-10 origin-[0] peer-focus:text-secondary peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 font-body-md text-body-md bg-transparent px-1" 
+                           for="id_name">Nombre de la mesa</label>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2">Capacidad</label>
+                        <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                               id="id_capacity" name="capacity" type="number" min="1" value="{{ object.capacity|default:'8' }}"/>
+                    </div>
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2">Forma</label>
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="shape" value="CIRCULAR" {% if object.shape == 'CIRCULAR' %}checked{% endif %} class="form-radio text-secondary focus:ring-secondary"/>
+                                <span class="material-symbols-outlined">circle</span>
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer">
+                                <input type="radio" name="shape" value="RECTANGULAR" {% if object.shape == 'RECTANGULAR' %}checked{% endif %} class="form-radio text-secondary focus:ring-secondary"/>
+                                <span class="material-symbols-outlined">rectangle</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" id="id_is_head_table" name="is_head_table" {% if object.is_head_table %}checked{% endif %} class="w-5 h-5 rounded border-outline-variant text-secondary focus:ring-secondary cursor-pointer"/>
+                    <label for="id_is_head_table" class="font-body-md text-body-md text-on-surface cursor-pointer">Mesa principal (novios)</label>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2">Posición X (%)</label>
+                        <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                               id="id_position_x" name="position_x" type="number" min="0" max="100" step="0.1" value="{{ object.position_x|default:'50' }}"/>
+                    </div>
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2">Posición Y (%)</label>
+                        <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                               id="id_position_y" name="position_y" type="number" min="0" max="100" step="0.1" value="{{ object.position_y|default:'50' }}"/>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 pt-4">
+                    <button type="submit" class="flex-1 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-8 py-4 rounded font-title-sm text-title-sm transition-colors duration-300 flex justify-center items-center gap-2 cursor-pointer">
+                        <span class="material-symbols-outlined">save</span>
+                        Guardar
+                    </button>
+                    {% if object %}
+                    <a href="{% url 'tables:delete' object.pk %}" class="px-8 py-4 rounded font-title-sm text-title-sm transition-colors duration-300 flex justify-center items-center gap-2 bg-error-container text-on-error-container hover:bg-error hover:text-on-error cursor-pointer">
+                        <span class="material-symbols-outlined">delete</span>
+                        Eliminar
+                    </a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

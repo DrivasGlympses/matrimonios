@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Donación pendiente - {{ event.display_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-2xl mx-auto px-6 py-16 text-center">
+    <div class="bg-surface-container-lowest rounded-2xl shadow-xl p-8 md:p-16 border border-white/60">
+        <div class="w-24 h-24 mx-auto mb-8 rounded-full bg-secondary-container flex items-center justify-center">
+            <span class="material-symbols-outlined text-on-secondary-container text-6xl" style="font-variation-settings: 'FILL' 0;">hourglass_empty</span>
+        </div>
+        
+        <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-6">
+            Tu donación está pendiente
+        </h1>
+        
+        <p class="font-body-lg text-body-lg text-on-surface-variant mb-8">
+            Tu donación ha sido recibida y está siendo procesada. Te notificaremos cuando se confirme.
+        </p>
+        
+        <div class="bg-surface-container rounded-xl p-6 mb-8">
+            <p class="font-body-md text-body-md text-on-surface">
+                Algunas formas de pago pueden tardar unos minutos en confirmarse. Agradecemos tu paciencia.
+            </p>
+        </div>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="{% url 'gallery:home' %}" class="bg-secondary text-on-secondary px-8 py-4 rounded-lg font-title-sm text-title-sm hover:bg-on-secondary-container transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-lg hover:shadow-xl">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">photo_library</span>
+                Ver galería de fotos
+            </a>
+            <a href="{% url 'event:public' %}" class="bg-surface-container text-on-surface-variant px-8 py-4 rounded-lg font-title-sm text-title-sm hover:bg-surface-container-high transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer border border-outline-variant">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">home</span>
+                Volver al inicio
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

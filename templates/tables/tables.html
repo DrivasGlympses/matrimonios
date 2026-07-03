@@ -1,0 +1,1197 @@
+{% extends 'base.html' %}
+{% load l10n %}
+
+{% block title %}Plan de Mesas - Ethereal Union{% endblock %}
+
+{% block extra_css %}
+<style>
+    .floor-plan {
+        position: relative;
+        width: 100%;
+        height: 700px;
+        background: 
+            radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+            radial-gradient(circle at 80% 20%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+            linear-gradient(135deg, #fafbfc 0%, #f5f7fa 100%);
+        border: 2px dashed #e0e4ea;
+        border-radius: 1rem;
+        overflow: auto;
+    }
+    .floor-plan-inner {
+        position: relative;
+        width: 1400px;
+        height: 1000px;
+    }
+    .floor-plan-inner::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image: 
+            radial-gradient(circle, #d0d5dd 1px, transparent 1px);
+        background-size: 24px 24px;
+        opacity: 0.4;
+        pointer-events: none;
+    }
+    .floor-plan-item {
+        position: absolute;
+        cursor: grab;
+        transition: box-shadow 200ms ease, transform 100ms ease;
+        z-index: 1;
+    }
+    .floor-plan-item:active { cursor: grabbing; }
+    .floor-plan-item.dragging {
+        opacity: 0.7;
+        z-index: 100;
+        transform: scale(1.05);
+        box-shadow: 0 20px 60px -15px rgba(115, 92, 0, 0.3);
+    }
+    .floor-plan-item.drop-target {
+        box-shadow: 0 0 0 3px #D4AF37, 0 10px 40px -10px rgba(212, 175, 55, 0.4);
+    }
+    .table-shape {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 1rem;
+        background: white;
+        border: 2px solid rgba(212, 175, 55, 0.3);
+        width: 160px;
+        height: 160px;
+        transition: all 200ms ease;
+    }
+    .table-shape:hover {
+        border-color: #D4AF37;
+        box-shadow: 0 8px 32px -8px rgba(115, 92, 0, 0.15);
+    }
+    .table-shape.head-table {
+        border-color: #DB2777;
+        background: linear-gradient(135deg, #fff 0%, #fdf2f8 100%);
+    }
+    .table-shape-circular { border-radius: 9999px; }
+    .table-shape-rectangular { border-radius: 1rem; width: 200px; height: 120px; }
+    .table-shape.over-capacity { border-color: #ef4444; }
+    .table-shape.near-capacity { border-color: #eab308; }
+    .table-name {
+        font-family: 'Playfair Display', serif;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #161c22;
+        text-align: center;
+        margin-bottom: 0.25rem;
+        pointer-events: none;
+    }
+    .table-count {
+        font-size: 0.7rem;
+        color: #4d4447;
+        margin-bottom: 0.5rem;
+        pointer-events: none;
+    }
+    .seating-area {
+        position: absolute;
+        inset: -14px;
+        pointer-events: none;
+    }
+    .seat {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.55rem;
+        cursor: pointer;
+        transition: all 200ms ease;
+        pointer-events: all;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        border: 2px solid white;
+    }
+    .seat:hover {
+        transform: scale(1.2);
+        z-index: 20;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    }
+    .seat.NOVIA { background: #fce7f3; color: #9d174d; }
+    .seat.NOVIO { background: #dbeafe; color: #1e40af; }
+    .seat.AMIGOS_NOVIA { background: #f3e8ff; color: #6b21a8; }
+    .seat.AMIGOS_NOVIO { background: #e0f2fe; color: #0369a1; }
+    .seat.TRABAJO { background: #fef3c7; color: #92400e; }
+    .seat.OTROS { background: #e9eef6; color: #4d4447; }
+    .seat-tooltip {
+        position: absolute;
+        bottom: calc(100% + 6px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #161c22;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.65rem;
+        font-weight: 500;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 150ms;
+        z-index: 100;
+    }
+    .seat-tooltip::after {
+        content: '';
+        position: absolute;
+        top: 100%;
+        left: 50%;
+        transform: translateX(-50%);
+        border: 4px solid transparent;
+        border-top-color: #161c22;
+    }
+    .seat:hover .seat-tooltip { opacity: 1; }
+    .empty-seat {
+        position: absolute;
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: 2px dashed #d0d5dd;
+        background: rgba(255,255,255,0.5);
+        pointer-events: all;
+        transition: all 200ms ease;
+    }
+    .empty-seat:hover {
+        border-color: #D4AF37;
+        background: rgba(212, 175, 55, 0.1);
+        transform: scale(1.1);
+    }
+    .empty-seat.drop-active {
+        border-color: #D4AF37;
+        background: rgba(212, 175, 55, 0.2);
+        border-style: solid;
+    }
+    .guest-drag-item {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 0.625rem 0.75rem;
+        border-radius: 0.5rem;
+        background: white;
+        border: 1px solid #e9eef6;
+        cursor: grab;
+        transition: all 150ms ease;
+        user-select: none;
+    }
+    .guest-drag-item:hover {
+        border-color: #D4AF37;
+        box-shadow: 0 4px 12px -4px rgba(115, 92, 0, 0.1);
+    }
+    .guest-drag-item:active { cursor: grabbing; }
+    .guest-drag-item.dragging { opacity: 0.4; }
+    .guest-avatar {
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 0.7rem;
+        flex-shrink: 0;
+    }
+    .guest-avatar.NOVIA { background: #fce7f3; color: #9d174d; }
+    .guest-avatar.NOVIO { background: #dbeafe; color: #1e40af; }
+    .guest-avatar.AMIGOS_NOVIA { background: #f3e8ff; color: #6b21a8; }
+    .guest-avatar.AMIGOS_NOVIO { background: #e0f2fe; color: #0369a1; }
+    .guest-avatar.TRABAJO { background: #fef3c7; color: #92400e; }
+    .guest-avatar.OTROS { background: #e9eef6; color: #4d4447; }
+    .drop-zone-highlight {
+        position: absolute;
+        inset: 0;
+        border-radius: inherit;
+        background: rgba(212, 175, 55, 0.1);
+        border: 2px dashed #D4AF37;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 200ms;
+    }
+    .floor-plan-item.drop-target .drop-zone-highlight { opacity: 1; }
+    .view-toggle-btn {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 150ms;
+        cursor: pointer;
+    }
+    .view-toggle-btn.active { background: #D4AF37; color: white; }
+    .view-toggle-btn:not(.active) { background: #e9eef6; color: #6b5a5f; }
+    .view-toggle-btn:not(.active):hover { background: #dde3eb; }
+    .guest-panel-tab {
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem 0.5rem 0 0;
+        font-size: 0.875rem;
+        cursor: pointer;
+        transition: all 150ms;
+    }
+    .guest-panel-tab.active { background: #ffffff; color: #6b5a5f; font-weight: 600; }
+    .guest-panel-tab:not(.active) { background: transparent; color: #4d4447; }
+    .guest-panel-tab:not(.active):hover { background: rgba(255,255,255,0.5); }
+    .tooltip {
+        position: absolute;
+        bottom: calc(100% + 8px);
+        left: 50%;
+        transform: translateX(-50%);
+        background: #161c22;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 4px;
+        font-size: 0.7rem;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 150ms;
+        z-index: 200;
+    }
+    .table-guest-chip:hover .tooltip { opacity: 1; }
+    .floor-label {
+        position: absolute;
+        bottom: 12px;
+        right: 16px;
+        font-size: 0.7rem;
+        color: #a0a5ad;
+        pointer-events: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    <div class="mb-6 flex justify-between items-center flex-wrap gap-4">
+        <div>
+            <h1 class="font-display-lg-mobile md:font-display-lg text-on-surface mb-1">Plan de Mesas</h1>
+            <p class="font-body-md text-on-surface-variant">{{ tables|length }} mesas | {{ unassigned_guests|length }} invitados sin asignar</p>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="flex bg-surface-container rounded-lg p-1">
+                <button class="view-toggle-btn active" id="btn-plan-view" onclick="switchView('plan')">
+                    <span class="material-symbols-outlined text-[18px] align-middle">map</span>
+                    Plano
+                </button>
+                <button class="view-toggle-btn" id="btn-list-view" onclick="switchView('list')">
+                    <span class="material-symbols-outlined text-[18px] align-middle">list</span>
+                    Lista
+                </button>
+            </div>
+            <a href="{% url 'tables:create' %}" class="flex items-center gap-2 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-5 py-2.5 rounded-lg transition-colors font-title-sm text-title-sm shadow-md cursor-pointer">
+                <span class="material-symbols-outlined text-[18px]">add</span>
+                Agregar Mesa
+            </a>
+        </div>
+    </div>
+
+    <div class="flex flex-col lg:flex-row gap-6">
+        <section class="flex-1 min-w-0">
+            <div id="plan-view" class="block">
+                {% if tables %}
+                <div class="floor-plan" id="floor-plan">
+                    <div class="floor-plan-inner" id="floor-plan-inner">
+                        {% for table in tables %}
+                        <div class="floor-plan-item" 
+                             data-table-id="{{ table.id }}"
+                             data-pos-x="{{ table.position_x|unlocalize }}"
+                             data-pos-y="{{ table.position_y|unlocalize }}"
+                             style="left: {{ table.position_x|unlocalize }}%; top: {{ table.position_y|unlocalize }}%;">
+                            <div class="table-shape {% if table.shape == 'CIRCULAR' %}table-shape-circular{% else %}table-shape-rectangular{% endif %} {% if table.is_head_table %}head-table{% endif %} {% if table.assigned_guests_count >= table.capacity %}over-capacity{% elif table.assigned_guests_count >= table.capacity|add:'-2' %}near-capacity{% endif %}"
+                                 data-table-id="{{ table.id }}"
+                                 data-capacity="{{ table.capacity }}"
+                                 data-shape="{{ table.shape }}"
+                                 onclick="handleTableClick({{ table.id }}, '{{ table.name|escapejs }}', {{ table.capacity }}, {{ table.assigned_guests_count }})">
+                                <div class="drop-zone-highlight"></div>
+                                <span class="table-name">{{ table.name }}</span>
+                                {% if table.is_head_table %}
+                                <span class="text-[0.6rem] text-primary font-semibold mb-1">Mesa Principal</span>
+                                {% endif %}
+                                <span class="table-count">{{ table.assigned_guests_count }}/{{ table.capacity }}</span>
+                            </div>
+                            <div class="seating-area" data-table-id="{{ table.id }}" data-capacity="{{ table.capacity }}" data-shape="{{ table.shape }}" data-guests-count="{{ table.guests.count }}">
+                                {% for guest in table.get_main_guests %}
+                                <div class="seat {{ guest.group }}" 
+                                     data-guest-id="{{ guest.id }}" 
+                                     data-seat-index="{{ forloop.counter0 }}"
+                                     data-guest-name="{{ guest.full_name|escapejs }}"
+                                     data-group="{{ guest.group }}"
+                                     draggable="true">
+                                    {{ guest.full_name|slice:":1"|upper }}
+                                    <span class="seat-tooltip">{{ guest.full_name }}</span>
+                                </div>
+                                {% with po=guest.get_plus_one %}
+                                {% if po %}
+                                <div class="seat {{ po.group }}"
+                                     data-guest-id="{{ po.id }}"
+                                     data-seat-index="{{ forloop.counter0 }}"
+                                     data-guest-name="{{ po.full_name|escapejs }}"
+                                     data-group="{{ po.group }}"
+                                     data-plus-one="true"
+                                     draggable="true">
+                                    {{ po.full_name|slice:":1"|upper }}
+                                    <span class="seat-tooltip">{{ po.full_name }} — Acompañante de {{ guest.full_name }}</span>
+                                </div>
+                                {% endif %}
+                                {% endwith %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                        <span class="floor-label">Arrastra las mesas para reorganizar</span>
+                    </div>
+                </div>
+                {% else %}
+                <div class="bg-surface-container-lowest rounded-xl p-16 text-center border-2 border-dashed border-outline-variant/30">
+                    <span class="material-symbols-outlined text-[80px] text-secondary/20 mb-4">table_restaurant</span>
+                    <h3 class="font-headline-md text-headline-md text-on-surface mb-2">No hay mesas creadas</h3>
+                    <p class="font-body-md text-body-md text-on-surface-variant mb-6">Comienza creando tu primera mesa para organizar a tus invitados.</p>
+                    <a href="{% url 'tables:create' %}" class="inline-flex items-center gap-2 bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-6 py-3 rounded-lg font-title-sm text-title-sm transition-colors cursor-pointer">
+                        <span class="material-symbols-outlined">add</span>
+                        Crear primera mesa
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+            <div id="list-view" class="hidden">
+                <div class="bg-surface-container-lowest rounded-xl whisper-shadow overflow-hidden">
+                    <table class="w-full">
+                        <thead class="bg-surface-container text-on-surface-variant text-left">
+                            <tr>
+                                <th class="px-6 py-4 font-title-sm text-title-sm">Mesa</th>
+                                <th class="px-6 py-4 font-title-sm text-title-sm">Forma</th>
+                                <th class="px-6 py-4 font-title-sm text-title-sm">Capacidad</th>
+                                <th class="px-6 py-4 font-title-sm text-title-sm">Ocupacion</th>
+                                <th class="px-6 py-4 font-title-sm text-title-sm">Invitados</th>
+                                <th class="px-6 py-4 font-title-sm text-title-sm text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-outline-variant/20">
+                            {% for table in tables %}
+                            <tr class="hover:bg-surface-container/50 transition-colors">
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 rounded-lg {% if table.is_head_table %}bg-primary-container{% else %}bg-[#D4AF37]/10{% endif %} flex items-center justify-center">
+                                            <span class="material-symbols-outlined {% if table.is_head_table %}text-primary{% else %}text-[#D4AF37]{% endif %}">table_restaurant</span>
+                                        </div>
+                                        <div>
+                                            <p class="font-body-md text-body-md text-on-surface font-medium">{{ table.name }}</p>
+                                            {% if table.is_head_table %}
+                                            <p class="text-xs text-primary">Mesa Principal</p>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <span class="px-3 py-1 rounded-full text-xs font-medium bg-surface-container text-on-surface-variant">{{ table.get_shape_display }}</span>
+                                </td>
+                                <td class="px-6 py-4 font-body-md text-sm text-on-surface">{{ table.capacity }}</td>
+                                <td class="px-6 py-4">
+                                    <div class="flex items-center gap-2">
+                                        <div class="w-24 h-2 bg-surface-container rounded-full overflow-hidden">
+                                            <div class="h-full rounded-full {% if table.assigned_guests_count < table.capacity|add:'-2' %}bg-green-500{% elif table.assigned_guests_count < table.capacity %}bg-yellow-500{% else %}bg-red-500{% endif %}" 
+                                                 style="width: {% widthratio table.assigned_guests_count table.capacity 100 %}%"></div>
+                                        </div>
+                                        <span class="text-xs text-on-surface-variant">{{ table.assigned_guests_count }}/{{ table.capacity }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4">
+                                    <div class="flex flex-wrap gap-1">
+                                        {% for guest in table.get_main_guests|slice:":3" %}
+                                        <span class="px-2 py-0.5 rounded text-xs bg-primary-container text-on-primary-container">{{ guest.full_name|slice:":15" }}</span>
+                                        {% with po=guest.get_plus_one %}
+                                        {% if po %}
+                                        <span class="px-2 py-0.5 rounded text-xs bg-secondary-container text-on-secondary-container">{{ po.full_name|slice:":15" }} (+1)</span>
+                                        {% endif %}
+                                        {% endwith %}
+                                        {% endfor %}
+                                        {% with main_count=table.get_main_guests|length %}
+                                        {% if main_count > 3 %}
+                                        <span class="text-xs text-on-surface-variant">+{{ main_count|add:'-3' }}</span>
+                                        {% endif %}
+                                        {% endwith %}
+                                    </div>
+                                </td>
+                                <td class="px-6 py-4 text-right">
+                                    <div class="flex justify-end gap-2">
+                                        <button onclick="openTableModal({{ table.id }}, '{{ table.name|escapejs }}', {{ table.capacity }}, {{ table.assigned_guests_count }})" class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface-variant hover:text-secondary cursor-pointer" title="Ver invitados">
+                                            <span class="material-symbols-outlined text-[20px]">people</span>
+                                        </button>
+                                        <a href="{% url 'tables:update' table.pk %}" class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface-variant hover:text-secondary cursor-pointer" title="Editar">
+                                            <span class="material-symbols-outlined text-[20px]">edit</span>
+                                        </a>
+                                        <a href="{% url 'tables:delete' table.pk %}" class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface-variant hover:text-error cursor-pointer" title="Eliminar">
+                                            <span class="material-symbols-outlined text-[20px]">delete</span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="6" class="px-6 py-16 text-center">
+                                    <span class="material-symbols-outlined text-[64px] text-secondary/30 mb-4">table_restaurant</span>
+                                    <p class="font-body-md text-body-md text-on-surface-variant">No hay mesas creadas</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <aside class="w-full lg:w-80 bg-surface-container-lowest rounded-xl whisper-shadow border border-outline-variant/20 flex flex-col lg:sticky lg:top-4 lg:max-h-[calc(100vh-8rem)]">
+            <div class="p-4 border-b border-outline-variant/20">
+                <div class="flex justify-between items-center mb-3">
+                    <h3 class="font-title-sm text-title-sm text-on-surface">Invitados sin asignar</h3>
+                    <span class="text-xs font-medium px-2 py-1 rounded-full bg-secondary-container text-on-secondary-container" id="unassigned-count">{{ unassigned_guests|length }}</span>
+                </div>
+                <div class="relative">
+                    <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50 text-[18px]">search</span>
+                    <input class="w-full pl-9 pr-4 py-2 bg-surface-container rounded-lg border border-transparent focus:border-[#D4AF37] focus:ring-0 transition-colors font-body-md text-sm" 
+                           id="guest-search-panel" placeholder="Buscar invitado..." type="text"/>
+                </div>
+            </div>
+            
+            <div class="flex border-b border-outline-variant/20">
+                <button class="guest-panel-tab active flex-1" data-group="all" onclick="filterGuestPanel('all')">Todos</button>
+                <button class="guest-panel-tab flex-1" data-group="NOVIA" onclick="filterGuestPanel('NOVIA')">Novia</button>
+                <button class="guest-panel-tab flex-1" data-group="NOVIO" onclick="filterGuestPanel('NOVIO')">Novio</button>
+                <button class="guest-panel-tab flex-1" data-group="OTROS" onclick="filterGuestPanel('OTROS')">Otros</button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-3 space-y-2" id="unassigned-guests">
+                {% for guest in unassigned_guests %}
+                <div class="guest-drag-item" 
+                     data-guest-id="{{ guest.id }}"
+                     data-guest-name="{{ guest.full_name }}"
+                     data-guest-group="{{ guest.group }}"
+                     draggable="true">
+                    <div class="guest-avatar {{ guest.group }}">
+                        {{ guest.full_name|slice:":2"|upper }}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p class="font-body-md text-sm text-on-surface font-medium truncate">{{ guest.full_name }}</p>
+                        <p class="font-label-caps text-xs text-on-surface-variant">
+                            {{ guest.get_group_display }}
+                            {% with po=guest.get_plus_one %}
+                            {% if po %}
+                            <span class="inline-flex items-center gap-0.5 ml-1 px-1.5 py-0.5 rounded-full bg-secondary-container text-on-secondary-container text-[10px]">
+                                <span class="material-symbols-outlined text-[10px]">group</span>
+                                +1
+                            </span>
+                            {% endif %}
+                            {% endwith %}
+                        </p>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="text-center py-12">
+                    <span class="material-symbols-outlined text-[48px] text-secondary/30 mb-3">check_circle</span>
+                    <p class="font-body-md text-sm text-on-surface-variant">Todos los invitados estan asignados</p>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="p-4 border-t border-outline-variant/20 bg-surface-bright rounded-b-xl">
+                <p class="font-body-md text-xs text-on-surface-variant text-center">
+                    {{ confirmed_guests }} confirmados | {{ pending_guests }} pendientes
+                </p>
+            </div>
+        </aside>
+    </div>
+</div>
+
+<div id="table-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface-container-lowest rounded-xl max-w-lg w-full max-h-[80vh] overflow-hidden flex flex-col">
+        <div class="p-6 border-b border-outline-variant/20 flex justify-between items-center">
+            <div>
+                <h3 class="font-headline-md text-headline-md text-on-surface" id="modal-table-name">Mesa 1</h3>
+                <p class="text-sm text-on-surface-variant" id="modal-table-capacity">0/0 asientos</p>
+            </div>
+            <button onclick="closeTableModal()" class="p-2 rounded hover:bg-surface-container transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-on-surface-variant">close</span>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-1">
+            <div id="modal-guests-list" class="space-y-3"></div>
+            {% if tables %}
+            <div class="mt-6 pt-6 border-t border-outline-variant/20">
+                <label class="block font-title-sm text-title-sm text-on-surface mb-3">Asignar invitado</label>
+                <div class="flex gap-3">
+                    <select id="modal-guest-select" class="flex-1 px-3 py-2 border border-outline-variant rounded-lg bg-surface-container-low text-on-surface text-sm cursor-pointer">
+                        <option value="">Seleccionar invitado...</option>
+                        {% for guest in all_guests %}
+                        <option value="{{ guest.id }}">{{ guest.full_name }} ({{ guest.get_group_display }})</option>
+                        {% endfor %}
+                    </select>
+                    <button onclick="assignGuestFromModal()" class="px-4 py-2 bg-[#D4AF37] hover:bg-[#c29f2f] text-white rounded-lg font-title-sm text-sm transition-colors cursor-pointer">
+                        Asignar
+                    </button>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        <div class="p-4 border-t border-outline-variant/20 flex justify-between">
+            <a href="#" id="modal-edit-link" class="px-6 py-2.5 bg-surface-container hover:bg-surface-container-high rounded-lg font-title-sm text-title-sm transition-colors cursor-pointer">
+                Editar Mesa
+            </a>
+            <button onclick="closeTableModal()" class="px-6 py-2.5 bg-[#D4AF37] hover:bg-[#c29f2f] text-white rounded-lg font-title-sm text-title-sm transition-colors cursor-pointer">
+                Cerrar
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="guest-edit-modal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-surface-container-lowest rounded-xl max-w-lg w-full max-h-[90vh] overflow-hidden flex flex-col">
+        <div class="p-6 border-b border-outline-variant/20 flex justify-between items-center">
+            <div>
+                <h3 class="font-headline-md text-headline-md text-on-surface">Editar Invitado</h3>
+                <p class="text-sm text-on-surface-variant" id="guest-edit-name"></p>
+            </div>
+            <button onclick="closeGuestEditModal()" class="p-2 rounded hover:bg-surface-container transition-colors cursor-pointer">
+                <span class="material-symbols-outlined text-on-surface-variant">close</span>
+            </button>
+        </div>
+        <div class="p-6 overflow-y-auto flex-1">
+            <form id="guest-edit-form" class="space-y-4">
+                <input type="hidden" id="guest-edit-id" name="guest_id">
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-1">Nombre completo</label>
+                    <input type="text" id="guest-edit-full-name" name="full_name" class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface-container-low text-on-surface text-sm">
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-1">Email</label>
+                        <input type="email" id="guest-edit-email" name="email" class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface-container-low text-on-surface text-sm">
+                    </div>
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-1">Telefono</label>
+                        <input type="text" id="guest-edit-phone" name="phone" class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface-container-low text-on-surface text-sm">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-1">Grupo</label>
+                        <select id="guest-edit-group" name="group" class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface-container-low text-on-surface text-sm cursor-pointer">
+                            <option value="NOVIA">Familia de la Novia</option>
+                            <option value="NOVIO">Familia del Novio</option>
+                            <option value="AMIGOS_NOVIA">Amigos de la Novia</option>
+                            <option value="AMIGOS_NOVIO">Amigos del Novio</option>
+                            <option value="TRABAJO">Companeros de Trabajo</option>
+                            <option value="OTROS">Otros</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-1">Estado RSVP</label>
+                        <select id="guest-edit-rsvp" name="rsvp_status" class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface-container-low text-on-surface text-sm cursor-pointer">
+                            <option value="PENDING">Pendiente</option>
+                            <option value="CONFIRMED">Confirmado</option>
+                            <option value="DECLINED">Rechazado</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-1">Menu</label>
+                    <select id="guest-edit-meal" name="meal_choice" class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface-container-low text-on-surface text-sm cursor-pointer">
+                        <option value="STANDARD">Menu Estandar</option>
+                        <option value="VEGETARIAN">Vegetariano</option>
+                        <option value="VEGAN">Vegano</option>
+                        <option value="CELIAC">Sin Gluten</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" id="guest-edit-plus-one" name="plus_one" class="w-4 h-4 rounded border-outline-variant cursor-pointer">
+                    <label for="guest-edit-plus-one" class="font-title-sm text-title-sm text-on-surface cursor-pointer">Acompanante</label>
+                </div>
+                <div id="plus-one-name-container" class="hidden">
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-1">Nombre del acompanante</label>
+                    <input type="text" id="guest-edit-plus-one-name" name="plus_one_name" class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface-container-low text-on-surface text-sm">
+                </div>
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-1">Notas</label>
+                    <textarea id="guest-edit-notes" name="notes" rows="3" class="w-full px-3 py-2 border border-outline-variant rounded-lg bg-surface-container-low text-on-surface text-sm resize-none"></textarea>
+                </div>
+            </form>
+        </div>
+        <div class="p-4 border-t border-outline-variant/20 flex justify-between">
+            <button onclick="unassignGuestFromSeat()" class="px-4 py-2.5 bg-error-container hover:bg-error-container/80 text-on-error-container rounded-lg font-title-sm text-title-sm transition-colors cursor-pointer flex items-center gap-2">
+                <span class="material-symbols-outlined text-[18px]">person_remove</span>
+                Quitar de mesa
+            </button>
+            <div class="flex gap-3">
+                <button onclick="closeGuestEditModal()" class="px-6 py-2.5 bg-surface-container hover:bg-surface-container-high rounded-lg font-title-sm text-title-sm transition-colors cursor-pointer">
+                    Cancelar
+                </button>
+                <button onclick="saveGuestEdit()" class="px-6 py-2.5 bg-[#D4AF37] hover:bg-[#c29f2f] text-white rounded-lg font-title-sm text-title-sm transition-colors cursor-pointer">
+                    Guardar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    const tablesData = {{ tables_json|safe }};
+    const unassignedData = {{ unassigned_json|safe }};
+    let currentTableId = null;
+    let currentGuestEditId = null;
+    let draggedGuestId = null;
+    let draggedTableEl = null;
+    let tableDragOffset = { x: 0, y: 0 };
+    let wasDragging = false;
+    let dragStartPos = { x: 0, y: 0 };
+    let clickTimer = null;
+
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    function switchView(view) {
+        document.getElementById('plan-view').classList.toggle('hidden', view !== 'plan');
+        document.getElementById('list-view').classList.toggle('hidden', view !== 'list');
+        document.getElementById('btn-plan-view').classList.toggle('active', view === 'plan');
+        document.getElementById('btn-list-view').classList.toggle('active', view === 'list');
+    }
+
+    function handleTableClick(tableId, tableName, capacity, guestCount) {
+        if (wasDragging) {
+            wasDragging = false;
+            return;
+        }
+        openTableModal(tableId, tableName, capacity, guestCount);
+    }
+
+    function positionSeats() {
+        document.querySelectorAll('.seating-area').forEach(area => {
+            const capacity = parseInt(area.dataset.capacity);
+            const shape = area.dataset.shape;
+            const tableId = area.dataset.tableId;
+            
+            const existingSeats = area.querySelectorAll('.seat');
+            const guestsCount = existingSeats.length;
+            
+            existingSeats.forEach((seat, index) => {
+                positionSeat(seat, index, capacity, shape);
+            });
+            
+            for (let i = guestsCount; i < capacity; i++) {
+                const emptySeat = document.createElement('div');
+                emptySeat.className = 'empty-seat';
+                emptySeat.dataset.seatIndex = i;
+                emptySeat.dataset.tableId = tableId;
+                positionSeat(emptySeat, i, capacity, shape);
+                emptySeat.addEventListener('dragover', handleEmptySeatDragOver);
+                emptySeat.addEventListener('dragleave', handleEmptySeatDragLeave);
+                emptySeat.addEventListener('drop', handleEmptySeatDrop);
+                area.appendChild(emptySeat);
+            }
+        });
+    }
+    
+    function positionSeat(seat, index, capacity, shape) {
+        let x, y;
+        if (shape === 'CIRCULAR') {
+            const angle = (index / capacity) * 2 * Math.PI - Math.PI / 2;
+            const radius = 60;
+            x = 50 + radius * Math.cos(angle);
+            y = 50 + radius * Math.sin(angle);
+        } else {
+            const topSeats = Math.ceil(capacity / 4);
+            const rightSeats = Math.floor(capacity / 4);
+            const bottomSeats = Math.ceil(capacity / 4);
+            
+            if (index < topSeats) {
+                x = 20 + (60 / (topSeats - 1 || 1)) * index;
+                y = 0;
+            } else if (index < topSeats + rightSeats) {
+                const i = index - topSeats;
+                x = 100;
+                y = 20 + (60 / (rightSeats - 1 || 1)) * i;
+            } else if (index < topSeats + rightSeats + bottomSeats) {
+                const i = index - topSeats - rightSeats;
+                x = 80 - (60 / (bottomSeats - 1 || 1)) * i;
+                y = 100;
+            } else {
+                const i = index - topSeats - rightSeats - bottomSeats;
+                x = 0;
+                y = 80 - (60 / (Math.max(1, capacity - topSeats - rightSeats - bottomSeats) - 1 || 1)) * i;
+            }
+        }
+        
+        seat.style.left = `calc(${x}% - 13px)`;
+        seat.style.top = `calc(${y}% - 13px)`;
+    }
+
+    function handleSeatClick(e, seat) {
+        if (e.detail === 1) {
+            if (clickTimer) {
+                clearTimeout(clickTimer);
+                clickTimer = null;
+                return;
+            }
+            clickTimer = setTimeout(() => {
+                const guestName = seat.dataset.guestName;
+                const group = seat.dataset.group;
+                const groupNames = {
+                    'NOVIA': 'Familia de la Novia',
+                    'NOVIO': 'Familia del Novio',
+                    'AMIGOS_NOVIA': 'Amigos de la Novia',
+                    'AMIGOS_NOVIO': 'Amigos del Novio',
+                    'TRABAJO': 'Companeros de Trabajo',
+                    'OTROS': 'Otros'
+                };
+                showSeatInfo(seat.dataset.guestId, guestName, groupNames[group] || group);
+                clickTimer = null;
+            }, 250);
+        } else if (e.detail === 2) {
+            if (clickTimer) {
+                clearTimeout(clickTimer);
+                clickTimer = null;
+            }
+            openGuestEditModal(parseInt(seat.dataset.guestId));
+        }
+    }
+
+    function showSeatInfo(guestId, name, group) {
+        const existing = document.getElementById('seat-info-popup');
+        if (existing) existing.remove();
+        
+        const popup = document.createElement('div');
+        popup.id = 'seat-info-popup';
+        popup.className = 'fixed bottom-6 left-1/2 -translate-x-1/2 bg-white rounded-xl shadow-2xl px-6 py-4 z-50 flex items-center gap-4 border border-outline-variant/20';
+        popup.innerHTML = `
+            <div class="w-12 h-12 rounded-full bg-primary-container flex items-center justify-center text-primary font-bold text-lg">${name.charAt(0).toUpperCase()}</div>
+            <div>
+                <p class="font-headline-md text-lg text-on-surface">${name}</p>
+                <p class="font-label-caps text-xs text-on-surface-variant">${group}</p>
+            </div>
+            <button onclick="this.parentElement.remove()" class="p-2 rounded hover:bg-surface-container transition-colors cursor-pointer ml-4">
+                <span class="material-symbols-outlined text-on-surface-variant">close</span>
+            </button>
+        `;
+        document.body.appendChild(popup);
+        
+        setTimeout(() => {
+            if (popup.parentElement) popup.remove();
+        }, 4000);
+    }
+
+    function openGuestEditModal(guestId) {
+        currentGuestEditId = guestId;
+        
+        fetch(`/tables/api/guest/${guestId}/`)
+            .then(r => r.json())
+            .then(data => {
+                document.getElementById('guest-edit-id').value = data.id;
+                document.getElementById('guest-edit-name').textContent = data.full_name;
+                document.getElementById('guest-edit-full-name').value = data.full_name;
+                document.getElementById('guest-edit-email').value = data.email;
+                document.getElementById('guest-edit-phone').value = data.phone;
+                document.getElementById('guest-edit-group').value = data.group;
+                document.getElementById('guest-edit-rsvp').value = data.rsvp_status;
+                document.getElementById('guest-edit-meal').value = data.meal_choice;
+                document.getElementById('guest-edit-plus-one').checked = data.plus_one;
+                document.getElementById('guest-edit-plus-one-name').value = data.plus_one_name;
+                document.getElementById('guest-edit-notes').value = data.notes;
+                
+                togglePlusOneName();
+                document.getElementById('guest-edit-modal').classList.remove('hidden');
+            });
+    }
+
+    function closeGuestEditModal() {
+        document.getElementById('guest-edit-modal').classList.add('hidden');
+        currentGuestEditId = null;
+    }
+
+    function togglePlusOneName() {
+        const checkbox = document.getElementById('guest-edit-plus-one');
+        const container = document.getElementById('plus-one-name-container');
+        container.classList.toggle('hidden', !checkbox.checked);
+    }
+
+    function saveGuestEdit() {
+        if (!currentGuestEditId) return;
+        
+        const formData = new FormData();
+        formData.append('full_name', document.getElementById('guest-edit-full-name').value);
+        formData.append('email', document.getElementById('guest-edit-email').value);
+        formData.append('phone', document.getElementById('guest-edit-phone').value);
+        formData.append('group', document.getElementById('guest-edit-group').value);
+        formData.append('rsvp_status', document.getElementById('guest-edit-rsvp').value);
+        formData.append('meal_choice', document.getElementById('guest-edit-meal').value);
+        formData.append('plus_one', document.getElementById('guest-edit-plus-one').checked ? 'true' : 'false');
+        formData.append('plus_one_name', document.getElementById('guest-edit-plus-one-name').value);
+        formData.append('notes', document.getElementById('guest-edit-notes').value);
+        
+        fetch(`/tables/api/guest/${currentGuestEditId}/update/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            body: formData,
+            credentials: 'same-origin'
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                closeGuestEditModal();
+                location.reload();
+            }
+        })
+        .catch(err => console.error('Error saving guest:', err));
+    }
+
+    function unassignGuestFromSeat() {
+        if (!currentGuestEditId) return;
+        
+        fetch(`/tables/api/assign/${currentGuestEditId}/0/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(() => {
+            closeGuestEditModal();
+            location.reload();
+        })
+        .catch(() => location.reload());
+    }
+
+    function initFloorPlan() {
+        const plan = document.getElementById('floor-plan');
+        if (!plan) return;
+
+        positionSeats();
+
+        document.querySelectorAll('.floor-plan-item').forEach(item => {
+            item.addEventListener('mousedown', startTableDrag);
+        });
+
+        document.querySelectorAll('.table-shape').forEach(shape => {
+            shape.addEventListener('dragover', handleTableDragOver);
+            shape.addEventListener('dragleave', handleTableDragLeave);
+            shape.addEventListener('drop', handleGuestDropOnTable);
+        });
+
+        document.querySelectorAll('.seat[draggable="true"]').forEach(seat => {
+            seat.addEventListener('dragstart', handleSeatDragStart);
+            seat.addEventListener('dragend', handleSeatDragEnd);
+            seat.addEventListener('click', function(e) {
+                e.stopPropagation();
+                handleSeatClick(e, this);
+            });
+        });
+
+        document.querySelectorAll('.empty-seat').forEach(seat => {
+            seat.addEventListener('dragover', handleEmptySeatDragOver);
+            seat.addEventListener('dragleave', handleEmptySeatDragLeave);
+            seat.addEventListener('drop', handleEmptySeatDrop);
+        });
+
+        document.querySelectorAll('.guest-drag-item[draggable="true"]').forEach(item => {
+            item.addEventListener('dragstart', handleSidebarDragStart);
+            item.addEventListener('dragend', handleSidebarDragEnd);
+        });
+
+        document.getElementById('guest-edit-plus-one').addEventListener('change', togglePlusOneName);
+    }
+
+    function startTableDrag(e) {
+        if (e.target.closest('.seat') || e.target.closest('.empty-seat')) return;
+        e.preventDefault();
+        const item = e.currentTarget;
+        
+        draggedTableEl = item;
+        const itemRect = item.getBoundingClientRect();
+        tableDragOffset.x = e.clientX - itemRect.left;
+        tableDragOffset.y = e.clientY - itemRect.top;
+        dragStartPos.x = e.clientX;
+        dragStartPos.y = e.clientY;
+        wasDragging = false;
+        
+        item.classList.add('dragging');
+        item.style.zIndex = '100';
+        
+        document.addEventListener('mousemove', moveTable);
+        document.addEventListener('mouseup', endTableDrag);
+    }
+
+    function moveTable(e) {
+        if (!draggedTableEl) return;
+        
+        const dx = e.clientX - dragStartPos.x;
+        const dy = e.clientY - dragStartPos.y;
+        if (Math.abs(dx) > 3 || Math.abs(dy) > 3) {
+            wasDragging = true;
+        }
+        
+        const inner = document.getElementById('floor-plan-inner');
+        const innerRect = inner.getBoundingClientRect();
+        
+        let x = e.clientX - innerRect.left - tableDragOffset.x;
+        let y = e.clientY - innerRect.top - tableDragOffset.y;
+        
+        x = Math.max(0, Math.min(x, innerRect.width - draggedTableEl.offsetWidth));
+        y = Math.max(0, Math.min(y, innerRect.height - draggedTableEl.offsetHeight));
+        
+        draggedTableEl.style.left = x + 'px';
+        draggedTableEl.style.top = y + 'px';
+    }
+
+    function endTableDrag(e) {
+        if (!draggedTableEl) return;
+        document.removeEventListener('mousemove', moveTable);
+        document.removeEventListener('mouseup', endTableDrag);
+        
+        const inner = document.getElementById('floor-plan-inner');
+        const innerRect = inner.getBoundingClientRect();
+        const itemRect = draggedTableEl.getBoundingClientRect();
+        
+        const pctX = ((itemRect.left - innerRect.left) / innerRect.width) * 100;
+        const pctY = ((itemRect.top - innerRect.top) / innerRect.height) * 100;
+        
+        draggedTableEl.style.left = Math.max(0, pctX) + '%';
+        draggedTableEl.style.top = Math.max(0, pctY) + '%';
+        draggedTableEl.classList.remove('dragging');
+        draggedTableEl.style.zIndex = '';
+        
+        const tableId = draggedTableEl.dataset.tableId;
+        saveTablePosition(tableId, Math.max(0, pctX), Math.max(0, pctY));
+        
+        draggedTableEl = null;
+    }
+
+    function saveTablePosition(tableId, x, y) {
+        const formData = new FormData();
+        formData.append('x', x);
+        formData.append('y', y);
+        
+        fetch(`/tables/api/position/${tableId}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken') },
+            body: formData,
+            credentials: 'same-origin'
+        }).catch(err => console.error('Error saving position:', err));
+    }
+
+    function handleSidebarDragStart(e) {
+        draggedGuestId = parseInt(e.currentTarget.dataset.guestId);
+        e.currentTarget.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', draggedGuestId);
+    }
+
+    function handleSidebarDragEnd(e) {
+        e.currentTarget.classList.remove('dragging');
+        draggedGuestId = null;
+        document.querySelectorAll('.empty-seat').forEach(s => s.classList.remove('drop-active'));
+    }
+
+    function handleSeatDragStart(e) {
+        e.stopPropagation();
+        draggedGuestId = parseInt(e.currentTarget.dataset.guestId);
+        e.currentTarget.style.opacity = '0.4';
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/plain', draggedGuestId);
+    }
+
+    function handleSeatDragEnd(e) {
+        e.currentTarget.style.opacity = '';
+        draggedGuestId = null;
+        document.querySelectorAll('.empty-seat').forEach(s => s.classList.remove('drop-active'));
+    }
+
+    function handleEmptySeatDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        e.currentTarget.classList.add('drop-active');
+    }
+
+    function handleEmptySeatDragLeave(e) {
+        e.currentTarget.classList.remove('drop-active');
+    }
+
+    function handleEmptySeatDrop(e) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('drop-active');
+        
+        const guestId = parseInt(e.dataTransfer.getData('text/plain'));
+        const tableId = parseInt(e.currentTarget.closest('.seating-area').dataset.tableId);
+        
+        if (guestId && tableId) {
+            assignGuest(guestId, tableId);
+        }
+    }
+
+    function handleTableDragOver(e) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+        const tableItem = e.currentTarget.closest('.floor-plan-item');
+        if (tableItem) tableItem.classList.add('drop-target');
+    }
+
+    function handleTableDragLeave(e) {
+        const tableItem = e.currentTarget.closest('.floor-plan-item');
+        if (tableItem && !e.currentTarget.contains(e.relatedTarget)) {
+            tableItem.classList.remove('drop-target');
+        }
+    }
+
+    function handleGuestDropOnTable(e) {
+        e.preventDefault();
+        const tableItem = e.currentTarget.closest('.floor-plan-item');
+        if (tableItem) tableItem.classList.remove('drop-target');
+        
+        const guestId = parseInt(e.dataTransfer.getData('text/plain'));
+        const tableId = parseInt(e.currentTarget.dataset.tableId);
+        
+        if (guestId && tableId) {
+            assignGuest(guestId, tableId);
+        }
+    }
+
+    function assignGuest(guestId, tableId) {
+        fetch(`/tables/api/assign/${guestId}/${tableId}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(() => location.reload())
+        .catch(() => location.reload());
+    }
+
+    function openTableModal(tableId, tableName, capacity, guestCount) {
+        currentTableId = tableId;
+        document.getElementById('modal-table-name').textContent = tableName;
+        document.getElementById('modal-table-capacity').textContent = `${guestCount}/${capacity} asientos`;
+        document.getElementById('modal-edit-link').href = `/tables/update/${tableId}/`;
+        
+        fetch(`/tables/api/guests/${tableId}/`)
+            .then(r => r.json())
+            .then(data => {
+                const list = document.getElementById('modal-guests-list');
+                if (data.guests.length === 0) {
+                    list.innerHTML = '<p class="text-center text-on-surface-variant py-8">No hay invitados en esta mesa</p>';
+                } else {
+                    list.innerHTML = data.guests.map(g => {
+                        if (g.is_plus_one) {
+                            return `
+                                <div class="flex items-center justify-between p-3 pl-10 rounded-lg bg-secondary-container/30 border-l-2 border-secondary ml-4">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs">${g.initials}</div>
+                                        <div>
+                                            <p class="font-body-md text-sm text-on-surface font-medium">${g.name}</p>
+                                            <p class="text-xs text-on-surface-variant">Acompañante de ${g.plus_one_of}</p>
+                                        </div>
+                                    </div>
+                                    <button onclick="removeGuestFromTable(${g.id})" class="p-1.5 rounded hover:bg-error-container text-on-surface-variant hover:text-error transition-colors cursor-pointer">
+                                        <span class="material-symbols-outlined text-[18px]">close</span>
+                                    </button>
+                                </div>
+                            `;
+                        } else {
+                            return `
+                                <div class="flex items-center justify-between p-3 rounded-lg bg-surface-container/50">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-primary font-bold text-xs">${g.initials}</div>
+                                        <p class="font-body-md text-sm text-on-surface font-medium">${g.name}</p>
+                                    </div>
+                                    <button onclick="removeGuestFromTable(${g.id})" class="p-1.5 rounded hover:bg-error-container text-on-surface-variant hover:text-error transition-colors cursor-pointer">
+                                        <span class="material-symbols-outlined text-[18px]">close</span>
+                                    </button>
+                                </div>
+                            `;
+                        }
+                    }).join('');
+                }
+            });
+        
+        document.getElementById('table-modal').classList.remove('hidden');
+    }
+
+    function closeTableModal() {
+        document.getElementById('table-modal').classList.add('hidden');
+        currentTableId = null;
+    }
+
+    function assignGuestFromModal() {
+        const select = document.getElementById('modal-guest-select');
+        const guestId = select.value;
+        if (!guestId || !currentTableId) return;
+        
+        fetch(`/tables/api/assign/${guestId}/${currentTableId}/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(() => {
+            select.value = '';
+            location.reload();
+        })
+        .catch(() => location.reload());
+    }
+
+    function removeGuestFromTable(guestId) {
+        fetch(`/tables/api/assign/${guestId}/0/`, {
+            method: 'POST',
+            headers: { 'X-CSRFToken': getCookie('csrftoken'), 'Content-Type': 'application/json' }
+        })
+        .then(r => r.json())
+        .then(() => {
+            if (currentTableId) {
+                openTableModal(currentTableId, document.getElementById('modal-table-name').textContent, 0, 0);
+            }
+            location.reload();
+        })
+        .catch(() => location.reload());
+    }
+
+    function filterGuestPanel(group) {
+        document.querySelectorAll('.guest-panel-tab').forEach(t => t.classList.toggle('active', t.dataset.group === group));
+        document.querySelectorAll('.guest-drag-item').forEach(item => {
+            if (group === 'all') {
+                item.style.display = '';
+            } else if (group === 'OTROS') {
+                item.style.display = ['NOVIA', 'NOVIO', 'AMIGOS_NOVIA', 'AMIGOS_NOVIO', 'TRABAJO'].includes(item.dataset.guestGroup) ? 'none' : '';
+            } else {
+                item.style.display = item.dataset.guestGroup === group ? '' : 'none';
+            }
+        });
+    }
+
+    document.getElementById('guest-search-panel').addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase();
+        document.querySelectorAll('.guest-drag-item').forEach(item => {
+            const name = item.dataset.guestName.toLowerCase();
+            item.style.display = name.includes(term) ? '' : 'none';
+        });
+    });
+
+    document.getElementById('table-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeTableModal();
+    });
+
+    document.getElementById('guest-edit-modal').addEventListener('click', function(e) {
+        if (e.target === this) closeGuestEditModal();
+    });
+
+    document.addEventListener('DOMContentLoaded', initFloorPlan);
+</script>
+{% endblock %}

@@ -1,0 +1,110 @@
+{% extends 'guest_base.html' %}
+
+{% block title %}Galería - {{ event.display_name }}{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-8">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
+        <div>
+            <h2 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">Galería de Fotos</h2>
+            <p class="text-on-surface-variant font-body-md max-w-2xl">Revive los momentos más mágicos de esta celebración.</p>
+        </div>
+    </div>
+
+    <div class="flex overflow-x-auto pb-4 mb-8 gap-3 no-scrollbar">
+        <button class="px-5 py-2 rounded-full bg-primary-container text-on-primary-container font-medium text-sm whitespace-nowrap transition-colors category-filter cursor-pointer" data-category="ALL">
+            Todas
+        </button>
+        {% for cat_key, cat_label in categories %}
+        <button class="px-5 py-2 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high text-sm whitespace-nowrap transition-colors category-filter cursor-pointer" data-category="{{ cat_key }}">
+            {{ cat_label }}
+        </button>
+        {% endfor %}
+    </div>
+
+    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter auto-rows-[200px]" id="photo-grid">
+        {% for photo in photos %}
+        <div class="relative group rounded-lg overflow-hidden shadow-sm shadow-secondary/5 photo-item cursor-pointer" data-category="{{ photo.category }}">
+            <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="{{ photo.image.url }}" alt="{{ photo.caption }}"/>
+            <div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
+                <div>
+                    <p class="text-on-primary text-sm font-medium">{{ photo.uploaded_by.get_full_name|default:photo.uploaded_by.username }}</p>
+                    {% if photo.caption %}
+                    <p class="text-on-primary/80 text-xs">{{ photo.caption|truncatechars:30 }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-span-full text-center py-16">
+            <span class="material-symbols-outlined text-[80px] text-secondary/30 mb-4">photo_library</span>
+            <p class="font-body-md text-on-surface-variant mb-4">No hay fotos en la galería todavía</p>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if photos|length > 12 %}
+    <div class="flex justify-center mt-12 mb-8">
+        <button class="text-secondary font-medium hover:text-on-secondary-container transition-colors border-b border-secondary pb-1 cursor-pointer">
+            Cargar más recuerdos
+        </button>
+    </div>
+    {% endif %}
+</div>
+
+<div id="lightbox" class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center p-8">
+    <button id="close-lightbox" class="absolute top-4 right-4 p-2 rounded-full text-white hover:bg-white/20 transition-colors cursor-pointer">
+        <span class="material-symbols-outlined text-[32px]">close</span>
+    </button>
+    <img id="lightbox-image" src="" alt="" class="max-w-full max-h-full object-contain"/>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    document.querySelectorAll('.category-filter').forEach(btn => {
+        btn.addEventListener('click', function() {
+            const category = this.dataset.category;
+            
+            document.querySelectorAll('.category-filter').forEach(b => {
+                b.classList.remove('bg-primary-container', 'text-on-primary-container');
+                b.classList.add('bg-surface-container', 'text-on-surface-variant');
+            });
+            this.classList.remove('bg-surface-container', 'text-on-surface-variant');
+            this.classList.add('bg-primary-container', 'text-on-primary-container');
+            
+            document.querySelectorAll('.photo-item').forEach(item => {
+                if (category === 'ALL' || item.dataset.category === category) {
+                    item.style.display = '';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    });
+
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImage = document.getElementById('lightbox-image');
+    
+    document.querySelectorAll('.photo-item').forEach(item => {
+        item.addEventListener('click', function() {
+            const img = this.querySelector('img');
+            lightboxImage.src = img.src;
+            lightbox.classList.remove('hidden');
+            lightbox.classList.add('flex');
+        });
+    });
+    
+    document.getElementById('close-lightbox').addEventListener('click', function() {
+        lightbox.classList.add('hidden');
+        lightbox.classList.remove('flex');
+    });
+    
+    lightbox.addEventListener('click', function(e) {
+        if (e.target === lightbox) {
+            lightbox.classList.add('hidden');
+            lightbox.classList.remove('flex');
+        }
+    });
+</script>
+{% endblock %}

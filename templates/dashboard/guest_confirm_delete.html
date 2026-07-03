@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Eliminar Invitado - Ethereal Union{% endblock %}
+
+{% block content %}
+<div class="max-w-container-max mx-auto w-full">
+    <div class="max-w-md mx-auto">
+        <div class="bg-surface-container-lowest rounded-xl whisper-shadow p-8">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 rounded-full bg-error-container mx-auto flex items-center justify-center mb-4">
+                    <span class="material-symbols-outlined text-error text-[32px]">person_remove</span>
+                </div>
+                <h1 class="font-headline-md text-headline-md text-on-surface mb-2">¿Eliminar invitado?</h1>
+                <p class="font-body-md text-body-md text-on-surface-variant">
+                    ¿Estás seguro de que deseas eliminar a <strong>{{ object.full_name }}</strong>? Esta acción no se puede deshacer.
+                </p>
+            </div>
+
+            <form method="post" class="flex gap-4">
+                {% csrf_token %}
+                <button type="submit" class="flex-1 bg-error hover:bg-error/90 text-white px-6 py-3 rounded-lg font-title-sm text-title-sm transition-colors flex justify-center items-center gap-2 cursor-pointer">
+                    <span class="material-symbols-outlined">delete</span>
+                    Eliminar
+                </button>
+                <a href="{% url 'dashboard:guests' %}" class="flex-1 px-6 py-3 rounded-lg border border-outline-variant hover:bg-surface-container transition-colors font-title-sm text-title-sm flex justify-center items-center gap-2 cursor-pointer">
+                    Cancelar
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

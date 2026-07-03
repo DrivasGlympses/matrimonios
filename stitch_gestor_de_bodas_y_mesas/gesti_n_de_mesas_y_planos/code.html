@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Ethereal Union - Table Plans</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary-container": "#745c00",
+                      "tertiary-fixed": "#e2e2e2",
+                      "surface-container": "#e9eef6",
+                      "on-secondary-fixed-variant": "#574500",
+                      "secondary": "#735c00",
+                      "secondary-container": "#fed65b",
+                      "surface-bright": "#f7f9ff",
+                      "surface-container-high": "#e3e9f0",
+                      "error-container": "#ffdad6",
+                      "primary-container": "#f8e1e7",
+                      "tertiary-fixed-dim": "#c6c6c7",
+                      "on-error": "#ffffff",
+                      "on-tertiary-container": "#666768",
+                      "surface-container-highest": "#dde3eb",
+                      "surface-variant": "#dde3eb",
+                      "on-secondary-fixed": "#241a00",
+                      "outline": "#7f7477",
+                      "background": "#f7f9ff",
+                      "primary-fixed": "#f4dde3",
+                      "on-surface": "#161c22",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed": "#1a1c1c",
+                      "on-error-container": "#93000a",
+                      "on-primary-container": "#746368",
+                      "inverse-on-surface": "#ecf1f9",
+                      "tertiary-container": "#e7e7e7",
+                      "on-surface-variant": "#4d4447",
+                      "inverse-primary": "#d7c1c7",
+                      "on-primary-fixed-variant": "#524348",
+                      "secondary-fixed-dim": "#e9c349",
+                      "on-tertiary-fixed-variant": "#454747",
+                      "inverse-surface": "#2b3137",
+                      "error": "#ba1a1a",
+                      "on-primary-fixed": "#24181c",
+                      "on-primary": "#ffffff",
+                      "primary": "#6b5a5f",
+                      "surface-container-low": "#eff4fc",
+                      "surface": "#f7f9ff",
+                      "on-tertiary": "#ffffff",
+                      "secondary-fixed": "#ffe088",
+                      "on-secondary": "#ffffff",
+                      "tertiary": "#5d5f5f",
+                      "on-background": "#161c22",
+                      "surface-tint": "#6b5a5f",
+                      "outline-variant": "#d0c3c6",
+                      "surface-dim": "#d5dae2",
+                      "primary-fixed-dim": "#d7c1c7"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-mobile": "20px",
+                      "container-max": "1280px",
+                      "unit": "8px",
+                      "margin-desktop": "64px",
+                      "gutter": "24px"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Playfair Display"
+                      ],
+                      "headline-md-mobile": [
+                              "Playfair Display"
+                      ],
+                      "title-sm": [
+                              "Inter"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "display-lg-mobile": [
+                              "Playfair Display"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "display-lg": [
+                              "Playfair Display"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-md-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "title-sm": [
+                              "20px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "letterSpacing": "0.01em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "display-lg-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "1.0",
+                                      "letterSpacing": "0.1em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&amp;family=Playfair+Display:ital,wght@0,400..900;1,400..900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body { font-family: 'Inter', sans-serif; }
+        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg { font-family: 'Playfair Display', serif; }
+        .whisper-shadow { box-shadow: 0 10px 40px -10px rgba(115, 92, 0, 0.05); }
+        .glass-panel { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex">
+<!-- SideNavBar -->
+<nav class="hidden md:flex h-screen w-64 fixed left-0 top-0 flex-col gap-unit p-6 bg-surface-container-lowest shadow-xl shadow-secondary/4 z-50">
+<!-- Header -->
+<div class="mb-8 flex flex-col items-center text-center">
+<div class="w-20 h-20 rounded-full overflow-hidden mb-4 ring-2 ring-primary-container p-1">
+<img alt="Wedding Couple" class="w-full h-full object-cover rounded-full" data-alt="A close up, elegant portrait of a happy wedding couple in a romantic, soft-lit setting. Modern editorial style, high contrast but airy, with soft blush and champagne tones. Focus on their joyful expressions." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAcofCaw8XbN1ZbpT_1eoeYRS3FDTHl13PcCZqTJLoCwZVY-CWsMKVntm9oDACUn24OprLAT68yVfCL0vWe7P-XYPLX5mmpWEbhWrvlfSi-_P7ZhtYe4RSWmO57OR_D1iUgIJjaApEn7CPZPoXDi1V_jZ9D5nUbN3zU3AT6aCsfBz1-kB5LPHMYVxDvMGS_AAxNiynYpxadaSYd-wEXMAKSUwXZl1-k6eEMS3TXLxFok20laP1AHa9ncla_1hZk0lbt_-FvTisHlnw"/>
+</div>
+<h2 class="font-headline-md text-headline-md-mobile text-secondary tracking-tight">Sarah &amp; James</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">September 24, 2024</p>
+</div>
+<!-- Navigation Links -->
+<ul class="flex flex-col gap-2 flex-grow">
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-title-sm text-title-sm" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                    Dashboard
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-title-sm text-title-sm" href="#">
+<span class="material-symbols-outlined">group</span>
+                    Guest List
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-secondary font-medium bg-primary-container/30 active:scale-95 transition-transform duration-200 font-title-sm text-title-sm" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+                    Table Plans
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-title-sm text-title-sm" href="#">
+<span class="material-symbols-outlined">photo_library</span>
+                    Photo Gallery
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-3 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-title-sm text-title-sm" href="#">
+<span class="material-symbols-outlined">fact_check</span>
+                    Checklist
+                </a>
+</li>
+</ul>
+<!-- CTA -->
+<button class="bg-[#D4AF37] hover:bg-[#c29f2f] text-white px-6 py-3 rounded transition-colors w-full mb-6 font-title-sm text-title-sm shadow-md">
+            Invite Guests
+        </button>
+<!-- Footer Links -->
+<ul class="flex flex-col gap-2 pt-4 border-t border-outline-variant/30">
+<li>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-body-md text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">help</span>
+                    Help Center
+                </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-4 py-2 rounded-lg text-on-surface-variant/70 hover:bg-primary-container/20 transition-all font-body-md text-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">logout</span>
+                    Log Out
+                </a>
+</li>
+</ul>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 ml-0 md:ml-64 flex flex-col min-h-screen">
+<!-- TopAppBar (Mobile Only or Contextual) -->
+<header class="md:hidden w-full sticky top-0 z-40 bg-surface/80 backdrop-blur-md shadow-sm shadow-secondary/5 flex justify-between items-center px-margin-mobile py-4">
+<div class="font-headline-md text-headline-md-mobile text-secondary tracking-tight">Ethereal Union</div>
+<div class="flex gap-4">
+<button class="text-secondary hover:text-secondary/80 transition-colors"><span class="material-symbols-outlined">notifications</span></button>
+<button class="text-secondary hover:text-secondary/80 transition-colors"><span class="material-symbols-outlined">settings</span></button>
+</div>
+</header>
+<div class="flex-1 flex flex-col lg:flex-row p-margin-mobile md:p-gutter gap-gutter h-full">
+<!-- Canvas Area (Floor Plan) -->
+<section class="flex-1 bg-surface-container-lowest rounded-xl whisper-shadow border border-outline-variant/20 p-8 flex flex-col relative overflow-hidden h-[600px] lg:h-auto">
+<div class="flex justify-between items-center mb-6">
+<h1 class="font-headline-md text-headline-md text-primary">Grand Ballroom</h1>
+<div class="flex gap-2">
+<button class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface-variant" title="Zoom In"><span class="material-symbols-outlined">zoom_in</span></button>
+<button class="p-2 rounded hover:bg-surface-container transition-colors text-on-surface-variant" title="Zoom Out"><span class="material-symbols-outlined">zoom_out</span></button>
+<button class="bg-surface-container p-2 rounded hover:bg-surface-container-high transition-colors text-secondary border border-outline-variant/30 flex items-center gap-2 px-4 ml-4">
+<span class="material-symbols-outlined text-[20px]">add</span> Add Table
+                        </button>
+</div>
+</div>
+<!-- Interactive Floor Plan Placeholder -->
+<div class="flex-1 border-2 border-dashed border-primary-container/50 rounded-lg relative bg-surface/50 overflow-hidden cursor-crosshair">
+<!-- Table 1: Circular -->
+<div class="absolute top-[20%] left-[25%] w-32 h-32 rounded-full border-2 border-[#D4AF37] bg-white flex flex-col items-center justify-center shadow-lg hover:shadow-xl transition-shadow cursor-grab">
+<span class="font-headline-md text-lg text-secondary">Table 1</span>
+<span class="font-label-caps text-on-surface-variant mt-1 bg-primary-container px-2 py-0.5 rounded-full">8/8</span>
+<!-- Chairs -->
+<div class="absolute -top-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-secondary"></div>
+<div class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-4 h-4 rounded-full bg-secondary"></div>
+<div class="absolute top-1/2 -left-3 -translate-y-1/2 w-4 h-4 rounded-full bg-secondary"></div>
+<div class="absolute top-1/2 -right-3 -translate-y-1/2 w-4 h-4 rounded-full bg-secondary"></div>
+<div class="absolute -top-2 left-2 w-4 h-4 rounded-full bg-secondary"></div>
+<div class="absolute -top-2 right-2 w-4 h-4 rounded-full bg-secondary"></div>
+<div class="absolute -bottom-2 left-2 w-4 h-4 rounded-full bg-secondary"></div>
+<div class="absolute -bottom-2 right-2 w-4 h-4 rounded-full bg-secondary"></div>
+</div>
+<!-- Table 2: Rectangular -->
+<div class="absolute top-[50%] left-[60%] w-48 h-24 rounded border-2 border-outline-variant bg-white flex flex-col items-center justify-center shadow-md hover:shadow-lg transition-shadow cursor-grab">
+<span class="font-headline-md text-lg text-on-surface">Table 2</span>
+<span class="font-label-caps text-on-surface-variant mt-1 bg-surface-container px-2 py-0.5 rounded-full">4/10</span>
+<!-- Chairs Top -->
+<div class="absolute -top-3 left-[15%] w-4 h-4 rounded-full bg-surface-variant border border-outline"></div>
+<div class="absolute -top-3 left-[35%] w-4 h-4 rounded-full bg-secondary"></div>
+<div class="absolute -top-3 left-[55%] w-4 h-4 rounded-full bg-surface-variant border border-outline"></div>
+<div class="absolute -top-3 left-[75%] w-4 h-4 rounded-full bg-secondary"></div>
+<!-- Chairs Bottom -->
+<div class="absolute -bottom-3 left-[15%] w-4 h-4 rounded-full bg-secondary"></div>
+<div class="absolute -bottom-3 left-[35%] w-4 h-4 rounded-full bg-surface-variant border border-outline"></div>
+<div class="absolute -bottom-3 left-[55%] w-4 h-4 rounded-full bg-secondary"></div>
+<div class="absolute -bottom-3 left-[75%] w-4 h-4 rounded-full bg-surface-variant border border-outline"></div>
+<!-- Chairs Sides -->
+<div class="absolute top-1/2 -left-3 -translate-y-1/2 w-4 h-4 rounded-full bg-surface-variant border border-outline"></div>
+<div class="absolute top-1/2 -right-3 -translate-y-1/2 w-4 h-4 rounded-full bg-surface-variant border border-outline"></div>
+</div>
+<!-- Main Table (Head Table) -->
+<div class="absolute top-[10%] left-[50%] -translate-x-1/2 w-64 h-16 rounded border-2 border-primary bg-primary-fixed flex flex-col items-center justify-center shadow-md">
+<span class="font-headline-md text-lg text-primary">Head Table</span>
+<span class="font-label-caps text-primary mt-1 bg-white/50 px-2 py-0.5 rounded-full">2/2</span>
+<!-- Chairs Top Only -->
+<div class="absolute -top-3 left-[40%] w-4 h-4 rounded-full bg-primary"></div>
+<div class="absolute -top-3 left-[60%] w-4 h-4 rounded-full bg-primary"></div>
+</div>
+</div>
+</section>
+<!-- Sidebar: Unassigned Guests -->
+<aside class="w-full lg:w-80 bg-surface-container-lowest rounded-xl whisper-shadow border border-outline-variant/20 flex flex-col h-[500px] lg:h-auto">
+<div class="p-6 border-b border-outline-variant/20">
+<h3 class="font-title-sm text-title-sm text-on-surface mb-2">Unassigned Guests</h3>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">search</span>
+<input class="w-full pl-10 pr-4 py-2 border-b border-outline-variant/50 bg-transparent focus:border-[#D4AF37] focus:ring-0 transition-colors font-body-md text-sm" placeholder="Search guests..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-3">
+<!-- Guest Card 1 -->
+<div class="glass-panel p-3 rounded-lg flex items-center justify-between cursor-grab hover:bg-surface-bright transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary-container flex items-center justify-center text-primary font-bold text-sm">
+                                EP
+                            </div>
+<div>
+<p class="font-body-md text-sm text-on-surface font-medium">Eleanor Vance</p>
+<p class="font-label-caps text-xs text-on-surface-variant">Bride's Family</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">drag_indicator</span>
+</div>
+<!-- Guest Card 2 -->
+<div class="glass-panel p-3 rounded-lg flex items-center justify-between cursor-grab hover:bg-surface-bright transition-colors group">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant font-bold text-sm">
+                                TH
+                            </div>
+<div>
+<p class="font-body-md text-sm text-on-surface font-medium">Theodora Crain</p>
+<p class="font-label-caps text-xs text-on-surface-variant">Groom's Friends</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">drag_indicator</span>
+</div>
+<!-- Guest Card 3 -->
+<div class="glass-panel p-3 rounded-lg flex items-center justify-between cursor-grab hover:bg-surface-bright transition-colors group border-l-2 border-[#D4AF37]">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-surface-container-high flex items-center justify-center text-on-surface-variant font-bold text-sm">
+                                LS
+                            </div>
+<div>
+<p class="font-body-md text-sm text-on-surface font-medium">Luke Sanderson</p>
+<p class="font-label-caps text-xs text-[#D4AF37]">VIP</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary transition-colors">drag_indicator</span>
+</div>
+</div>
+<div class="p-4 border-t border-outline-variant/20 bg-surface-bright rounded-b-xl text-center">
+<p class="font-body-md text-sm text-on-surface-variant">42 guests remaining</p>
+</div>
+</aside>
+</div>
+</main>
+</body></html>
