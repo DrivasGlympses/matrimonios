@@ -1,0 +1,582 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>Ruta de los Novios - Gestion de Bodas Premium</title>
+    <meta name="description" content="Plataforma premium para la gestion integral de tu boda. Invitaciones digitales, RSVP, plan de mesas, galeria de fotos y mas."/>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Great+Vibes&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    <script>
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "brand": {
+                            "50": "#fdf2f8",
+                            "100": "#fce7f3",
+                            "200": "#fbcfe8",
+                            "300": "#f9a8d4",
+                            "400": "#f472b6",
+                            "500": "#ec4899",
+                            "600": "#db2777",
+                            "700": "#be185d",
+                            "800": "#9d174d",
+                            "900": "#831843",
+                        },
+                        "gold": {
+                            "50": "#fffbeb",
+                            "100": "#fef3c7",
+                            "200": "#fde68a",
+                            "300": "#fcd34d",
+                            "400": "#fbbf24",
+                            "500": "#f59e0b",
+                            "600": "#ca8a04",
+                            "700": "#a16207",
+                            "800": "#854d0e",
+                            "900": "#713f12",
+                        },
+                        "cream": "#fdf8f4",
+                        "ink": "#1a1118",
+                        "muted": "#6b5b65",
+                        "soft": "#f5eef2",
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.375rem",
+                        "lg": "0.75rem",
+                        "xl": "1rem",
+                        "2xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "margin-mobile": "20px",
+                        "container-max": "1280px",
+                        "unit": "8px",
+                        "margin-desktop": "64px",
+                        "gutter": "24px",
+                    },
+                    "fontFamily": {
+                        "script": ["Great Vibes", "cursive"],
+                        "serif": ["Playfair Display", "serif"],
+                        "sans": ["Inter", "sans-serif"],
+                    },
+                    "boxShadow": {
+                        "soft": "0 2px 8px -2px rgba(131, 24, 67, 0.08), 0 4px 16px -4px rgba(131, 24, 67, 0.06)",
+                        "soft-lg": "0 4px 16px -4px rgba(131, 24, 67, 0.1), 0 12px 40px -8px rgba(131, 24, 67, 0.08)",
+                        "soft-xl": "0 8px 32px -8px rgba(131, 24, 67, 0.12), 0 20px 60px -12px rgba(131, 24, 67, 0.08)",
+                        "glow": "0 0 40px -8px rgba(219, 39, 119, 0.3)",
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        html { scroll-behavior: smooth; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .reveal-delay-1 { transition-delay: 0.1s; }
+        .reveal-delay-2 { transition-delay: 0.2s; }
+        .reveal-delay-3 { transition-delay: 0.3s; }
+        .reveal-delay-4 { transition-delay: 0.4s; }
+
+        .hero-bg {
+            background:
+                linear-gradient(160deg, rgba(253,242,248,0.92) 0%, rgba(253,248,244,0.88) 40%, rgba(252,231,243,0.85) 100%),
+                url("https://images.unsplash.com/photo-1519741497674-611481863552?w=1920&q=80") center/cover no-repeat;
+        }
+
+        .ornament-line {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .ornament-line::before,
+        .ornament-line::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(219,39,119,0.3), transparent);
+        }
+
+        .feature-card {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .feature-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .design-card {
+            transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .design-card:hover {
+            transform: scale(1.03);
+        }
+
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: #db2777;
+            transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        .cta-gradient {
+            background: linear-gradient(135deg, #831843 0%, #be185d 40%, #db2777 70%, #ca8a04 100%);
+        }
+
+        .float-badge {
+            animation: float 6s ease-in-out infinite;
+        }
+        .float-badge-delay {
+            animation: float 6s ease-in-out 2s infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-12px); }
+        }
+
+        .divider-ornament {
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #db2777, transparent);
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body class="bg-cream text-ink font-sans antialiased min-h-screen flex flex-col selection:bg-brand-200 selection:text-brand-900">
+
+    <nav class="fixed top-4 left-4 right-4 z-50 max-w-container-max mx-auto">
+        <div class="bg-white/80 backdrop-blur-xl rounded-full shadow-soft border border-brand-100/50 px-6 md:px-8 py-3 flex justify-between items-center">
+            <a href="/" class="flex items-center gap-2 cursor-pointer" aria-label="Ruta de los Novios - Inicio">
+                <span class="font-script text-3xl text-brand-600 leading-none">Ruta de los Novios</span>
+            </a>
+            <div class="hidden md:flex items-center gap-8">
+                <a class="nav-link font-sans text-sm text-muted hover:text-brand-700 transition-colors duration-200 cursor-pointer" href="#features">Funcionalidades</a>
+                <a class="nav-link font-sans text-sm text-muted hover:text-brand-700 transition-colors duration-200 cursor-pointer" href="#disenos">Disenos</a>
+                <a class="nav-link font-sans text-sm text-muted hover:text-brand-700 transition-colors duration-200 cursor-pointer" href="#como-funciona">Como Funciona</a>
+                {% if user.is_authenticated %}
+                <a class="font-sans text-sm font-medium text-brand-700 hover:text-brand-800 transition-colors duration-200 cursor-pointer" href="{% url 'dashboard:home' %}">Panel</a>
+                {% else %}
+                <a class="font-sans text-sm text-muted hover:text-brand-700 transition-colors duration-200 cursor-pointer" href="{% url 'core:login' %}">Iniciar Sesion</a>
+                <a class="bg-brand-600 text-white text-sm font-medium px-5 py-2.5 rounded-full hover:bg-brand-700 transition-all duration-200 cursor-pointer shadow-soft hover:shadow-soft-lg" href="{% url 'core:signup' %}">Comenzar Gratis</a>
+                {% endif %}
+            </div>
+            <button class="md:hidden p-2 rounded-full hover:bg-brand-50 transition-colors duration-200 cursor-pointer" aria-label="Menu" onclick="document.getElementById('mobile-menu').classList.toggle('hidden')">
+                <span class="material-symbols-outlined text-brand-700">menu</span>
+            </button>
+        </div>
+        <div id="mobile-menu" class="hidden md:hidden mt-2 bg-white/95 backdrop-blur-xl rounded-2xl shadow-soft-lg border border-brand-100/50 p-4 space-y-2">
+            <a class="block px-4 py-3 rounded-xl text-muted hover:bg-brand-50 hover:text-brand-700 transition-colors duration-200 cursor-pointer font-sans text-sm" href="#features">Funcionalidades</a>
+            <a class="block px-4 py-3 rounded-xl text-muted hover:bg-brand-50 hover:text-brand-700 transition-colors duration-200 cursor-pointer font-sans text-sm" href="#disenos">Disenos</a>
+            <a class="block px-4 py-3 rounded-xl text-muted hover:bg-brand-50 hover:text-brand-700 transition-colors duration-200 cursor-pointer font-sans text-sm" href="#como-funciona">Como Funciona</a>
+            <div class="pt-2 border-t border-brand-100">
+                {% if user.is_authenticated %}
+                <a class="block px-4 py-3 rounded-xl bg-brand-600 text-white text-center font-sans text-sm font-medium hover:bg-brand-700 transition-colors duration-200 cursor-pointer" href="{% url 'dashboard:home' %}">Ir al Panel</a>
+                {% else %}
+                <a class="block px-4 py-3 rounded-xl bg-brand-600 text-white text-center font-sans text-sm font-medium hover:bg-brand-700 transition-colors duration-200 cursor-pointer mb-2" href="{% url 'core:signup' %}">Comenzar Gratis</a>
+                <a class="block px-4 py-3 rounded-xl text-center text-muted hover:bg-brand-50 transition-colors duration-200 cursor-pointer font-sans text-sm" href="{% url 'core:login' %}">Iniciar Sesion</a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow flex flex-col">
+
+        <section class="hero-bg relative min-h-screen flex items-center pt-24 pb-16 overflow-hidden">
+            <div class="absolute top-32 right-10 w-64 h-64 bg-brand-200/30 rounded-full blur-3xl float-badge"></div>
+            <div class="absolute bottom-20 left-10 w-80 h-80 bg-gold-200/20 rounded-full blur-3xl float-badge-delay"></div>
+
+            <div class="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop w-full">
+                <div class="max-w-3xl mx-auto text-center">
+                    <div class="reveal inline-flex items-center gap-2 bg-white/70 backdrop-blur-sm border border-brand-200/50 rounded-full px-5 py-2 mb-8 shadow-soft">
+                        <span class="w-2 h-2 rounded-full bg-brand-500 animate-pulse"></span>
+                        <span class="font-sans text-xs font-medium text-brand-700 tracking-wide uppercase">Plataforma de Gestion de Bodas</span>
+                    </div>
+
+                    <h1 class="reveal reveal-delay-1 font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-ink leading-[1.1] mb-4">
+                        Cada detalle de<br/>
+                        <span class="font-script text-brand-600 text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-normal">tu boda</span>
+                    </h1>
+
+                    <div class="reveal reveal-delay-2 ornament-line max-w-xs mx-auto my-6">
+                        <span class="material-symbols-outlined text-gold-500 text-lg" style="font-variation-settings: 'FILL' 1;">favorite</span>
+                    </div>
+
+                    <p class="reveal reveal-delay-2 font-sans text-lg md:text-xl text-muted leading-relaxed max-w-xl mx-auto mb-10">
+                        Invitaciones digitales, confirmacion de asistencia, plan de mesas interactivo y galeria de fotos. Todo lo que necesitas para el dia mas importante de tu vida.
+                    </p>
+
+                    <div class="reveal reveal-delay-3 flex flex-col sm:flex-row gap-4 justify-center items-center">
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard:home' %}" class="bg-brand-600 text-white font-sans text-sm font-medium px-8 py-4 rounded-full hover:bg-brand-700 transition-all duration-300 cursor-pointer shadow-soft-lg hover:shadow-glow inline-flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[20px]">dashboard</span>
+                            Ir al Panel
+                        </a>
+                        {% else %}
+                        <a href="{% url 'core:signup' %}" class="bg-brand-600 text-white font-sans text-sm font-medium px-8 py-4 rounded-full hover:bg-brand-700 transition-all duration-300 cursor-pointer shadow-soft-lg hover:shadow-glow inline-flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[20px]">celebration</span>
+                            Comenzar a Planear
+                        </a>
+                        <a href="#features" class="font-sans text-sm font-medium text-brand-700 hover:text-brand-800 transition-colors duration-200 cursor-pointer inline-flex items-center gap-2 px-6 py-4">
+                            <span class="material-symbols-outlined text-[20px]">play_circle</span>
+                            Ver Funcionalidades
+                        </a>
+                        {% endif %}
+                    </div>
+
+                    <div class="reveal reveal-delay-4 mt-16 flex items-center justify-center gap-8 text-muted/60">
+                        <div class="flex items-center gap-2">
+                            <span class="material-symbols-outlined text-gold-500 text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-gold-500 text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-gold-500 text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-gold-500 text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                            <span class="material-symbols-outlined text-gold-500 text-[18px]" style="font-variation-settings: 'FILL' 1;">star</span>
+                        </div>
+                        <span class="font-sans text-xs">Diseno premium para bodas inolvidables</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+                <span class="material-symbols-outlined text-brand-400 text-2xl">keyboard_arrow_down</span>
+            </div>
+        </section>
+
+        <section id="features" class="py-24 md:py-32 bg-white">
+            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+                <div class="text-center mb-20 reveal">
+                    <span class="font-sans text-xs font-semibold text-brand-600 tracking-[0.2em] uppercase block mb-4">Funcionalidades</span>
+                    <h2 class="font-serif text-4xl md:text-5xl text-ink mb-6">Todo lo que necesitas</h2>
+                    <div class="divider-ornament mb-6"></div>
+                    <p class="font-sans text-muted max-w-lg mx-auto text-lg">Herramientas disenadas para que planear tu boda sea una experiencia, no una tarea.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div class="reveal reveal-delay-1 feature-card lg:col-span-2 bg-gradient-to-br from-brand-50 to-cream rounded-2xl p-8 md:p-10 border border-brand-100/50 shadow-soft cursor-pointer group">
+                        <div class="flex flex-col md:flex-row gap-6 items-start">
+                            <div class="w-14 h-14 rounded-2xl bg-brand-600 flex items-center justify-center shrink-0 shadow-soft">
+                                <span class="material-symbols-outlined text-white text-[28px]" style="font-variation-settings: 'FILL' 1;">group</span>
+                            </div>
+                            <div>
+                                <h3 class="font-serif text-2xl text-ink mb-3">Gestion de Invitados</h3>
+                                <p class="font-sans text-muted leading-relaxed mb-4">Administra tu lista de invitados, grupos familiares y acompanantes. Importa y exporta desde Excel para una gestion sin complicaciones.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="font-sans text-xs bg-white/80 text-brand-700 px-3 py-1.5 rounded-full border border-brand-200/50">Grupos familiares</span>
+                                    <span class="font-sans text-xs bg-white/80 text-brand-700 px-3 py-1.5 rounded-full border border-brand-200/50">Acompanantes</span>
+                                    <span class="font-sans text-xs bg-white/80 text-brand-700 px-3 py-1.5 rounded-full border border-brand-200/50">Importar Excel</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reveal reveal-delay-2 feature-card bg-gold-50 rounded-2xl p-8 border border-gold-200/50 shadow-soft cursor-pointer group">
+                        <div class="w-14 h-14 rounded-2xl bg-gold-600 flex items-center justify-center mb-6 shadow-soft">
+                            <span class="material-symbols-outlined text-white text-[28px]" style="font-variation-settings: 'FILL' 1;">grid_view</span>
+                        </div>
+                        <h3 class="font-serif text-2xl text-ink mb-3">Plan de Mesas</h3>
+                        <p class="font-sans text-muted leading-relaxed text-sm">Organiza la distribucion de mesas de forma visual e interactiva. Arrastra y suelta invitados.</p>
+                    </div>
+
+                    <div class="reveal reveal-delay-1 feature-card bg-white rounded-2xl p-8 border border-brand-100/50 shadow-soft cursor-pointer group">
+                        <div class="w-14 h-14 rounded-2xl bg-brand-100 flex items-center justify-center mb-6">
+                            <span class="material-symbols-outlined text-brand-600 text-[28px]" style="font-variation-settings: 'FILL' 1;">photo_library</span>
+                        </div>
+                        <h3 class="font-serif text-2xl text-ink mb-3">Galeria de Fotos</h3>
+                        <p class="font-sans text-muted leading-relaxed text-sm">Comparte y organiza las fotos de tu boda. Tus invitados pueden subir sus propias fotos.</p>
+                    </div>
+
+                    <div class="reveal reveal-delay-2 feature-card lg:col-span-2 bg-gradient-to-br from-soft to-brand-50/50 rounded-2xl p-8 md:p-10 border border-brand-100/50 shadow-soft cursor-pointer group">
+                        <div class="flex flex-col md:flex-row gap-6 items-start">
+                            <div class="w-14 h-14 rounded-2xl bg-brand-600 flex items-center justify-center shrink-0 shadow-soft">
+                                <span class="material-symbols-outlined text-white text-[28px]" style="font-variation-settings: 'FILL' 1;">mail</span>
+                            </div>
+                            <div>
+                                <h3 class="font-serif text-2xl text-ink mb-3">Invitaciones Digitales</h3>
+                                <p class="font-sans text-muted leading-relaxed mb-4">Envia invitaciones personalizadas con 5 disenos premium. Confirmacion de asistencia integrada con seguimiento en tiempo real.</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <span class="font-sans text-xs bg-white/80 text-brand-700 px-3 py-1.5 rounded-full border border-brand-200/50">5 disenos</span>
+                                    <span class="font-sans text-xs bg-white/80 text-brand-700 px-3 py-1.5 rounded-full border border-brand-200/50">RSVP integrado</span>
+                                    <span class="font-sans text-xs bg-white/80 text-brand-700 px-3 py-1.5 rounded-full border border-brand-200/50">Envio por correo</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="disenos" class="py-24 md:py-32 bg-brand-50/30">
+            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+                <div class="text-center mb-20 reveal">
+                    <span class="font-sans text-xs font-semibold text-brand-600 tracking-[0.2em] uppercase block mb-4">Disenos de Invitacion</span>
+                    <h2 class="font-serif text-4xl md:text-5xl text-ink mb-6">Cinco estilos premium</h2>
+                    <div class="divider-ornament mb-6"></div>
+                    <p class="font-sans text-muted max-w-lg mx-auto text-lg">Cada diseno cuenta una historia diferente. Elige el que mejor represente tu estilo como pareja.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 items-stretch">
+                    <div class="reveal reveal-delay-1 design-card group cursor-pointer flex">
+                        <div class="bg-white rounded-3xl overflow-hidden shadow-soft-lg hover:shadow-soft-xl transition-all duration-300 flex flex-col w-full">
+                            <div class="h-52 bg-gradient-to-br from-pink-200 via-pink-100 to-amber-100 flex items-center justify-center shrink-0">
+                                <span class="font-script text-6xl text-brand-600 group-hover:scale-110 transition-transform duration-500">M &amp; J</span>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <h4 class="font-serif text-xl text-ink mb-2">Romance Clasico</h4>
+                                <p class="font-sans text-sm text-muted leading-relaxed">Elegante y romantico con tonos rosa y dorado</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reveal reveal-delay-2 design-card group cursor-pointer flex">
+                        <div class="bg-white rounded-3xl overflow-hidden shadow-soft-lg hover:shadow-soft-xl transition-all duration-300 flex flex-col w-full">
+                            <div class="h-52 bg-gradient-to-br from-gray-100 via-white to-gray-200 flex items-center justify-center shrink-0">
+                                <span class="font-serif text-5xl text-gray-800 tracking-wider group-hover:scale-110 transition-transform duration-500">M &amp; J</span>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <h4 class="font-serif text-xl text-ink mb-2">Minimalista Moderno</h4>
+                                <p class="font-sans text-sm text-muted leading-relaxed">Limpio y sofisticado con alto contraste</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reveal reveal-delay-3 design-card group cursor-pointer flex">
+                        <div class="bg-white rounded-3xl overflow-hidden shadow-soft-lg hover:shadow-soft-xl transition-all duration-300 flex flex-col w-full">
+                            <div class="h-52 bg-gradient-to-br from-amber-100 via-yellow-50 to-green-100 flex items-center justify-center shrink-0">
+                                <span class="font-serif text-5xl text-green-800 italic group-hover:scale-110 transition-transform duration-500">M &amp; J</span>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <h4 class="font-serif text-xl text-ink mb-2">Rustico Boho</h4>
+                                <p class="font-sans text-sm text-muted leading-relaxed">Calido y natural con tonos tierra</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reveal reveal-delay-4 design-card group cursor-pointer flex">
+                        <div class="bg-gray-900 rounded-3xl overflow-hidden shadow-soft-lg hover:shadow-soft-xl transition-all duration-300 flex flex-col w-full">
+                            <div class="h-52 bg-gradient-to-br from-gray-800 via-gray-900 to-black flex items-center justify-center shrink-0">
+                                <span class="font-sans text-4xl text-gold-500 tracking-[0.2em] group-hover:scale-110 transition-transform duration-500">M &amp; J</span>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <h4 class="font-serif text-xl text-white mb-2">Art Deco</h4>
+                                <p class="font-sans text-sm text-gray-400 leading-relaxed">Glamouroso y vintage con dorados</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reveal reveal-delay-4 design-card group cursor-pointer flex">
+                        <div class="bg-white rounded-3xl overflow-hidden shadow-soft-lg hover:shadow-soft-xl transition-all duration-300 flex flex-col w-full">
+                            <div class="h-52 bg-gradient-to-br from-pink-100 via-rose-50 to-green-50 flex items-center justify-center shrink-0">
+                                <span class="font-script text-6xl text-pink-600 group-hover:scale-110 transition-transform duration-500">M &amp; J</span>
+                            </div>
+                            <div class="p-6 flex-1 flex flex-col justify-between">
+                                <h4 class="font-serif text-xl text-ink mb-2">Floral Romantico</h4>
+                                <p class="font-sans text-sm text-muted leading-relaxed">Delicado con acuarelas florales</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="como-funciona" class="py-24 md:py-32 bg-white">
+            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+                <div class="text-center mb-20 reveal">
+                    <span class="font-sans text-xs font-semibold text-brand-600 tracking-[0.2em] uppercase block mb-4">Como Funciona</span>
+                    <h2 class="font-serif text-4xl md:text-5xl text-ink mb-6">Tres pasos simples</h2>
+                    <div class="divider-ornament mb-6"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-12 relative">
+                    <div class="hidden md:block absolute top-10 left-[20%] right-[20%] h-px bg-gradient-to-r from-brand-200 via-gold-300 to-brand-200"></div>
+
+                    <div class="reveal reveal-delay-1 relative flex flex-col items-center text-center">
+                        <div class="w-20 h-20 rounded-full bg-white border-2 border-brand-200 flex items-center justify-center mb-8 shadow-soft-lg relative z-10">
+                            <span class="font-serif text-2xl font-bold text-brand-600">1</span>
+                        </div>
+                        <h3 class="font-serif text-xl text-ink mb-3">Crea tu cuenta</h3>
+                        <p class="font-sans text-muted text-sm leading-relaxed max-w-xs">Registrate en menos de un minuto y configura los datos de tu boda.</p>
+                    </div>
+
+                    <div class="reveal reveal-delay-2 relative flex flex-col items-center text-center">
+                        <div class="w-20 h-20 rounded-full bg-white border-2 border-gold-300 flex items-center justify-center mb-8 shadow-soft-lg relative z-10">
+                            <span class="font-serif text-2xl font-bold text-gold-600">2</span>
+                        </div>
+                        <h3 class="font-serif text-xl text-ink mb-3">Personaliza tu evento</h3>
+                        <p class="font-sans text-muted text-sm leading-relaxed max-w-xs">Elige un diseno de invitacion, agrega invitados y organiza tu plan de mesas.</p>
+                    </div>
+
+                    <div class="reveal reveal-delay-3 relative flex flex-col items-center text-center">
+                        <div class="w-20 h-20 rounded-full bg-white border-2 border-brand-200 flex items-center justify-center mb-8 shadow-soft-lg relative z-10">
+                            <span class="font-serif text-2xl font-bold text-brand-600">3</span>
+                        </div>
+                        <h3 class="font-serif text-xl text-ink mb-3">Comparte y disfruta</h3>
+                        <p class="font-sans text-muted text-sm leading-relaxed max-w-xs">Envia las invitaciones digitales y deja que la plataforma se encargue del resto.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="py-24 md:py-32 bg-cream">
+            <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+                <div class="text-center mb-20 reveal">
+                    <span class="font-sans text-xs font-semibold text-brand-600 tracking-[0.2em] uppercase block mb-4">Mas Herramientas</span>
+                    <h2 class="font-serif text-4xl md:text-5xl text-ink mb-6">Todo bajo control</h2>
+                    <div class="divider-ornament mb-6"></div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="reveal reveal-delay-1 feature-card bg-white rounded-2xl p-8 border border-brand-100/40 shadow-soft cursor-pointer group">
+                        <div class="flex items-start gap-5">
+                            <div class="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center shrink-0 group-hover:bg-brand-100 transition-colors duration-300">
+                                <span class="material-symbols-outlined text-brand-600 text-[24px]" style="font-variation-settings: 'FILL' 1;">fact_check</span>
+                            </div>
+                            <div>
+                                <h3 class="font-serif text-xl text-ink mb-2">Lista de Tareas</h3>
+                                <p class="font-sans text-muted text-sm leading-relaxed">No olvides ningun detalle con nuestra lista de tareas con prioridades y fechas limite.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reveal reveal-delay-2 feature-card bg-white rounded-2xl p-8 border border-brand-100/40 shadow-soft cursor-pointer group">
+                        <div class="flex items-start gap-5">
+                            <div class="w-12 h-12 rounded-xl bg-gold-50 flex items-center justify-center shrink-0 group-hover:bg-gold-100 transition-colors duration-300">
+                                <span class="material-symbols-outlined text-gold-600 text-[24px]" style="font-variation-settings: 'FILL' 1;">account_balance_wallet</span>
+                            </div>
+                            <div>
+                                <h3 class="font-serif text-xl text-ink mb-2">Presupuesto</h3>
+                                <p class="font-sans text-muted text-sm leading-relaxed">Controla tus gastos por categoria y mantente dentro de tu presupuesto.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="reveal reveal-delay-3 feature-card bg-white rounded-2xl p-8 border border-brand-100/40 shadow-soft cursor-pointer group">
+                        <div class="flex items-start gap-5">
+                            <div class="w-12 h-12 rounded-xl bg-brand-50 flex items-center justify-center shrink-0 group-hover:bg-brand-100 transition-colors duration-300">
+                                <span class="material-symbols-outlined text-brand-600 text-[24px]" style="font-variation-settings: 'FILL' 1;">palette</span>
+                            </div>
+                            <div>
+                                <h3 class="font-serif text-xl text-ink mb-2">5 Disenos Premium</h3>
+                                <p class="font-sans text-muted text-sm leading-relaxed">Romance Clasico, Minimalista Moderno, Rustico Boho, Art Deco y Floral Romantico.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-gradient relative py-24 md:py-32 overflow-hidden">
+            <div class="absolute inset-0 opacity-10">
+                <div class="absolute top-10 left-10 w-40 h-40 border border-white/30 rounded-full"></div>
+                <div class="absolute bottom-10 right-20 w-60 h-60 border border-white/20 rounded-full"></div>
+                <div class="absolute top-1/2 left-1/3 w-32 h-32 border border-white/10 rounded-full"></div>
+            </div>
+            <div class="relative z-10 max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop text-center">
+                <div class="reveal">
+                    <span class="font-script text-5xl md:text-6xl text-white/90 block mb-4">Comienza hoy</span>
+                    <h2 class="font-serif text-4xl md:text-5xl text-white mb-6">Planea la boda de tus suenos</h2>
+                    <div class="w-16 h-px bg-white/40 mx-auto mb-8"></div>
+                    <p class="font-sans text-white/80 mb-12 max-w-md mx-auto text-lg">Crea tu cuenta gratis y descubre todas las herramientas que Ruta de los Novios tiene para ti.</p>
+                    {% if user.is_authenticated %}
+                    <a href="{% url 'dashboard:home' %}" class="bg-white text-brand-700 font-sans text-sm font-semibold px-10 py-4 rounded-full hover:bg-brand-50 transition-all duration-300 cursor-pointer shadow-soft-lg inline-flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">arrow_forward</span>
+                        Ir al Panel
+                    </a>
+                    {% else %}
+                    <a href="{% url 'core:signup' %}" class="bg-white text-brand-700 font-sans text-sm font-semibold px-10 py-4 rounded-full hover:bg-brand-50 transition-all duration-300 cursor-pointer shadow-soft-lg inline-flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">celebration</span>
+                        Crear Cuenta Gratis
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-ink text-white/70 py-16">
+        <div class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="text-center md:text-left">
+                    <span class="font-script text-3xl text-white block mb-2">Ruta de los Novios</span>
+                    <span class="font-sans text-xs text-white/40">Gestion de bodas premium</span>
+                </div>
+                <div class="flex flex-wrap justify-center gap-8">
+                    {% if user.is_authenticated %}
+                    <a class="font-sans text-sm text-white/60 hover:text-white transition-colors duration-200 cursor-pointer" href="{% url 'dashboard:home' %}">Panel</a>
+                    {% else %}
+                    <a class="font-sans text-sm text-white/60 hover:text-white transition-colors duration-200 cursor-pointer" href="{% url 'core:login' %}">Iniciar Sesion</a>
+                    <a class="font-sans text-sm text-white/60 hover:text-white transition-colors duration-200 cursor-pointer" href="{% url 'core:signup' %}">Registrarse</a>
+                    {% endif %}
+                </div>
+                <div class="font-sans text-xs text-white/30 text-center md:text-right">
+                    &copy; 2024 Ruta de los Novios. Todos los derechos reservados.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var reveals = document.querySelectorAll('.reveal');
+            if ('IntersectionObserver' in window) {
+                var observer = new IntersectionObserver(function(entries) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('visible');
+                            observer.unobserve(entry.target);
+                        }
+                    });
+                }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+                reveals.forEach(function(el) { observer.observe(el); });
+            } else {
+                reveals.forEach(function(el) { el.classList.add('visible'); });
+            }
+
+            var mobileMenu = document.getElementById('mobile-menu');
+            document.querySelectorAll('#mobile-menu a').forEach(function(link) {
+                link.addEventListener('click', function() {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+        });
+    </script>
+
+</body>
+</html>

@@ -188,15 +188,28 @@ class EventForm(forms.ModelForm):
     
     class Meta:
         model = Event
-        fields = ['bride_name', 'groom_name', 'date', 'location', 'venue_details', 'latitude', 'longitude', 'couple_photo', 'design_template', 'email_header', 'email_message', 'email_question', 'email_button_text', 'email_closing']
+        fields = [
+            'bride_name', 'groom_name', 'date',
+            'ceremony_time', 'location', 'venue_details', 'latitude', 'longitude',
+            'same_venue', 'celebration_time', 'celebration_location', 'celebration_venue_details',
+            'celebration_latitude', 'celebration_longitude',
+            'couple_photo', 'design_template',
+            'email_header', 'email_message', 'email_question', 'email_button_text', 'email_closing'
+        ]
         widgets = {
             'bride_name': forms.TextInput(attrs={'placeholder': 'Nombre de la novia'}),
             'groom_name': forms.TextInput(attrs={'placeholder': 'Nombre del novio'}),
             'date': forms.DateInput(attrs={'type': 'date'}),
+            'ceremony_time': forms.TimeInput(attrs={'type': 'time'}),
             'location': forms.TextInput(attrs={'placeholder': 'Nombre del lugar (ej: Hacienda Los Nogales)'}),
             'venue_details': forms.Textarea(attrs={'placeholder': 'Direccion completa, indicaciones para los invitados...', 'rows': 3}),
             'latitude': forms.HiddenInput(),
             'longitude': forms.HiddenInput(),
+            'celebration_time': forms.TimeInput(attrs={'type': 'time'}),
+            'celebration_location': forms.TextInput(attrs={'placeholder': 'Nombre del lugar de la celebracion'}),
+            'celebration_venue_details': forms.Textarea(attrs={'placeholder': 'Direccion completa de la celebracion...', 'rows': 3}),
+            'celebration_latitude': forms.HiddenInput(),
+            'celebration_longitude': forms.HiddenInput(),
             'design_template': forms.RadioSelect(),
             'email_header': forms.TextInput(attrs={'placeholder': 'Estás invitado'}),
             'email_message': forms.Textarea(attrs={'placeholder': 'Nos llena de alegría compartir este momento tan especial contigo', 'rows': 3}),
@@ -216,10 +229,14 @@ class EventSettingsView(PlannerRequiredMixin, TemplateView):
             context['form'] = EventForm(instance=event)
             context['current_lat'] = event.latitude or -33.4569
             context['current_lng'] = event.longitude or -70.6483
+            context['current_celebration_lat'] = event.celebration_latitude or 0
+            context['current_celebration_lng'] = event.celebration_longitude or 0
         else:
             context['form'] = EventForm()
             context['current_lat'] = -33.4569
             context['current_lng'] = -70.6483
+            context['current_celebration_lat'] = 0
+            context['current_celebration_lng'] = 0
         context['event'] = event
         return context
     

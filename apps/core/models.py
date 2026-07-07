@@ -33,10 +33,17 @@ class Event(models.Model):
     bride_name = models.CharField(max_length=100, blank=True, verbose_name='Nombre de la Novia')
     groom_name = models.CharField(max_length=100, blank=True, verbose_name='Nombre del Novio')
     date = models.DateField(null=True, blank=True)
-    location = models.CharField(max_length=300, blank=True)
-    venue_details = models.TextField(blank=True)
-    latitude = models.FloatField(null=True, blank=True)
-    longitude = models.FloatField(null=True, blank=True)
+    ceremony_time = models.TimeField(null=True, blank=True, verbose_name='Hora de la Ceremonia')
+    location = models.CharField(max_length=300, blank=True, verbose_name='Lugar de la Ceremonia')
+    venue_details = models.TextField(blank=True, verbose_name='Detalles del Lugar de la Ceremonia')
+    latitude = models.FloatField(null=True, blank=True, verbose_name='Latitud de la Ceremonia')
+    longitude = models.FloatField(null=True, blank=True, verbose_name='Longitud de la Ceremonia')
+    same_venue = models.BooleanField(default=False, verbose_name='Mismo lugar para ceremonia y celebración')
+    celebration_time = models.TimeField(null=True, blank=True, verbose_name='Hora de la Celebración')
+    celebration_location = models.CharField(max_length=300, blank=True, verbose_name='Lugar de la Celebración')
+    celebration_venue_details = models.TextField(blank=True, verbose_name='Detalles del Lugar de la Celebración')
+    celebration_latitude = models.FloatField(null=True, blank=True, verbose_name='Latitud de la Celebración')
+    celebration_longitude = models.FloatField(null=True, blank=True, verbose_name='Longitud de la Celebración')
     budget_total = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     couple_photo = models.ImageField(upload_to='events/%Y/%m/%d/', blank=True, null=True)
     design_template = models.CharField(max_length=20, choices=DESIGN_TEMPLATE_CHOICES, default='classic_romance', verbose_name='Diseño de Invitación')
@@ -94,6 +101,46 @@ class Event(models.Model):
         if self.bride_name and self.groom_name:
             return f'{self.bride_name} & {self.groom_name}'
         return self.name or 'Nuestra Boda'
+    
+    @property
+    def has_valid_coordinates(self):
+        if self.latitude is None or self.longitude is None:
+            return False
+        return abs(self.latitude) > 1.0 and abs(self.longitude) > 1.0
+    
+    @property
+    def has_valid_celebration_coordinates(self):
+        if self.celebration_latitude is None or self.celebration_longitude is None:
+            return False
+        return abs(self.celebration_latitude) > 1.0 and abs(self.celebration_longitude) > 1.0
+
+
+class EventSchedule(models.Model):
+    ICON_CHOICES = [
+        ('church', 'Ceremonia'),
+        ('restaurant', 'Recepción/Cena'),
+        ('celebration', 'Fiesta'),
+        ('cake', 'Pastel'),
+        ('local_bar', 'Brindis'),
+        ('photo_camera', 'Sesión de Fotos'),
+        ('music_note', 'Música'),
+        ('event', 'Otro'),
+    ]
+    
+    event = models.ForeignKey(Event, on_delete=models.CASCADE, related_name='schedule')
+    name = models.CharField(max_length=200)
+    time = models.TimeField()
+    venue = models.CharField(max_length=200)
+    icon = models.CharField(max_length=50, choices=ICON_CHOICES, default='event')
+    order = models.PositiveIntegerField(default=0)
+    
+    class Meta:
+        verbose_name = 'Itinerario'
+        verbose_name_plural = 'Itinerarios'
+        ordering = ['order', 'time']
+    
+    def __str__(self):
+        return f"{self.name} - {self.time.strftime('%H:%M')}"
 
 
 class Guest(models.Model):

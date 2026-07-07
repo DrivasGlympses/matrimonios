@@ -167,6 +167,8 @@ class DonationSuccessView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         if hasattr(self.request.user, 'guest_profile'):
             context['event'] = self.request.user.event
+        elif self.request.user.role == 'PLANNER' and self.request.user.event:
+            context['event'] = self.request.user.event
         return context
 
 
@@ -180,6 +182,8 @@ class DonationFailureView(LoginRequiredMixin, TemplateView):
         context = super().get_context_data(**kwargs)
         if hasattr(self.request.user, 'guest_profile'):
             context['event'] = self.request.user.event
+        elif self.request.user.role == 'PLANNER' and self.request.user.event:
+            context['event'] = self.request.user.event
         return context
 
 
@@ -192,5 +196,7 @@ class DonationPendingView(LoginRequiredMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if hasattr(self.request.user, 'guest_profile'):
+            context['event'] = self.request.user.event
+        elif self.request.user.role == 'PLANNER' and self.request.user.event:
             context['event'] = self.request.user.event
         return context

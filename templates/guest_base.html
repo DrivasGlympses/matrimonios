@@ -19,7 +19,7 @@
     {% elif user.event.design_template == 'floral_romantic' %}
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     {% else %}
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
     {% endif %}
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script>
@@ -109,65 +109,52 @@
             font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
         }
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Cormorant Infant', serif;
+            background-color: #FFF8F0;
         }
-        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg {
-            font-family: 'Playfair Display', serif;
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Cormorant Infant', serif;
         }
         
         {% if user.event.design_template == 'classic_romance' %}
-        body { font-family: 'Cormorant Infant', serif; background-color: #FDF2F8; }
-        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg { font-family: 'Great Vibes', cursive; }
-        header { background: linear-gradient(135deg, #DB2777 0%, #F472B6 100%) !important; }
-        header .font-headline-md { color: white !important; font-family: 'Great Vibes', cursive !important; }
-        header a { color: rgba(255,255,255,0.9) !important; }
+        body { background-color: #FDF2F8; }
         {% elif user.event.design_template == 'modern_minimal' %}
         body { font-family: 'Jost', sans-serif; background-color: #FFFFFF; }
-        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg { font-family: 'Bodoni Moda', serif; }
-        header { background: #FFFFFF !important; border-bottom: 1px solid #E5E7EB !important; }
-        header .font-headline-md { color: #1A1A1A !important; font-family: 'Bodoni Moda', serif !important; letter-spacing: 2px; }
-        header a { color: #6B7280 !important; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Bodoni Moda', serif; }
         {% elif user.event.design_template == 'rustic_boho' %}
         body { font-family: 'Cormorant', serif; background-color: #FEF3C7; }
-        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg { font-family: 'Cormorant', serif; }
-        header { background: #FEF3C7 !important; border-bottom: 1px solid #FDE68A !important; }
-        header .font-headline-md { color: #451A03 !important; font-family: 'Cormorant', serif !important; }
-        header a { color: #6B8E6B !important; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Cormorant', serif; }
         {% elif user.event.design_template == 'art_deco' %}
         body { font-family: 'Didact Gothic', sans-serif; background-color: #0A0A0A; color: #F5F0E6; }
-        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg { font-family: 'Poiret One', sans-serif; }
-        header { background: #0A0A0A !important; border-bottom: 2px solid #CA8A04 !important; }
-        header .font-headline-md { color: #CA8A04 !important; font-family: 'Poiret One', sans-serif !important; letter-spacing: 3px; }
-        header a { color: #F5F0E6 !important; }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Poiret One', sans-serif; }
         {% elif user.event.design_template == 'floral_romantic' %}
-        body { font-family: 'Cormorant Infant', serif; background-color: #FFF8F0; }
-        h1, h2, h3, h4, h5, h6, .font-headline-md, .font-display-lg { font-family: 'Great Vibes', cursive; }
-        header { background: linear-gradient(135deg, #E8A0BF 0%, #FDE8EF 100%) !important; }
-        header .font-headline-md { color: #5D4037 !important; font-family: 'Great Vibes', cursive !important; }
-        header a { color: #DB2777 !important; }
+        body { background-color: #FFF8F0; }
         {% endif %}
     </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body class="bg-background text-on-background font-body-md antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen flex flex-col">
-    <header class="w-full sticky top-0 z-40 bg-surface/80 backdrop-blur-md shadow-sm shadow-secondary/5 flex justify-between items-center px-margin-mobile md:px-margin-desktop py-4">
-        <div class="font-headline-md text-headline-md-mobile md:text-headline-md text-secondary dark:text-secondary-fixed tracking-tight">
+<body class="min-h-screen flex flex-col antialiased">
+    <header class="w-full sticky top-0 z-40 bg-white/90 backdrop-blur-md flex justify-between items-center px-5 md:px-10 py-3" style="border-bottom: 1px solid rgba(202,138,4,0.15);">
+        <div class="text-2xl md:text-3xl tracking-tight" style="font-family: 'Great Vibes', cursive; color: #DB2777;">
             {{ user.event.display_name|default:"Ethereal Union" }}
         </div>
-        <div class="hidden md:flex gap-gutter items-center">
-            <a class="font-title-sm text-title-sm text-on-surface-variant hover:text-secondary transition-colors duration-300 cursor-pointer" href="{% url 'gallery:home' %}">Galería</a>
-            <a class="font-title-sm text-title-sm text-on-surface-variant hover:text-secondary transition-colors duration-300 cursor-pointer" href="{% url 'donations:donation' %}">Donación</a>
+        <nav class="hidden md:flex gap-8 items-center">
+            <a class="text-sm font-medium tracking-wide transition-colors duration-300 cursor-pointer {% if request.resolver_match.url_name == 'guest_home' %}text-pink-600 border-b-2 border-pink-600 pb-0.5{% else %}text-gray-600 hover:text-pink-600{% endif %}" style="font-family: 'Cormorant Infant', serif; font-size: 1rem;" href="{% url 'event:guest_home' %}">Inicio</a>
+            <a class="text-sm font-medium tracking-wide transition-colors duration-300 cursor-pointer {% if request.resolver_match.namespace == 'gallery' %}text-pink-600 border-b-2 border-pink-600 pb-0.5{% else %}text-gray-600 hover:text-pink-600{% endif %}" style="font-family: 'Cormorant Infant', serif; font-size: 1rem;" href="{% url 'gallery:home' %}">Galería</a>
+            <a class="text-sm font-medium tracking-wide transition-colors duration-300 cursor-pointer {% if request.resolver_match.namespace == 'donations' %}text-pink-600 border-b-2 border-pink-600 pb-0.5{% else %}text-gray-600 hover:text-pink-600{% endif %}" style="font-family: 'Cormorant Infant', serif; font-size: 1rem;" href="{% url 'donations:donation' %}">Donación</a>
             <form method="post" action="{% url 'core:logout' %}" class="inline">
                 {% csrf_token %}
-                <button type="submit" class="font-title-sm text-title-sm text-secondary hover:text-secondary/80 transition-colors duration-300 cursor-pointer bg-transparent border-0 p-0">Cerrar Sesión</button>
+                <button type="submit" class="text-sm font-medium tracking-wide text-gray-500 hover:text-pink-600 transition-colors duration-300 cursor-pointer bg-transparent border-0 p-0" style="font-family: 'Cormorant Infant', serif; font-size: 1rem;">Salir</button>
             </form>
-        </div>
-        <div class="flex md:hidden gap-4">
+        </nav>
+        <nav class="flex md:hidden gap-4 items-center">
+            <a class="text-sm transition-colors duration-300 cursor-pointer {% if request.resolver_match.url_name == 'guest_home' %}text-pink-600 font-semibold{% else %}text-gray-600{% endif %}" style="font-family: 'Cormorant Infant', serif;" href="{% url 'event:guest_home' %}">Inicio</a>
+            <a class="text-sm transition-colors duration-300 cursor-pointer {% if request.resolver_match.namespace == 'gallery' %}text-pink-600 font-semibold{% else %}text-gray-600{% endif %}" style="font-family: 'Cormorant Infant', serif;" href="{% url 'gallery:home' %}">Galería</a>
             <form method="post" action="{% url 'core:logout' %}" class="inline">
                 {% csrf_token %}
-                <button type="submit" class="font-title-sm text-title-sm text-secondary bg-transparent border-0 p-0 cursor-pointer">Salir</button>
+                <button type="submit" class="text-sm text-gray-500 bg-transparent border-0 p-0 cursor-pointer" style="font-family: 'Cormorant Infant', serif;">Salir</button>
             </form>
-        </div>
+        </nav>
     </header>
     
     <main class="flex-1 flex flex-col min-h-screen">

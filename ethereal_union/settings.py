@@ -100,7 +100,7 @@ CRISPY_TEMPLATE_PACK = 'tailwind'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = 'dashboard:home'
-LOGOUT_REDIRECT_URL = 'event:public'
+LOGOUT_REDIRECT_URL = 'landing'
 LOGIN_URL = 'core:login'
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

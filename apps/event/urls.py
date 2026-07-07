@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import (
-    PublicEventView, RSVPView, RSVPSuccessView,
+    LandingView, GuestHomeView,
     InvitationView, ConfirmInvitationView,
     InvitationConfirmedView, InvitationDeclinedView,
     InvitationExpiredView
@@ -9,9 +9,8 @@ from .views import (
 app_name = 'event'
 
 urlpatterns = [
-    path('', PublicEventView.as_view(), name='public'),
-    path('rsvp/', RSVPView.as_view(), name='rsvp'),
-    path('rsvp/gracias/', RSVPSuccessView.as_view(), name='rsvp_success'),
+    path('landing/', LandingView.as_view(), name='landing'),
+    path('guest/', GuestHomeView.as_view(), name='guest_home'),
     path('invitacion/<uuid:token>/', InvitationView.as_view(), name='invitation'),
     path('invitacion/<uuid:token>/confirmar/', ConfirmInvitationView.as_view(), name='confirm_invitation'),
     path('invitacion/confirmada/', InvitationConfirmedView.as_view(), name='invitation_confirmed'),

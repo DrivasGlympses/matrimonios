@@ -1,0 +1,544 @@
+{% extends 'guest_base.html' %}
+{% load l10n %}
+
+{% block title %}{{ event.display_name|default:"Nuestra Boda" }} - Inicio{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet"/>
+<style>
+    .guest-page {
+        --gp-rose: #E8A0BF;
+        --gp-rose-dark: #DB2777;
+        --gp-sage: #A7C4A0;
+        --gp-sage-dark: #6B8E6B;
+        --gp-cream: #FFF8F0;
+        --gp-blush: #FDE8EF;
+        --gp-gold: #CA8A04;
+        --gp-text: #5D4037;
+    }
+    .guest-page .gp-script { font-family: 'Great Vibes', cursive; }
+    .guest-page .gp-serif { font-family: 'Cormorant Infant', serif; }
+
+    .map-container {
+        border-radius: 16px 16px 0 0;
+        overflow: hidden;
+        position: relative;
+        z-index: 1;
+    }
+    .map-container .leaflet-container { height: 100%; width: 100%; }
+    .leaflet-control-zoom { border: none !important; box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important; }
+    .leaflet-control-zoom a { border-radius: 0.5rem !important; border: none !important; }
+    html { scroll-behavior: smooth; }
+
+    .hero-overlay {
+        background: linear-gradient(180deg, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.20) 40%, rgba(0,0,0,0.50) 100%);
+    }
+
+    .hero-card {
+        background: rgba(255,255,255,0.96);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(232,160,191,0.25);
+        box-shadow: 0 20px 50px rgba(219,39,119,0.08), 0 8px 20px rgba(0,0,0,0.06);
+    }
+
+    .gp-ornament {
+        width: 80px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--gp-gold), transparent);
+        margin: 0.75rem auto;
+    }
+
+    .gp-ornament-sm {
+        width: 50px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--gp-rose), transparent);
+        margin: 0.5rem auto;
+    }
+
+    .countdown-section {
+        background: linear-gradient(180deg, var(--gp-blush) 0%, white 100%);
+    }
+
+    .countdown-card {
+        background: white;
+        border: 1px solid rgba(232,160,191,0.2);
+        box-shadow: 0 8px 30px rgba(219,39,119,0.06);
+    }
+
+    .countdown-number {
+        font-family: 'Great Vibes', cursive;
+        font-size: 4.5rem;
+        line-height: 1;
+        color: var(--gp-rose-dark);
+    }
+
+    .countdown-label {
+        font-family: 'Cormorant Infant', serif;
+        font-size: 0.875rem;
+        font-weight: 500;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gp-text);
+        opacity: 0.7;
+        margin-top: 4px;
+    }
+
+    .section-title {
+        font-family: 'Great Vibes', cursive;
+        font-size: 2.5rem;
+        color: var(--gp-rose-dark);
+        margin-bottom: 0.25rem;
+    }
+
+    @media (min-width: 768px) {
+        .section-title { font-size: 3rem; }
+    }
+
+    .event-card {
+        background: white;
+        border: 1px solid rgba(232,160,191,0.15);
+        box-shadow: 0 4px 20px rgba(219,39,119,0.04);
+        transition: all 300ms ease;
+        overflow: hidden;
+        border-radius: 1.25rem;
+    }
+
+    .event-card:hover {
+        box-shadow: 0 8px 30px rgba(219,39,119,0.08);
+        transform: translateY(-2px);
+    }
+
+    .event-icon-wrap {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--gp-blush);
+    }
+
+    .event-icon-wrap .material-symbols-outlined {
+        font-size: 22px;
+        color: var(--gp-rose-dark);
+    }
+
+    .location-card {
+        background: white;
+        border: 1px solid rgba(232,160,191,0.15);
+        box-shadow: 0 4px 20px rgba(219,39,119,0.04);
+        overflow: hidden;
+        transition: all 300ms ease;
+        border-radius: 1.25rem;
+    }
+
+    .location-card:hover {
+        box-shadow: 0 8px 30px rgba(219,39,119,0.08);
+        transform: translateY(-2px);
+    }
+
+    .btn-directions {
+        background: linear-gradient(135deg, var(--gp-gold), #D4AF37);
+        color: white;
+        padding: 10px 24px;
+        border-radius: 2rem;
+        font-family: 'Cormorant Infant', serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 300ms ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(202,138,4,0.25);
+    }
+
+    .btn-directions:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(202,138,4,0.35);
+    }
+
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 500ms ease, transform 500ms ease;
+    }
+
+    .fade-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .decorative-corner {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        border-color: rgba(202,138,4,0.3);
+    }
+
+    .decorative-corner.top-left { top: 12px; left: 12px; border-top: 1.5px solid; border-left: 1.5px solid; border-right: none; border-bottom: none; }
+    .decorative-corner.top-right { top: 12px; right: 12px; border-top: 1.5px solid; border-right: 1.5px solid; border-left: none; border-bottom: none; }
+    .decorative-corner.bottom-left { bottom: 12px; left: 12px; border-bottom: 1.5px solid; border-left: 1.5px solid; border-right: none; border-top: none; }
+    .decorative-corner.bottom-right { bottom: 12px; right: 12px; border-bottom: 1.5px solid; border-right: 1.5px solid; border-left: none; border-top: none; }
+
+    .venue-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: var(--gp-blush);
+        color: var(--gp-rose-dark);
+        padding: 3px 10px;
+        border-radius: 12px;
+        font-family: 'Cormorant Infant', serif;
+        font-size: 0.75rem;
+        font-weight: 500;
+        margin-top: 4px;
+    }
+
+    .info-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--gp-blush);
+        padding: 8px 16px;
+        border-radius: 2rem;
+        font-family: 'Cormorant Infant', serif;
+        font-size: 0.95rem;
+        color: var(--gp-text);
+    }
+
+    .info-chip .material-symbols-outlined {
+        font-size: 18px;
+        color: var(--gp-rose-dark);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in-up { opacity: 1; transform: none; transition: none; }
+        .event-card:hover, .location-card:hover { transform: none; }
+        .btn-directions:hover { transform: none; }
+        html { scroll-behavior: auto; }
+    }
+
+    @media (max-width: 640px) {
+        .countdown-number { font-size: 3.5rem; }
+        .section-title { font-size: 2.25rem; }
+        .decorative-corner { width: 32px; height: 32px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+{% if event %}
+<div class="guest-page">
+
+<section class="w-full relative min-h-[480px] md:min-h-[560px] flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 z-0">
+        {% if event.couple_photo %}
+        <img class="w-full h-full object-cover object-center" src="{{ event.couple_photo.url }}" alt="{{ event.name }}"/>
+        {% else %}
+        <img class="w-full h-full object-cover object-center" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAFwit4-wAHo6XR0vDqhwx3FQF26joUUdN4OFO6o1XuAT3hqedE42GgsMJl-sxQY37XjyGauV7QeQl81tNJ3V0g7rqq2g70GNBD-sSL8iPY1HoutuF5OhCryBLvbE0-CmicdlTrsQVevu1vKpIDIBVvLPWTkEI2hIaA-raa01s-hPO0xS6z9W6F9JYAJHYvcDw-jgnDOIMVn4piaxcHEf7n_tKyZI-ksM2b9s6HhEiCKfZptZUjTh00lv3pOiOv7twvU6dgcWI8cws" alt="Wedding Couple"/>
+        {% endif %}
+        <div class="absolute inset-0 hero-overlay"></div>
+    </div>
+
+    <div class="relative z-10 hero-card rounded-2xl text-center max-w-md mx-4 p-7 md:p-10">
+        <div class="decorative-corner top-left"></div>
+        <div class="decorative-corner top-right"></div>
+        <div class="decorative-corner bottom-left"></div>
+        <div class="decorative-corner bottom-right"></div>
+
+        <p class="gp-script text-3xl md:text-4xl mb-2" style="color: #DB2777;">Nos Casamos</p>
+        <div class="gp-ornament"></div>
+        <h1 class="gp-serif text-3xl md:text-4xl font-semibold mt-3 mb-2" style="color: #5D4037;">{{ event.display_name }}</h1>
+        <div class="gp-ornament-sm"></div>
+        <p class="gp-serif text-base md:text-lg mt-3 mb-4" style="color: #5D4037; opacity: 0.8;">Celebra con nosotros el inicio de nuestro para siempre</p>
+        <div class="flex flex-col sm:flex-row gap-2 justify-center items-center">
+            <span class="info-chip">
+                <span class="material-symbols-outlined">calendar_month</span>
+                {{ event.date|date:"d \d\e F, Y" }}
+            </span>
+            <span class="info-chip">
+                <span class="material-symbols-outlined">location_on</span>
+                {{ event.location }}
+            </span>
+        </div>
+    </div>
+</section>
+
+{% if event.days_until > 0 %}
+<section class="countdown-section py-8 md:py-10">
+    <div class="max-w-container-max mx-auto px-4">
+        <div class="flex justify-center fade-in-up">
+            <div class="countdown-card rounded-2xl px-10 py-6 md:px-14 md:py-8 text-center relative overflow-hidden">
+                <div class="absolute top-0 left-0 right-0 h-0.5 bg-gradient-to-r from-transparent via-pink-400 to-transparent"></div>
+                <div class="countdown-number">{{ event.days_until }}</div>
+                <div class="countdown-label">Faltan días</div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if event.ceremony_time or event.celebration_time %}
+<section class="py-8 md:py-12" style="background: white;">
+    <div class="max-w-container-max mx-auto px-4">
+        <div class="text-center mb-6 fade-in-up">
+            <h2 class="section-title">El Gran Día</h2>
+            <div class="gp-ornament"></div>
+        </div>
+        <div class="max-w-2xl mx-auto grid gap-4 {% if event.ceremony_time and event.celebration_time and not event.same_venue %}md:grid-cols-2{% endif %}">
+            
+            {% if event.ceremony_time %}
+            <div class="event-card fade-in-up">
+                <div class="p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="event-icon-wrap shrink-0">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">church</span>
+                        </div>
+                        <div>
+                            <h3 class="gp-serif text-lg font-semibold" style="color: #5D4037;">Ceremonia</h3>
+                            {% if event.celebration_time and not event.same_venue %}
+                            <span class="venue-badge">
+                                <span class="material-symbols-outlined text-[12px]">location_on</span>
+                                Lugar distinto
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-3 text-sm" style="color: #5D4037; opacity: 0.75;">
+                        <span class="gp-serif flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]" style="color: #CA8A04;">schedule</span>
+                            {{ event.ceremony_time|time:"H:i" }} hrs
+                        </span>
+                        {% if event.location %}
+                        <span class="gp-serif flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]" style="color: #CA8A04;">place</span>
+                            {{ event.location }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if event.celebration_time %}
+            <div class="event-card fade-in-up">
+                <div class="p-5">
+                    <div class="flex items-center gap-3 mb-3">
+                        <div class="event-icon-wrap shrink-0">
+                            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">celebration</span>
+                        </div>
+                        <div>
+                            <h3 class="gp-serif text-lg font-semibold" style="color: #5D4037;">Celebración</h3>
+                            {% if not event.same_venue %}
+                            <span class="venue-badge">
+                                <span class="material-symbols-outlined text-[12px]">location_on</span>
+                                Lugar distinto
+                            </span>
+                            {% else %}
+                            <span class="venue-badge">
+                                <span class="material-symbols-outlined text-[12px]">check</span>
+                                Mismo lugar
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="flex items-center flex-wrap gap-3 text-sm" style="color: #5D4037; opacity: 0.75;">
+                        <span class="gp-serif flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]" style="color: #CA8A04;">schedule</span>
+                            {{ event.celebration_time|time:"H:i" }} hrs
+                        </span>
+                        {% if not event.same_venue and event.celebration_location %}
+                        <span class="gp-serif flex items-center gap-1.5">
+                            <span class="material-symbols-outlined text-[16px]" style="color: #CA8A04;">place</span>
+                            {{ event.celebration_location }}
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% if event.location or event.venue_details or event.celebration_location or event.celebration_venue_details %}
+<section class="py-8 md:py-12" style="background: linear-gradient(180deg, #FFF8F0 0%, #FDE8EF 100%);">
+    <div class="max-w-container-max mx-auto px-4">
+        <div class="text-center mb-6 fade-in-up">
+            <h2 class="section-title">Ubicación</h2>
+            <div class="gp-ornament"></div>
+        </div>
+        <div class="max-w-2xl mx-auto grid gap-4 {% if event.celebration_location and not event.same_venue %}md:grid-cols-2{% endif %}">
+            
+            {% if event.location %}
+            <div class="location-card fade-in-up">
+                {% if event.has_valid_coordinates %}
+                <div id="ceremony-map" class="map-container h-48 md:h-56" data-lat="{{ event.latitude|unlocalize }}" data-lng="{{ event.longitude|unlocalize }}"></div>
+                {% else %}
+                <div class="h-24 flex items-center justify-center" style="background: var(--gp-blush);">
+                    <p class="gp-serif text-sm flex items-center gap-2" style="color: var(--gp-text); opacity: 0.6;">
+                        <span class="material-symbols-outlined text-[18px]">info</span>
+                        Mapa no disponible
+                    </p>
+                </div>
+                {% endif %}
+                <div class="p-5">
+                    <div class="flex items-start gap-3 mb-3">
+                        <span class="material-symbols-outlined text-[22px] mt-0.5 shrink-0" style="color: #DB2777;">church</span>
+                        <div>
+                            <h3 class="gp-serif text-base font-semibold" style="color: #5D4037;">Ceremonia</h3>
+                            <p class="gp-serif text-sm mt-1" style="color: #5D4037; opacity: 0.75;">{{ event.location }}</p>
+                            {% if event.venue_details %}
+                            <p class="gp-serif text-xs mt-1.5" style="color: #5D4037; opacity: 0.6;">{{ event.venue_details }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if event.has_valid_coordinates %}
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ event.latitude|unlocalize }},{{ event.longitude|unlocalize }}" target="_blank" rel="noopener noreferrer" class="btn-directions">
+                        <span class="material-symbols-outlined text-[18px]">directions</span>
+                        Cómo llegar
+                    </a>
+                    {% else %}
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ event.location|urlencode }}" target="_blank" rel="noopener noreferrer" class="btn-directions">
+                        <span class="material-symbols-outlined text-[18px]">directions</span>
+                        Cómo llegar
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            {% if not event.same_venue and event.celebration_location %}
+            <div class="location-card fade-in-up">
+                {% if event.has_valid_celebration_coordinates %}
+                <div id="celebration-map" class="map-container h-48 md:h-56" data-lat="{{ event.celebration_latitude|unlocalize }}" data-lng="{{ event.celebration_longitude|unlocalize }}"></div>
+                {% else %}
+                <div class="h-24 flex items-center justify-center" style="background: var(--gp-blush);">
+                    <p class="gp-serif text-sm flex items-center gap-2" style="color: var(--gp-text); opacity: 0.6;">
+                        <span class="material-symbols-outlined text-[18px]">info</span>
+                        Mapa no disponible
+                    </p>
+                </div>
+                {% endif %}
+                <div class="p-5">
+                    <div class="flex items-start gap-3 mb-3">
+                        <span class="material-symbols-outlined text-[22px] mt-0.5 shrink-0" style="color: #DB2777;">celebration</span>
+                        <div>
+                            <h3 class="gp-serif text-base font-semibold" style="color: #5D4037;">Celebración</h3>
+                            <p class="gp-serif text-sm mt-1" style="color: #5D4037; opacity: 0.75;">{{ event.celebration_location }}</p>
+                            {% if event.celebration_venue_details %}
+                            <p class="gp-serif text-xs mt-1.5" style="color: #5D4037; opacity: 0.6;">{{ event.celebration_venue_details }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if event.has_valid_celebration_coordinates %}
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ event.celebration_latitude|unlocalize }},{{ event.celebration_longitude|unlocalize }}" target="_blank" rel="noopener noreferrer" class="btn-directions">
+                        <span class="material-symbols-outlined text-[18px]">directions</span>
+                        Cómo llegar
+                    </a>
+                    {% else %}
+                    <a href="https://www.google.com/maps/search/?api=1&query={{ event.celebration_location|urlencode }}" target="_blank" rel="noopener noreferrer" class="btn-directions">
+                        <span class="material-symbols-outlined text-[18px]">directions</span>
+                        Cómo llegar
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</section>
+{% endif %}
+
+</div>
+
+{% else %}
+<div class="guest-page min-h-[70vh] flex items-center justify-center px-4" style="background: linear-gradient(180deg, #FFF8F0 0%, #FDE8EF 50%, #FFF8F0 100%);">
+    <div class="text-center fade-in-up visible max-w-md">
+        <div class="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center" style="background: var(--gp-blush, #FDE8EF);">
+            <span class="material-symbols-outlined text-[32px]" style="color: #DB2777;">favorite</span>
+        </div>
+        <h1 class="gp-script text-4xl md:text-5xl mb-3" style="color: #DB2777;">Pronto</h1>
+        <p class="gp-serif text-lg" style="color: #5D4037;">Nuestra invitación estará lista muy pronto</p>
+        <div class="gp-ornament mt-4"></div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+    (function() {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        
+        if (!prefersReducedMotion) {
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+            document.querySelectorAll('.fade-in-up').forEach(function(el) {
+                observer.observe(el);
+            });
+        } else {
+            document.querySelectorAll('.fade-in-up').forEach(function(el) {
+                el.classList.add('visible');
+            });
+        }
+
+        const weddingIcon = L.divIcon({
+            html: '<div style="background:#DB2777;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="transform:rotate(45deg);color:white;font-size:14px;">favorite</span></div>',
+            iconSize: [28, 28],
+            iconAnchor: [14, 28],
+            className: ''
+        });
+
+        const celebrationIcon = L.divIcon({
+            html: '<div style="background:#CA8A04;width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.2);display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="transform:rotate(45deg);color:white;font-size:14px;">celebration</span></div>',
+            iconSize: [28, 28],
+            iconAnchor: [14, 28],
+            className: ''
+        });
+
+        function initMap(containerId, icon) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            const lat = parseFloat(container.dataset.lat);
+            const lng = parseFloat(container.dataset.lng);
+
+            if (isNaN(lat) || isNaN(lng)) return;
+
+            const map = L.map(containerId, {
+                scrollWheelZoom: false,
+                zoomControl: true
+            }).setView([lat, lng], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; OpenStreetMap',
+                maxZoom: 19
+            }).addTo(map);
+
+            L.marker([lat, lng], { icon: icon }).addTo(map);
+
+            setTimeout(function() {
+                map.invalidateSize();
+            }, 100);
+        }
+
+        initMap('ceremony-map', weddingIcon);
+        initMap('celebration-map', celebrationIcon);
+    })();
+</script>
+{% endblock %}

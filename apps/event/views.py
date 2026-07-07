@@ -1,54 +1,31 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import TemplateView, CreateView, View
+from django.views.generic import TemplateView, View
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.conf import settings
 from django.utils import timezone
 import string
 import random
 from apps.core.models import Event, Guest
-from .forms import RSVPForm
 
 
 User = get_user_model()
 
 
-class PublicEventView(TemplateView):
-    template_name = 'event/public.html'
+class LandingView(TemplateView):
+    template_name = 'landing.html'
+
+
+class GuestHomeView(LoginRequiredMixin, TemplateView):
+    template_name = 'event/guest_home.html'
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['event'] = Event.objects.first()
-        return context
-
-
-class RSVPView(CreateView):
-    model = Guest
-    form_class = RSVPForm
-    template_name = 'event/rsvp_form.html'
-    success_url = reverse_lazy('event:rsvp_success')
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['event'] = Event.objects.first()
-        return context
-    
-    def form_valid(self, form):
-        event = Event.objects.first()
-        if event:
-            form.instance.event = event
-            form.instance.rsvp_status = 'CONFIRMED'
-        messages.success(self.request, '¡Gracias por confirmar tu asistencia! Te esperamos.')
-        return super().form_valid(form)
-
-
-class RSVPSuccessView(TemplateView):
-    template_name = 'event/rsvp_success.html'
-    
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['event'] = Event.objects.first()
+        user = self.request.user
+        if user.is_authenticated and user.event:
+            context['event'] = user.event
         return context
 
 
@@ -131,12 +108,14 @@ class ConfirmInvitationView(View):
             except Exception as e:
                 messages.warning(request, f'Has confirmado tu asistencia, pero no se pudo enviar el correo con tus credenciales: {str(e)}')
             
+            request.session['last_event_slug'] = guest.event.slug
             return redirect('event:invitation_confirmed')
         
         elif action == 'decline':
             guest.rsvp_status = 'DECLINED'
             guest.save()
             messages.info(request, 'Lamentamos que no puedas acompañarnos. ¡Gracias por avisarnos!')
+            request.session['last_event_slug'] = guest.event.slug
             return redirect('event:invitation_declined')
         
         return redirect('event:invitation', token=token)
@@ -158,7 +137,11 @@ class InvitationConfirmedView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['event'] = Event.objects.first()
+        slug = self.request.session.get('last_event_slug')
+        if slug:
+            context['event'] = get_object_or_404(Event, slug=slug)
+        else:
+            context['event'] = Event.objects.first()
         return context
 
 
@@ -178,7 +161,11 @@ class InvitationDeclinedView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['event'] = Event.objects.first()
+        slug = self.request.session.get('last_event_slug')
+        if slug:
+            context['event'] = get_object_or_404(Event, slug=slug)
+        else:
+            context['event'] = Event.objects.first()
         return context
 
 
@@ -198,5 +185,9 @@ class InvitationExpiredView(TemplateView):
     
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['event'] = Event.objects.first()
+        slug = self.request.session.get('last_event_slug')
+        if slug:
+            context['event'] = get_object_or_404(Event, slug=slug)
+        else:
+            context['event'] = Event.objects.first()
         return context

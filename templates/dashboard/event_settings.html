@@ -6,7 +6,7 @@
 {% block extra_css %}
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 <style>
-    #venue-map {
+    #venue-map, #celebration-venue-map {
         height: 350px;
         border-radius: 0.75rem;
         border: 2px solid #e0e4ea;
@@ -99,13 +99,29 @@
                         {% endif %}
                     </div>
                     <div>
-                        <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_location">Nombre del Lugar</label>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_ceremony_time">Hora de la Ceremonia</label>
                         <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
-                               id="id_location" name="location" placeholder="Ej: Hacienda Los Nogales" type="text" value="{{ form.location.value|default:'' }}"/>
-                        {% if form.location.errors %}
-                        <p class="mt-1 text-sm text-error">{{ form.location.errors.0 }}</p>
+                               id="id_ceremony_time" name="ceremony_time" type="time" value="{{ form.ceremony_time.value|default:'' }}"/>
+                        {% if form.ceremony_time.errors %}
+                        <p class="mt-1 text-sm text-error">{{ form.ceremony_time.errors.0 }}</p>
                         {% endif %}
                     </div>
+                </div>
+
+                <div class="border-t border-outline-variant/30 pt-6">
+                    <h2 class="font-title-sm text-title-sm text-on-surface mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">church</span>
+                        Ceremonia
+                    </h2>
+                </div>
+
+                <div>
+                    <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_location">Lugar de la Ceremonia</label>
+                    <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                           id="id_location" name="location" placeholder="Ej: Hacienda Los Nogales" type="text" value="{{ form.location.value|default:'' }}"/>
+                    {% if form.location.errors %}
+                    <p class="mt-1 text-sm text-error">{{ form.location.errors.0 }}</p>
+                    {% endif %}
                 </div>
 
                 <div>
@@ -130,6 +146,10 @@
                     
                     <div id="venue-map"></div>
                     <p class="map-coords" id="map-coords">Coordenadas: <span id="coords-display">-</span></p>
+                    <p class="text-xs text-secondary mt-2 flex items-center gap-1">
+                        <span class="material-symbols-outlined text-[14px]">info</span>
+                        Haz click en el mapa o arrastra el marcador para guardar la ubicacion exacta
+                    </p>
                     
                     {{ form.latitude }}
                     {{ form.longitude }}
@@ -142,6 +162,86 @@
                     {% if form.venue_details.errors %}
                     <p class="mt-1 text-sm text-error">{{ form.venue_details.errors.0 }}</p>
                     {% endif %}
+                </div>
+
+                <div class="border-t border-outline-variant/30 pt-6">
+                    <h2 class="font-title-sm text-title-sm text-on-surface mb-4 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[20px]">celebration</span>
+                        Celebracion
+                    </h2>
+                    <p class="text-xs text-on-surface-variant mb-4">Si la celebracion es en un lugar diferente a la ceremonia, desmarca la opcion para agregar los detalles</p>
+                </div>
+
+                <div class="flex items-center gap-3 p-4 bg-surface-container-low rounded-lg mb-4">
+                    <input type="checkbox" id="id_same_venue" name="same_venue" class="w-5 h-5 rounded border-outline-variant text-secondary focus:ring-secondary cursor-pointer" {% if form.same_venue.value %}checked{% endif %}/>
+                    <label for="id_same_venue" class="font-body-md text-body-md text-on-surface cursor-pointer">La celebracion es en el mismo lugar que la ceremonia</label>
+                </div>
+
+                <div id="celebration-fields" class="space-y-6 {% if form.same_venue.value %}hidden{% endif %}">
+                    <div class="p-3 bg-secondary/5 border border-secondary/20 rounded-lg mb-4">
+                        <p class="text-sm text-secondary flex items-center gap-2">
+                            <span class="material-symbols-outlined text-[18px]">info</span>
+                            Completa los datos de la celebracion (hora, lugar y ubicacion)
+                        </p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_celebration_time">Hora de la Celebracion</label>
+                            <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                                   id="id_celebration_time" name="celebration_time" type="time" value="{{ form.celebration_time.value|default:'' }}"/>
+                            {% if form.celebration_time.errors %}
+                            <p class="mt-1 text-sm text-error">{{ form.celebration_time.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                        <div>
+                            <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_celebration_location">Lugar de la Celebracion</label>
+                            <input class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md" 
+                                   id="id_celebration_location" name="celebration_location" placeholder="Ej: Salon de Fiestas" type="text" value="{{ form.celebration_location.value|default:'' }}"/>
+                            {% if form.celebration_location.errors %}
+                            <p class="mt-1 text-sm text-error">{{ form.celebration_location.errors.0 }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2">
+                            <span class="material-symbols-outlined text-[18px] align-middle mr-1">location_on</span>
+                            Ubicacion de la Celebracion en el Mapa
+                        </label>
+                        <p class="text-xs text-on-surface-variant mb-3">Busca la direccion o haz click en el mapa para marcar la ubicacion exacta</p>
+                        
+                        <div class="map-search-container mb-3">
+                            <div class="relative">
+                                <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+                                <input type="text" id="celebration-map-search-input" placeholder="Buscar direccion..." 
+                                       class="w-full pl-10 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-sm"
+                                       autocomplete="off"/>
+                                <button type="button" id="celebration-map-search-btn" class="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-md bg-[#D4AF37] hover:bg-[#c29f2f] text-white transition-colors cursor-pointer">
+                                    <span class="material-symbols-outlined text-[18px]">search</span>
+                                </button>
+                            </div>
+                            <div id="celebration-map-search-results" class="map-search-results"></div>
+                        </div>
+                        
+                        <div id="celebration-venue-map"></div>
+                        <p class="map-coords" id="celebration-map-coords">Coordenadas: <span id="celebration-coords-display">-</span></p>
+                        <p class="text-xs text-secondary mt-2 flex items-center gap-1">
+                            <span class="material-symbols-outlined text-[14px]">info</span>
+                            Haz click en el mapa o arrastra el marcador para guardar la ubicacion exacta
+                        </p>
+                        
+                        {{ form.celebration_latitude }}
+                        {{ form.celebration_longitude }}
+                    </div>
+
+                    <div>
+                        <label class="block font-title-sm text-title-sm text-on-surface mb-2" for="id_celebration_venue_details">Detalles del Lugar de Celebracion</label>
+                        <textarea class="block w-full px-4 py-3 text-on-surface bg-surface-container-low border border-outline-variant rounded-lg appearance-none focus:outline-none focus:ring-2 focus:ring-secondary focus:border-secondary font-body-md text-body-md resize-none" 
+                                  id="id_celebration_venue_details" name="celebration_venue_details" placeholder="Direccion completa, indicaciones para los invitados..." rows="3">{{ form.celebration_venue_details.value|default:'' }}</textarea>
+                        {% if form.celebration_venue_details.errors %}
+                        <p class="mt-1 text-sm text-error">{{ form.celebration_venue_details.errors.0 }}</p>
+                        {% endif %}
+                    </div>
                 </div>
 
                 <div>
@@ -367,13 +467,8 @@
 <script>
     const initLat = {{ current_lat|unlocalize }};
     const initLng = {{ current_lng|unlocalize }};
-    
-    const map = L.map('venue-map').setView([initLat, initLng], 13);
-    
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
-        maxZoom: 19
-    }).addTo(map);
+    const initCelebLat = {% if current_celebration_lat %}{{ current_celebration_lat|unlocalize }}{% else %}{{ current_lat|unlocalize }}{% endif %};
+    const initCelebLng = {% if current_celebration_lng %}{{ current_celebration_lng|unlocalize }}{% else %}{{ current_lng|unlocalize }}{% endif %};
     
     const weddingIcon = L.divIcon({
         html: '<div style="background:#D4AF37;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="transform:rotate(45deg);color:white;font-size:16px;">favorite</span></div>',
@@ -382,30 +477,99 @@
         className: ''
     });
     
-    let marker = L.marker([initLat, initLng], { 
-        icon: weddingIcon,
-        draggable: true 
+    const celebrationIcon = L.divIcon({
+        html: '<div style="background:#DB2777;width:32px;height:32px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:3px solid white;box-shadow:0 2px 8px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><span class="material-symbols-outlined" style="transform:rotate(45deg);color:white;font-size:16px;">celebration</span></div>',
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        className: ''
+    });
+    
+    const map = L.map('venue-map').setView([initLat, initLng], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
     }).addTo(map);
     
+    let marker = L.marker([initLat, initLng], { icon: weddingIcon, draggable: true }).addTo(map);
     updateCoordsDisplay(initLat, initLng);
     
     marker.on('dragend', function(e) {
         const pos = e.target.getLatLng();
         updateCoordsDisplay(pos.lat, pos.lng);
-        reverseGeocode(pos.lat, pos.lng);
+        reverseGeocode(pos.lat, pos.lng, 'ceremony');
     });
     
     map.on('click', function(e) {
         marker.setLatLng(e.latlng);
         updateCoordsDisplay(e.latlng.lat, e.latlng.lng);
-        reverseGeocode(e.latlng.lat, e.latlng.lng);
+        reverseGeocode(e.latlng.lat, e.latlng.lng, 'ceremony');
     });
     
     function updateCoordsDisplay(lat, lng) {
-        document.getElementById('id_latitude').value = lat.toFixed(6);
-        document.getElementById('id_longitude').value = lng.toFixed(6);
-        document.getElementById('coords-display').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+        const latField = document.getElementById('id_latitude');
+        const lngField = document.getElementById('id_longitude');
+        if (latField && lngField) {
+            latField.value = lat.toFixed(6);
+            lngField.value = lng.toFixed(6);
+            document.getElementById('coords-display').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            console.log('Coordenadas ceremonia actualizadas:', lat.toFixed(6), lng.toFixed(6));
+        }
     }
+    
+    let celebrationMap, celebrationMarker;
+    const celebrationFields = document.getElementById('celebration-fields');
+    const sameVenueCheckbox = document.getElementById('id_same_venue');
+    
+    function initCelebrationMap() {
+        if (celebrationMap) return;
+        
+        celebrationMap = L.map('celebration-venue-map').setView([initCelebLat, initCelebLng], 13);
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+            maxZoom: 19
+        }).addTo(celebrationMap);
+        
+        celebrationMarker = L.marker([initCelebLat, initCelebLng], { icon: celebrationIcon, draggable: true }).addTo(celebrationMap);
+        updateCelebrationCoordsDisplay(initCelebLat, initCelebLng);
+        
+        celebrationMarker.on('dragend', function(e) {
+            const pos = e.target.getLatLng();
+            updateCelebrationCoordsDisplay(pos.lat, pos.lng);
+            reverseGeocode(pos.lat, pos.lng, 'celebration');
+        });
+        
+        celebrationMap.on('click', function(e) {
+            celebrationMarker.setLatLng(e.latlng);
+            updateCelebrationCoordsDisplay(e.latlng.lat, e.latlng.lng);
+            reverseGeocode(e.latlng.lat, e.latlng.lng, 'celebration');
+        });
+        
+        setTimeout(() => celebrationMap.invalidateSize(), 100);
+        initCelebrationSearch();
+    }
+    
+    function updateCelebrationCoordsDisplay(lat, lng) {
+        const latField = document.getElementById('id_celebration_latitude');
+        const lngField = document.getElementById('id_celebration_longitude');
+        if (latField && lngField) {
+            latField.value = lat.toFixed(6);
+            lngField.value = lng.toFixed(6);
+            document.getElementById('celebration-coords-display').textContent = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+            console.log('Coordenadas celebracion actualizadas:', lat.toFixed(6), lng.toFixed(6));
+        }
+    }
+    
+    function toggleCelebrationFields() {
+        if (sameVenueCheckbox.checked) {
+            celebrationFields.classList.add('hidden');
+        } else {
+            celebrationFields.classList.remove('hidden');
+            setTimeout(() => initCelebrationMap(), 100);
+        }
+    }
+    
+    sameVenueCheckbox.addEventListener('change', toggleCelebrationFields);
+    toggleCelebrationFields();
     
     const searchInput = document.getElementById('map-search-input');
     const searchResults = document.getElementById('map-search-results');
@@ -419,39 +583,82 @@
             searchResults.classList.remove('active');
             return;
         }
-        searchTimeout = setTimeout(() => searchAddress(query), 400);
+        searchTimeout = setTimeout(() => searchAddress(query, 'ceremony'), 400);
     });
     
     searchInput.addEventListener('keydown', function(e) {
         if (e.key === 'Enter') {
             e.preventDefault();
             const query = this.value.trim();
-            if (query.length >= 3) searchAddress(query);
+            if (query.length >= 3) searchAddress(query, 'ceremony');
         }
     });
     
     searchBtn.addEventListener('click', function() {
         const query = searchInput.value.trim();
-        if (query.length >= 3) searchAddress(query);
+        if (query.length >= 3) searchAddress(query, 'ceremony');
     });
     
     document.addEventListener('click', function(e) {
-        if (!e.target.closest('.map-search-container')) {
+        if (!e.target.closest('#map-search-input') && !e.target.closest('#map-search-results') && !e.target.closest('#map-search-btn')) {
             searchResults.classList.remove('active');
+        }
+        if (!e.target.closest('#celebration-map-search-input') && !e.target.closest('#celebration-map-search-results') && !e.target.closest('#celebration-map-search-btn')) {
+            const celebResults = document.getElementById('celebration-map-search-results');
+            if (celebResults) celebResults.classList.remove('active');
         }
     });
     
-    function searchAddress(query) {
+    function initCelebrationSearch() {
+        const celebSearchInput = document.getElementById('celebration-map-search-input');
+        const celebSearchResults = document.getElementById('celebration-map-search-results');
+        const celebSearchBtn = document.getElementById('celebration-map-search-btn');
+        let celebSearchTimeout = null;
+        
+        if (!celebSearchInput) return;
+        
+        celebSearchInput.addEventListener('input', function() {
+            clearTimeout(celebSearchTimeout);
+            const query = this.value.trim();
+            if (query.length < 3) {
+                celebSearchResults.classList.remove('active');
+                return;
+            }
+            celebSearchTimeout = setTimeout(() => searchAddress(query, 'celebration'), 400);
+        });
+        
+        celebSearchInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                const query = this.value.trim();
+                if (query.length >= 3) searchAddress(query, 'celebration');
+            }
+        });
+        
+        celebSearchBtn.addEventListener('click', function() {
+            const query = celebSearchInput.value.trim();
+            if (query.length >= 3) searchAddress(query, 'celebration');
+        });
+    }
+    
+    function searchAddress(query, type) {
         fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}&limit=5&addressdetails=1`)
             .then(r => r.json())
             .then(results => {
+                const resultsContainer = type === 'ceremony' ? searchResults : document.getElementById('celebration-map-search-results');
+                const targetMap = type === 'ceremony' ? map : celebrationMap;
+                const targetMarker = type === 'ceremony' ? marker : celebrationMarker;
+                const locationInput = type === 'ceremony' ? document.getElementById('id_location') : document.getElementById('id_celebration_location');
+                const detailsInput = type === 'ceremony' ? document.getElementById('id_venue_details') : document.getElementById('id_celebration_venue_details');
+                const searchInputEl = type === 'ceremony' ? searchInput : document.getElementById('celebration-map-search-input');
+                
                 if (results.length === 0) {
-                    searchResults.innerHTML = '<div class="map-search-item"><span class="address-main">No se encontraron resultados</span></div>';
-                    searchResults.classList.add('active');
+                    resultsContainer.innerHTML = '<div class="map-search-item"><span class="address-main">No se encontraron resultados</span></div>';
+                    resultsContainer.classList.add('active');
                     return;
                 }
                 
-                searchResults.innerHTML = results.map(r => {
+                resultsContainer.innerHTML = results.map(r => {
                     const parts = r.display_name.split(',');
                     const main = parts.slice(0, 2).join(',');
                     const detail = parts.slice(2, 4).join(',');
@@ -461,44 +668,46 @@
                     </div>`;
                 }).join('');
                 
-                searchResults.classList.add('active');
+                resultsContainer.classList.add('active');
                 
-                searchResults.querySelectorAll('.map-search-item').forEach(item => {
+                resultsContainer.querySelectorAll('.map-search-item').forEach(item => {
                     item.addEventListener('click', function() {
                         const lat = parseFloat(this.dataset.lat);
                         const lon = parseFloat(this.dataset.lon);
                         const name = this.dataset.name;
                         const address = this.dataset.address;
                         
-                        map.setView([lat, lon], 16);
-                        marker.setLatLng([lat, lon]);
-                        updateCoordsDisplay(lat, lon);
+                        targetMap.setView([lat, lon], 16);
+                        targetMarker.setLatLng([lat, lon]);
                         
-                        if (!document.getElementById('id_location').value) {
-                            document.getElementById('id_location').value = name;
-                        }
-                        if (!document.getElementById('id_venue_details').value) {
-                            document.getElementById('id_venue_details').value = address;
+                        if (type === 'ceremony') {
+                            updateCoordsDisplay(lat, lon);
+                        } else {
+                            updateCelebrationCoordsDisplay(lat, lon);
                         }
                         
-                        searchInput.value = name;
-                        searchResults.classList.remove('active');
+                        if (!locationInput.value) locationInput.value = name;
+                        if (!detailsInput.value) detailsInput.value = address;
+                        
+                        searchInputEl.value = name;
+                        resultsContainer.classList.remove('active');
                     });
                 });
             })
             .catch(err => console.error('Search error:', err));
     }
     
-    function reverseGeocode(lat, lng) {
+    function reverseGeocode(lat, lng, type) {
         fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`)
             .then(r => r.json())
             .then(data => {
                 if (data && data.display_name) {
                     const parts = data.display_name.split(',');
-                    searchInput.value = parts.slice(0, 2).join(',').trim();
-                    if (!document.getElementById('id_venue_details').value) {
-                        document.getElementById('id_venue_details').value = data.display_name;
-                    }
+                    const searchInputEl = type === 'ceremony' ? searchInput : document.getElementById('celebration-map-search-input');
+                    const detailsInput = type === 'ceremony' ? document.getElementById('id_venue_details') : document.getElementById('id_celebration_venue_details');
+                    
+                    if (searchInputEl) searchInputEl.value = parts.slice(0, 2).join(',').trim();
+                    if (!detailsInput.value) detailsInput.value = data.display_name;
                 }
             })
             .catch(() => {});
