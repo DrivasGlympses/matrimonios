@@ -16,6 +16,7 @@ Sistema de gestión de bodas construido con Django.
 - pip
 
 ## Instalación
+## por favor 
 
 1. **Crear entorno virtual**:
 ```bash
