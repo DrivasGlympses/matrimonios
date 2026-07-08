@@ -14,7 +14,9 @@ python manage.py create_sample_data  # loads sample event/guests
 python manage.py runserver
 ```
 
-## Testing
+## Testinga
+## Testinga
+
 
 ```bash
 python manage.py test [appname]   # e.g. python manage.py test apps.dashboard
@@ -56,3 +58,4 @@ Design rules at `design-system/ethereal-union/MASTER.md` override defaults:
 - `django-extensions` and `crispy-tailwind` installed
 - Spanish UI throughout (`LANGUAGE_CODE = 'es'`)
 - Tests in `apps/*/tests.py` are empty stubs
+-prueba
