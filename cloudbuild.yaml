@@ -1,0 +1,32 @@
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$_SERVICE_NAME', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$_SERVICE_NAME']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: gcloud
+    args:
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPOSITORY/$_SERVICE_NAME'
+      - '--region=$_REGION'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=DB_ENGINE=$_DB_ENGINE,DB_NAME=$_DB_NAME,DB_USER=$_DB_USER,DB_PASSWORD=$_DB_PASSWORD,DB_HOST=$_DB_HOST,DB_PORT=$_DB_PORT'
+
+substitutions:
+  _SERVICE_NAME: matrimonios
+  _REGION: us-central1
+  _REPOSITORY: matrimonios
+  _DB_ENGINE: django.db.backends.postgresql
+  _DB_NAME: ""
+  _DB_USER: ""
+  _DB_PASSWORD: ""
+  _DB_HOST: ""
+  _DB_PORT: "5432"
+
+options:
+  logging: CLOUD_LOGGING_ONLY
