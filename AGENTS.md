@@ -58,4 +58,4 @@ Design rules at `design-system/ethereal-union/MASTER.md` override defaults:
 - `django-extensions` and `crispy-tailwind` installed
 - Spanish UI throughout (`LANGUAGE_CODE = 'es'`)
 - Tests in `apps/*/tests.py` are empty stubs
--prueba
+-pruebasss
