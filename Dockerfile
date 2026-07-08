@@ -25,3 +25,5 @@ EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "3", "ethereal_union.wsgi:application"]
+
+## prueba
