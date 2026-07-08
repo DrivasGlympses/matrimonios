@@ -132,6 +132,19 @@
         overflow: hidden;
         transition: all 300ms ease;
         border-radius: 1.25rem;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .location-card .card-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+    }
+
+    .location-card .card-body .btn-directions {
+        margin-top: auto;
+        align-self: flex-start;
     }
 
     .location-card:hover {
@@ -387,7 +400,7 @@
                     </p>
                 </div>
                 {% endif %}
-                <div class="p-5">
+                <div class="p-5 card-body">
                     <div class="flex items-start gap-3 mb-3">
                         <span class="material-symbols-outlined text-[22px] mt-0.5 shrink-0" style="color: #DB2777;">church</span>
                         <div>
@@ -425,7 +438,7 @@
                     </p>
                 </div>
                 {% endif %}
-                <div class="p-5">
+                <div class="p-5 card-body">
                     <div class="flex items-start gap-3 mb-3">
                         <span class="material-symbols-outlined text-[22px] mt-0.5 shrink-0" style="color: #DB2777;">celebration</span>
                         <div>

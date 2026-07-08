@@ -150,6 +150,7 @@
         <nav class="flex md:hidden gap-4 items-center">
             <a class="text-sm transition-colors duration-300 cursor-pointer {% if request.resolver_match.url_name == 'guest_home' %}text-pink-600 font-semibold{% else %}text-gray-600{% endif %}" style="font-family: 'Cormorant Infant', serif;" href="{% url 'event:guest_home' %}">Inicio</a>
             <a class="text-sm transition-colors duration-300 cursor-pointer {% if request.resolver_match.namespace == 'gallery' %}text-pink-600 font-semibold{% else %}text-gray-600{% endif %}" style="font-family: 'Cormorant Infant', serif;" href="{% url 'gallery:home' %}">Galería</a>
+            <a class="text-sm transition-colors duration-300 cursor-pointer {% if request.resolver_match.namespace == 'donations' %}text-pink-600 font-semibold{% else %}text-gray-600{% endif %}" style="font-family: 'Cormorant Infant', serif;" href="{% url 'donations:donation' %}">Donación</a>
             <form method="post" action="{% url 'core:logout' %}" class="inline">
                 {% csrf_token %}
                 <button type="submit" class="text-sm text-gray-500 bg-transparent border-0 p-0 cursor-pointer" style="font-family: 'Cormorant Infant', serif;">Salir</button>

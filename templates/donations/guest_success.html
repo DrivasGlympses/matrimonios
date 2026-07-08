@@ -2,33 +2,159 @@
 
 {% block title %}¡Gracias por tu donación! - {{ event.display_name }}{% endblock %}
 
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet"/>
+<style>
+    .guest-page {
+        --gp-rose: #E8A0BF;
+        --gp-rose-dark: #DB2777;
+        --gp-cream: #FFF8F0;
+        --gp-blush: #FDE8EF;
+        --gp-gold: #CA8A04;
+        --gp-text: #5D4037;
+    }
+    .guest-page .gp-script { font-family: 'Great Vibes', cursive; }
+    .guest-page .gp-serif { font-family: 'Cormorant Infant', serif; }
+
+    .gp-ornament {
+        width: 80px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--gp-gold), transparent);
+        margin: 0.75rem auto;
+    }
+
+    .status-section {
+        background: linear-gradient(180deg, var(--gp-cream) 0%, var(--gp-blush) 50%, var(--gp-cream) 100%);
+    }
+
+    .status-card {
+        background: rgba(255,255,255,0.96);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(232,160,191,0.25);
+        box-shadow: 0 20px 50px rgba(219,39,119,0.08), 0 8px 20px rgba(0,0,0,0.06);
+        border-radius: 1.25rem;
+    }
+
+    .icon-circle {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+
+    .icon-circle.success {
+        background: linear-gradient(135deg, var(--gp-blush), rgba(232,160,191,0.3));
+    }
+
+    .icon-circle .material-symbols-outlined {
+        font-size: 40px;
+        color: var(--gp-rose-dark);
+    }
+
+    .message-card {
+        background: var(--gp-blush);
+        border: 1px solid rgba(232,160,191,0.2);
+        border-radius: 1rem;
+    }
+
+    .btn-elegant {
+        background: linear-gradient(135deg, var(--gp-gold), #D4AF37);
+        color: white;
+        padding: 12px 28px;
+        border-radius: 2rem;
+        font-family: 'Cormorant Infant', serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 300ms ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(202,138,4,0.25);
+        text-decoration: none;
+    }
+
+    .btn-elegant:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(202,138,4,0.35);
+        color: white;
+        text-decoration: none;
+    }
+
+    .decorative-corner {
+        position: absolute;
+        width: 50px;
+        height: 50px;
+        border-color: rgba(202,138,4,0.3);
+    }
+
+    .decorative-corner.top-left { top: 12px; left: 12px; border-top: 1.5px solid; border-left: 1.5px solid; border-right: none; border-bottom: none; }
+    .decorative-corner.top-right { top: 12px; right: 12px; border-top: 1.5px solid; border-right: 1.5px solid; border-left: none; border-bottom: none; }
+    .decorative-corner.bottom-left { bottom: 12px; left: 12px; border-bottom: 1.5px solid; border-left: 1.5px solid; border-right: none; border-top: none; }
+    .decorative-corner.bottom-right { bottom: 12px; right: 12px; border-bottom: 1.5px solid; border-right: 1.5px solid; border-left: none; border-top: none; }
+
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 500ms ease, transform 500ms ease;
+    }
+
+    .fade-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in-up { opacity: 1; transform: none; transition: none; }
+        .btn-elegant:hover { transform: none; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="max-w-2xl mx-auto px-6 py-16 text-center">
-    <div class="bg-surface-container-lowest rounded-2xl shadow-xl p-8 md:p-16 border border-white/60">
-        <div class="w-24 h-24 mx-auto mb-8 rounded-full bg-secondary/10 flex items-center justify-center">
-            <span class="material-symbols-outlined text-secondary text-6xl" style="font-variation-settings: 'FILL' 1;">favorite</span>
-        </div>
-        
-        <h1 class="font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-6">
-            ¡Gracias por tu generosidad!
-        </h1>
-        
-        <p class="font-body-lg text-body-lg text-on-surface-variant mb-8">
-            Tu donación ha sido procesada exitosamente. Agradecemos mucho tu apoyo en este día tan especial para nosotros.
-        </p>
-        
-        <div class="bg-surface-container rounded-xl p-6 mb-8">
-            <p class="font-body-md text-body-md text-on-surface">
-                Tu contribución nos ayuda a hacer de este día un recuerdo inolvidable.
-            </p>
-        </div>
-        
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="{% url 'gallery:home' %}" class="bg-secondary text-on-secondary px-8 py-4 rounded-lg font-title-sm text-title-sm hover:bg-on-secondary-container transition-all duration-300 flex items-center justify-center gap-2 cursor-pointer shadow-lg hover:shadow-xl">
-                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">photo_library</span>
+<div class="guest-page">
+
+<section class="status-section min-h-[70vh] flex items-center justify-center py-12 px-4">
+    <div class="max-w-lg w-full fade-in-up">
+        <div class="status-card p-8 md:p-12 text-center relative">
+            <div class="decorative-corner top-left"></div>
+            <div class="decorative-corner top-right"></div>
+            <div class="decorative-corner bottom-left"></div>
+            <div class="decorative-corner bottom-right"></div>
+
+            <div class="icon-circle success">
+                <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">favorite</span>
+            </div>
+
+            <h1 class="gp-script text-3xl md:text-4xl mb-2" style="color: var(--gp-rose-dark);">¡Gracias!</h1>
+            <div class="gp-ornament"></div>
+            <p class="gp-serif text-lg mt-4 mb-6" style="color: var(--gp-text);">Tu donación ha sido procesada exitosamente. Agradecemos mucho tu apoyo en este día tan especial.</p>
+
+            <div class="message-card p-5 mb-8">
+                <p class="gp-serif text-sm" style="color: var(--gp-text); opacity: 0.8;">Tu contribución nos ayuda a hacer de este día un recuerdo inolvidable.</p>
+            </div>
+
+            <a href="{% url 'gallery:home' %}" class="btn-elegant">
+                <span class="material-symbols-outlined text-[18px]">photo_library</span>
                 Ver galería de fotos
             </a>
         </div>
     </div>
+</section>
+
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    (function() {
+        document.querySelectorAll('.fade-in-up').forEach(function(el) {
+            el.classList.add('visible');
+        });
+    })();
+</script>
 {% endblock %}

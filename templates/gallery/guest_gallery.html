@@ -2,109 +2,425 @@
 
 {% block title %}Galería - {{ event.display_name }}{% endblock %}
 
+{% block extra_css %}
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet"/>
+<style>
+    .guest-page {
+        --gp-rose: #E8A0BF;
+        --gp-rose-dark: #DB2777;
+        --gp-sage: #A7C4A0;
+        --gp-sage-dark: #6B8E6B;
+        --gp-cream: #FFF8F0;
+        --gp-blush: #FDE8EF;
+        --gp-gold: #CA8A04;
+        --gp-text: #5D4037;
+    }
+    .guest-page .gp-script { font-family: 'Great Vibes', cursive; }
+    .guest-page .gp-serif { font-family: 'Cormorant Infant', serif; }
+
+    .gp-ornament {
+        width: 80px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, var(--gp-gold), transparent);
+        margin: 0.75rem auto;
+    }
+
+    .section-title {
+        font-family: 'Great Vibes', cursive;
+        font-size: 2.5rem;
+        color: var(--gp-rose-dark);
+        margin-bottom: 0.25rem;
+    }
+
+    @media (min-width: 768px) {
+        .section-title { font-size: 3rem; }
+    }
+
+    .gallery-section {
+        background: linear-gradient(180deg, var(--gp-cream) 0%, var(--gp-blush) 60%, var(--gp-blush) 100%);
+    }
+
+    .guest-page {
+        background: var(--gp-blush);
+        min-height: calc(100vh - 64px);
+    }
+
+    body {
+        background-color: #FDE8EF !important;
+    }
+
+    main {
+        background-color: #FDE8EF;
+    }
+
+    .gallery-section {
+        flex: 1;
+    }
+
+    .filter-btn {
+        font-family: 'Cormorant Infant', serif;
+        font-size: 0.95rem;
+        font-weight: 500;
+        padding: 8px 20px;
+        border-radius: 2rem;
+        transition: all 300ms ease;
+        cursor: pointer;
+        border: 1px solid rgba(232,160,191,0.2);
+        background: white;
+        color: var(--gp-text);
+    }
+
+    .filter-btn:hover {
+        background: var(--gp-blush);
+        border-color: rgba(232,160,191,0.4);
+    }
+
+    .filter-btn.active {
+        background: var(--gp-blush);
+        color: var(--gp-rose-dark);
+        border-color: var(--gp-rose);
+        box-shadow: 0 2px 8px rgba(219,39,119,0.1);
+    }
+
+    .photo-card {
+        position: relative;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        background: white;
+        border: 1px solid rgba(232,160,191,0.15);
+        box-shadow: 0 4px 20px rgba(219,39,119,0.04);
+        transition: all 300ms ease;
+        cursor: pointer;
+    }
+
+    .photo-card:hover {
+        box-shadow: 0 8px 30px rgba(219,39,119,0.1);
+        transform: translateY(-3px);
+    }
+
+    .photo-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 500ms ease;
+    }
+
+    .photo-card:hover img {
+        transform: scale(1.05);
+    }
+
+    .photo-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(to top, rgba(93,64,55,0.7) 0%, rgba(93,64,55,0.2) 40%, transparent 100%);
+        opacity: 0;
+        transition: opacity 300ms ease;
+        display: flex;
+        align-items: flex-end;
+        padding: 1rem;
+    }
+
+    .photo-card:hover .photo-overlay {
+        opacity: 1;
+    }
+
+    .photo-overlay-text {
+        font-family: 'Cormorant Infant', serif;
+        color: white;
+    }
+
+    .empty-state-card {
+        background: white;
+        border: 1px solid rgba(232,160,191,0.15);
+        box-shadow: 0 4px 20px rgba(219,39,119,0.04);
+        border-radius: 1.25rem;
+    }
+
+    .btn-load-more {
+        background: linear-gradient(135deg, var(--gp-gold), #D4AF37);
+        color: white;
+        padding: 12px 32px;
+        border-radius: 2rem;
+        font-family: 'Cormorant Infant', serif;
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: all 300ms ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 4px 12px rgba(202,138,4,0.25);
+        border: none;
+    }
+
+    .btn-load-more:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 18px rgba(202,138,4,0.35);
+    }
+
+    .lightbox-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 50;
+        background: rgba(0,0,0,0.92);
+        backdrop-filter: blur(8px);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+    }
+
+    .lightbox-overlay.show {
+        display: flex;
+    }
+
+    .lightbox-close {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 200ms ease;
+    }
+
+    .lightbox-close:hover {
+        background: rgba(255,255,255,0.2);
+    }
+
+    .lightbox-nav {
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: all 200ms ease;
+    }
+
+    .lightbox-nav:hover {
+        background: rgba(255,255,255,0.2);
+    }
+
+    .lightbox-nav.prev { left: 1rem; }
+    .lightbox-nav.next { right: 1rem; }
+
+    .fade-in-up {
+        opacity: 0;
+        transform: translateY(20px);
+        transition: opacity 500ms ease, transform 500ms ease;
+    }
+
+    .fade-in-up.visible {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    @media (prefers-reduced-motion: reduce) {
+        .fade-in-up { opacity: 1; transform: none; transition: none; }
+        .photo-card:hover { transform: none; }
+        .photo-card:hover img { transform: none; }
+        .btn-load-more:hover { transform: none; }
+    }
+
+    @media (max-width: 640px) {
+        .section-title { font-size: 2.25rem; }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
-<div class="max-w-container-max mx-auto w-full px-margin-mobile md:px-margin-desktop py-8">
-    <div class="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-6">
-        <div>
-            <h2 class="font-display-lg-mobile md:font-display-lg text-display-lg-mobile md:text-display-lg text-on-surface mb-2">Galería de Fotos</h2>
-            <p class="text-on-surface-variant font-body-md max-w-2xl">Revive los momentos más mágicos de esta celebración.</p>
+<div class="guest-page">
+
+<section class="gallery-section py-8 md:py-12 min-h-[60vh]">
+    <div class="max-w-container-max mx-auto px-4">
+        <div class="text-center mb-8 fade-in-up">
+            <h2 class="section-title">Nuestra Galería</h2>
+            <div class="gp-ornament"></div>
+            <p class="gp-serif text-base md:text-lg mt-3" style="color: var(--gp-text); opacity: 0.75;">Revive los momentos más mágicos de esta celebración</p>
         </div>
-    </div>
 
-    <div class="flex overflow-x-auto pb-4 mb-8 gap-3 no-scrollbar">
-        <button class="px-5 py-2 rounded-full bg-primary-container text-on-primary-container font-medium text-sm whitespace-nowrap transition-colors category-filter cursor-pointer" data-category="ALL">
-            Todas
-        </button>
-        {% for cat_key, cat_label in categories %}
-        <button class="px-5 py-2 rounded-full bg-surface-container text-on-surface-variant hover:bg-surface-container-high text-sm whitespace-nowrap transition-colors category-filter cursor-pointer" data-category="{{ cat_key }}">
-            {{ cat_label }}
-        </button>
-        {% endfor %}
-    </div>
+        <div class="flex overflow-x-auto pb-4 mb-8 gap-3 no-scrollbar justify-center fade-in-up flex-wrap">
+            <button class="filter-btn active" data-category="ALL">Todas</button>
+            {% for cat_key, cat_label in categories %}
+            <button class="filter-btn" data-category="{{ cat_key }}">{{ cat_label }}</button>
+            {% endfor %}
+        </div>
 
-    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-gutter auto-rows-[200px]" id="photo-grid">
-        {% for photo in photos %}
-        <div class="relative group rounded-lg overflow-hidden shadow-sm shadow-secondary/5 photo-item cursor-pointer" data-category="{{ photo.category }}">
-            <img class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="{{ photo.image.url }}" alt="{{ photo.caption }}"/>
-            <div class="absolute inset-0 bg-gradient-to-t from-on-surface/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
-                <div>
-                    <p class="text-on-primary text-sm font-medium">{{ photo.uploaded_by.get_full_name|default:photo.uploaded_by.username }}</p>
-                    {% if photo.caption %}
-                    <p class="text-on-primary/80 text-xs">{{ photo.caption|truncatechars:30 }}</p>
-                    {% endif %}
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-5" id="photo-grid">
+            {% for photo in photos %}
+            <div class="photo-card fade-in-up aspect-square" data-category="{{ photo.category }}">
+                <img src="{{ photo.image.url }}" alt="{{ photo.caption }}" loading="lazy"/>
+                <div class="photo-overlay">
+                    <div class="photo-overlay-text">
+                        <p class="text-sm font-semibold">{{ photo.uploaded_by.get_full_name|default:photo.uploaded_by.username }}</p>
+                        {% if photo.caption %}
+                        <p class="text-xs opacity-80 mt-0.5">{{ photo.caption|truncatechars:35 }}</p>
+                        {% endif %}
+                    </div>
                 </div>
             </div>
+            {% empty %}
+            <div class="col-span-full flex justify-center fade-in-up visible">
+                <div class="empty-state-card text-center py-16 px-8 max-w-md">
+                    <div class="w-16 h-16 rounded-full mx-auto mb-5 flex items-center justify-center" style="background: var(--gp-blush);">
+                        <span class="material-symbols-outlined text-[32px]" style="color: var(--gp-rose-dark);">photo_library</span>
+                    </div>
+                    <h3 class="gp-script text-2xl mb-2" style="color: var(--gp-rose-dark);">Pronto</h3>
+                    <p class="gp-serif text-sm" style="color: var(--gp-text); opacity: 0.7;">Las fotos de la galería estarán disponibles muy pronto</p>
+                </div>
+            </div>
+            {% endfor %}
         </div>
-        {% empty %}
-        <div class="col-span-full text-center py-16">
-            <span class="material-symbols-outlined text-[80px] text-secondary/30 mb-4">photo_library</span>
-            <p class="font-body-md text-on-surface-variant mb-4">No hay fotos en la galería todavía</p>
-        </div>
-        {% endfor %}
-    </div>
 
-    {% if photos|length > 12 %}
-    <div class="flex justify-center mt-12 mb-8">
-        <button class="text-secondary font-medium hover:text-on-secondary-container transition-colors border-b border-secondary pb-1 cursor-pointer">
-            Cargar más recuerdos
-        </button>
+        {% if photos|length > 12 %}
+        <div class="flex justify-center mt-10 fade-in-up">
+            <button class="btn-load-more" id="load-more-btn">
+                <span class="material-symbols-outlined text-[18px]">photo_library</span>
+                Cargar más recuerdos
+            </button>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
+</section>
+
 </div>
 
-<div id="lightbox" class="fixed inset-0 z-50 bg-black/90 hidden items-center justify-center p-8">
-    <button id="close-lightbox" class="absolute top-4 right-4 p-2 rounded-full text-white hover:bg-white/20 transition-colors cursor-pointer">
-        <span class="material-symbols-outlined text-[32px]">close</span>
+<div class="lightbox-overlay" id="lightbox">
+    <button class="lightbox-close" id="close-lightbox">
+        <span class="material-symbols-outlined text-[24px]">close</span>
     </button>
-    <img id="lightbox-image" src="" alt="" class="max-w-full max-h-full object-contain"/>
+    <button class="lightbox-nav prev" id="lightbox-prev">
+        <span class="material-symbols-outlined text-[28px]">chevron_left</span>
+    </button>
+    <img id="lightbox-image" src="" alt="" class="max-w-full max-h-full object-contain rounded-lg"/>
+    <button class="lightbox-nav next" id="lightbox-next">
+        <span class="material-symbols-outlined text-[28px]">chevron_right</span>
+    </button>
 </div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-    document.querySelectorAll('.category-filter').forEach(btn => {
-        btn.addEventListener('click', function() {
-            const category = this.dataset.category;
-            
-            document.querySelectorAll('.category-filter').forEach(b => {
-                b.classList.remove('bg-primary-container', 'text-on-primary-container');
-                b.classList.add('bg-surface-container', 'text-on-surface-variant');
-            });
-            this.classList.remove('bg-surface-container', 'text-on-surface-variant');
-            this.classList.add('bg-primary-container', 'text-on-primary-container');
-            
-            document.querySelectorAll('.photo-item').forEach(item => {
-                if (category === 'ALL' || item.dataset.category === category) {
-                    item.style.display = '';
-                } else {
-                    item.style.display = 'none';
-                }
-            });
-        });
-    });
+    (function() {
+        const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-    const lightbox = document.getElementById('lightbox');
-    const lightboxImage = document.getElementById('lightbox-image');
-    
-    document.querySelectorAll('.photo-item').forEach(item => {
-        item.addEventListener('click', function() {
-            const img = this.querySelector('img');
-            lightboxImage.src = img.src;
-            lightbox.classList.remove('hidden');
-            lightbox.classList.add('flex');
-        });
-    });
-    
-    document.getElementById('close-lightbox').addEventListener('click', function() {
-        lightbox.classList.add('hidden');
-        lightbox.classList.remove('flex');
-    });
-    
-    lightbox.addEventListener('click', function(e) {
-        if (e.target === lightbox) {
-            lightbox.classList.add('hidden');
-            lightbox.classList.remove('flex');
+        if (!prefersReducedMotion) {
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(function(entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
+
+            document.querySelectorAll('.fade-in-up').forEach(function(el) {
+                observer.observe(el);
+            });
+        } else {
+            document.querySelectorAll('.fade-in-up').forEach(function(el) {
+                el.classList.add('visible');
+            });
         }
-    });
+
+        document.querySelectorAll('.filter-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                const category = this.dataset.category;
+
+                document.querySelectorAll('.filter-btn').forEach(function(b) {
+                    b.classList.remove('active');
+                });
+                this.classList.add('active');
+
+                document.querySelectorAll('.photo-card').forEach(function(item) {
+                    if (category === 'ALL' || item.dataset.category === category) {
+                        item.style.display = '';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImage = document.getElementById('lightbox-image');
+        const photoCards = document.querySelectorAll('.photo-card');
+        let currentIndex = 0;
+
+        function getVisiblePhotos() {
+            return Array.from(photoCards).filter(function(card) {
+                return card.style.display !== 'none';
+            });
+        }
+
+        function openLightbox(index) {
+            const visible = getVisiblePhotos();
+            if (index < 0 || index >= visible.length) return;
+            currentIndex = index;
+            const img = visible[index].querySelector('img');
+            lightboxImage.src = img.src;
+            lightbox.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('show');
+            document.body.style.overflow = '';
+        }
+
+        function navigateLightbox(direction) {
+            const visible = getVisiblePhotos();
+            currentIndex = (currentIndex + direction + visible.length) % visible.length;
+            const img = visible[currentIndex].querySelector('img');
+            lightboxImage.src = img.src;
+        }
+
+        photoCards.forEach(function(card, idx) {
+            card.addEventListener('click', function() {
+                const visible = getVisiblePhotos();
+                const visibleIndex = visible.indexOf(this);
+                openLightbox(visibleIndex >= 0 ? visibleIndex : 0);
+            });
+        });
+
+        document.getElementById('close-lightbox').addEventListener('click', closeLightbox);
+        document.getElementById('lightbox-prev').addEventListener('click', function(e) {
+            e.stopPropagation();
+            navigateLightbox(-1);
+        });
+        document.getElementById('lightbox-next').addEventListener('click', function(e) {
+            e.stopPropagation();
+            navigateLightbox(1);
+        });
+
+        lightbox.addEventListener('click', function(e) {
+            if (e.target === lightbox) closeLightbox();
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (!lightbox.classList.contains('show')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') navigateLightbox(-1);
+            if (e.key === 'ArrowRight') navigateLightbox(1);
+        });
+    })();
 </script>
 {% endblock %}
